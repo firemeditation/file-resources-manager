@@ -6,7 +6,9 @@ export GOPATH="$OLDGOPATH":"$CURDIR"
 
 #gofmt -w src
 
-go install file_resources_manager
+go install frm_server
+
+cp -r src/frm_server/*.cfg bin/
 
 export GOPATH="$OLDGOPATH"
 
