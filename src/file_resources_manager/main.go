@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	c, _ := goconfig.ReadConfigFile("config/client.cfg")
+	c, _ := goconfig.ReadConfigFile("../config/client.cfg")
 	fmt.Println(c)
 }
