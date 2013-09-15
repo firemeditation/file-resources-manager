@@ -7,10 +7,10 @@
     
 登录步骤：
     0. C建立连接 -->
-    1. C{1byte[1](要求登陆)|1byte[version](版本号)} -->
-    2. S{1byte[1](1表示OK可以进行)|40byte[sha1](用时间生成sha1)} -->
-    3. C{2byte[len](用户名长度)|nbyte(用户名)|40byte(pass)[密码+SHA1再进行sha1运算]} -->
-    4. S{1byte[1](验证成功可以登录)|40byte[sha1](随机生成的登录身份验证标识)} or S{1byte[2](验证不通过)} -->
+    1. C{1byte[version](版本号) | 1byte[1](要求登陆)} -->
+    2. S{1byte[1](1表示OK可以进行) | 40byte[sha1](用时间生成sha1)} -->
+    3. C{2byte[len](用户名长度) | nbyte(用户名) | 40byte(pass)[密码+SHA1再进行sha1运算]} -->
+    4. S{1byte[1](验证成功可以登录) | 40byte[sha1](随机生成的登录身份验证标识)} <or> S{1byte[2](验证不通过)} -->
     5. S关闭连接
     
     第四步认证成功后的S身份认证记录(S内)：
@@ -20,5 +20,24 @@
         Level int  //权限级别
         LastTime time.Time //最后操作时间
     }
+    数据库中的用户表不再说明
 
+
+
+添加资源条目：
+    当前资源条目信息存放在结构体中，同时保存在数据库中，其中结构体如下：
+    type ResourceInfo struct {
+    	RID uint32 //资源ID
+    	Rname string //资源名称，数据库为char(255)
+    	Rtype uint16 //资源类型，数据库中的类型表ID
+    	Rinfo string //资源描述，数据库为TEXT
+    	Rbtime int64 //创建时间，Unix时间戳
+    }
+    
+    0. C建立连接 -->
+    1. C{1byte[version](版本号) | 1byte[2](2为申请添加一个资源条目) | 40byte[sha1](身份验证标识)} -->
+    2. S{1byte[1](1表示OK可以进行)} -->
+    3. C{4byte[len](后面结构体的长度) | xbyte[ResourceInfo结构体gob转码](RID留空)} -->
+    4. S{1byte[1](建立成功) | 4byte[RID](返回建立好的资源条目的RID)} <or> S{1byte[2](建立失败) | 4byte[len](错误长度)|xbyte[错误原因]} -->
+    5. S关闭连接
 
