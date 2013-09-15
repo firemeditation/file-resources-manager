@@ -1,0 +1,24 @@
+流程说明
+
+    状态位，为一个byte的长度，实际为uint8的数据类型。C代表客户端，S代表服务端。
+    长度信息，按照不同需求，分为2byte长度的uint16（文件名、目录名等长度），4byte长度的unit32（结构信息的长度），8byte长度的uint64（文件的长度）。
+    结构信息使用gob进行编码。
+    
+    
+登录步骤：
+    0. C建立连接 -->
+    1. C{1byte[1](要求登陆)|1byte[version](版本号)} -->
+    2. S{1byte[1](1表示OK可以进行)|40byte[sha1](用时间生成sha1)} -->
+    3. C{2byte[len](用户名长度)|nbyte(用户名)|40byte(pass)[密码+SHA1再进行sha1运算]} -->
+    4. S{1byte[1](验证成功可以登录)|40byte[sha1](随机生成的登录身份验证标识)} or S{1byte[2](验证不通过)} -->
+    5. S关闭连接
+    
+    第四步认证成功后的S身份认证记录(S内)：
+    var loginIsIn map[string]isLoginInfo  //其中[string]为sha1的登录身份验证标识
+    type isLoginInfo struct {
+        Name string //用户名
+        Level int  //权限级别
+        LastTime time.Time //最后操作时间
+    }
+
+
