@@ -10,5 +10,6 @@ import (
 func main() {
 	c := frm.GetConfig("server")
 	fmt.Println(c)
+	testIsLoginInfo()
 }
 

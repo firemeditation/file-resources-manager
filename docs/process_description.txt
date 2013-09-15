@@ -14,8 +14,8 @@
     5. S关闭连接
     
     第四步认证成功后的S身份认证记录(S内)：
-    var loginIsIn map[string]isLoginInfo  //其中[string]为sha1的登录身份验证标识
-    type isLoginInfo struct {
+    var UserIsLogin map[string]*IsLoginInfo  //其中[string]为sha1的登录身份验证标识
+    type IsLoginInfo struct {
         Name string //用户名
         Level int  //权限级别
         LastTime time.Time //最后操作时间

@@ -1,0 +1,75 @@
+// userIsLogin 内含 IsLoginInfo
+
+
+package main
+
+import (
+	"time"
+	"fmt"
+)
+
+// IsLoginInfo 是一个记录单个已经登录的人员信息的表
+type IsLoginInfo struct {
+	Name string //用户名
+	Level int //权限级别
+	LastTime time.Time //最后操作时间
+}
+
+// NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
+func NewIsLoginInfo(name string, level int, lastTime time.Time) *IsLoginInfo{
+	return &IsLoginInfo{name, level, lastTime}
+}
+
+// CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
+func (ili *IsLoginInfo) CheckLevel (asklevel int) bool {
+	if ili.Level >= asklevel {
+		return true
+	}else{
+		return false
+	}
+}
+
+// NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
+func (ili *IsLoginInfo) NotTimeOut (timeout int) bool {
+	oldtime := ili.LastTime.Unix()
+	nowtime := time.Now().Unix()
+	if oldtime + int64(timeout) < nowtime {
+		return false
+	}else{
+		return true
+	}
+}
+
+// UpdateLastTime 已当前时间写入LastTime中进行更新，并返回写入的时间
+func (ili *IsLoginInfo) UpdateLastTime () time.Time {
+	ili.LastTime = time.Now()
+	return ili.LastTime
+}
+
+
+
+
+// UserIsLogin 是一个map，记录所有已经登录的人员信息
+type UserIsLogin map[string]*IsLoginInfo
+
+// NewUserIsLogin 初始化UserIsLogin的map
+func NewUserIsLogin () UserIsLogin {
+	return UserIsLogin{}
+}
+
+// Add 增加一条用户信息，返回响应的IsLoginInfo，如果ckcode重复，则返回错误
+func (uil UserIsLogin) Add (ckcode string, name string, level int, lastTime time.Time) (ili *IsLoginInfo, err error) {
+	_, found := uil[ckcode]
+	if  found == false {
+		uil[ckcode] = NewIsLoginInfo(name, level, lastTime)
+		return uil[ckcode], err
+	}else{
+		err = fmt.Errorf("键值 %x 已经存在，不能新建", ckcode)
+		return ili, err
+	}
+}
+
+// Del 删除一条用户信息，通常是在其过期之后
+func (uil UserIsLogin) Del (ckcode string) {
+	delete(uil, ckcode)
+}
