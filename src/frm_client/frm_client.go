@@ -4,11 +4,19 @@ package main
 
 import (
 	"fmt"
-	frm "frm_pkg"
+	. "frm_pkg"
+	"github.com/msbranco/goconfig"
 )
 
+var serverConfig  *goconfig.ConfigFile
+var myLogin SelfLoginInfo
+
+func init() {
+	serverConfig = GetConfig("client")
+}
+
 func main() {
-	c := frm.GetConfig("client")
+	c := GetConfig("client")
 	fmt.Println(c)
 }
 

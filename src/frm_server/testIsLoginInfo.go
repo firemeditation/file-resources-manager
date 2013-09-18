@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	. "frm_pkg"
 )
 
 func testIsLoginInfo(){

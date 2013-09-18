@@ -1,7 +1,7 @@
 // userIsLogin 内含 UserPower，IsLoginInfo
 
 
-package main
+package frm_pkg
 
 import (
 	"time"
@@ -13,21 +13,25 @@ import (
 type UserPower map[string]map[string]uint16
 
 // IsLoginInfo 是一个记录单个已经登录的人员信息的表
-type IsLoginInfo struct {
+type IsLoginInfoBasic struct {
 	Name string //用户名
 	Level uint16 //权限级别
-	LastTime time.Time //最后操作时间
 	Utype uint8 //用户类型
 	UPower UserPower
 }
 
+type IsLoginInfo struct {
+	IsLoginInfoBasic
+	LastTime time.Time
+}
+
 // NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
 func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo{
-	return &IsLoginInfo{name, level, lastTime, utype, make(UserPower)}
+	return &IsLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, lastTime}
 }
 
 // CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
-func (ili *IsLoginInfo) CheckLevel (asklevel uint16) bool {
+func (ili IsLoginInfoBasic) CheckLevel (asklevel uint16) bool {
 	if ili.Level >= asklevel {
 		return true
 	}else{
@@ -36,7 +40,7 @@ func (ili *IsLoginInfo) CheckLevel (asklevel uint16) bool {
 }
 
 // CheckPowerLevel 检查UPower的权限
-func (ili *IsLoginInfo) CheckPowerLevel (topp string, secp string, asklevel uint16) bool {
+func (ili IsLoginInfoBasic) CheckPowerLevel (topp string, secp string, asklevel uint16) bool {
 	_, found := ili.UPower[topp][secp]
 	if found == true {
 		if ili.UPower[topp][secp] >= asklevel {
@@ -50,7 +54,7 @@ func (ili *IsLoginInfo) CheckPowerLevel (topp string, secp string, asklevel uint
 }
 
 // UpdatePowerLevel 更新UserPower的值
-func (ili *IsLoginInfo) UpdatePowerLevel (topp string, secp string, asklevel uint16) {
+func (ili IsLoginInfoBasic) UpdatePowerLevel (topp string, secp string, asklevel uint16) {
 	ili.UPower[topp][secp] = asklevel
 }
 
@@ -107,4 +111,14 @@ func (uil UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error) {
 // Del 删除一条用户信息，通常是在其过期之后
 func (uil UserIsLogin) Del (ckcode string) {
 	delete(uil, ckcode)
+}
+
+
+type SelfLoginInfo struct {
+	IsLoginInfoBasic
+	SID string
+}
+
+func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *MyLoginInfo{
+	return &MyLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, sid}
 }
