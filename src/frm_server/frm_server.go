@@ -3,13 +3,20 @@
 package main
 
 import (
-	"fmt"
-	frm "frm_pkg"
+	//"fmt"
+	. "frm_pkg"
+	"github.com/msbranco/goconfig"
 )
 
+var serverConfig  *goconfig.ConfigFile
+var userLoginStatus UserIsLogin
+
+func init() {
+	serverConfig = GetConfig("server")
+	userLoginStatus = NewUserIsLogin()
+}
+
 func main() {
-	c := frm.GetConfig("server")
-	fmt.Println(c)
 	testIsLoginInfo()
 }
 

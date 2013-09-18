@@ -14,13 +14,16 @@
     5. S关闭连接
     
     第四步认证成功后的S身份认证记录(S内)：
-    var UserIsLogin map[string]*IsLoginInfo  //其中[string]为sha1的登录身份验证标识
+    type UserPower map[string]map[string]uint16
     type IsLoginInfo struct {
         Name string //用户名
-        Level int  //权限级别
-        LastTime time.Time //最后操作时间
+	    Level uint16 //权限级别
+	    LastTime time.Time //最后操作时间
+    	Utype uint8 //用户类型
+    	UPower UserPower
     }
-    数据库中的用户表不再说明
+    vtype UserIsLogin map[string]*IsLoginInfo  //其中[string]为sha1的登录身份验证标识
+    数据库中的用户表与IsLoginInfo中相似，但其中UPower另外存放
 
 
 
