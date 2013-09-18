@@ -7,9 +7,9 @@ import (
 
 func testIsLoginInfo(){
 	loginIsIn := NewUserIsLogin()
-	oneUser,_ := loginIsIn.Add("adfadf", "User1sName", 100, time.Now())
+	oneUser,_ := loginIsIn.Add("adfadf", "User1sName", 100, time.Now(), 10)
 	fmt.Println(oneUser.Name)
-	oneUser2 ,err := loginIsIn.Add("adfadwf", "User2sName", 100, time.Now())
+	oneUser2 ,err := loginIsIn.Add("adfadwf", "User2sName", 100, time.Now() ,20)
 	fmt.Println(err)
 	oneUser.Name ="User1sName-改"
 	fmt.Println(loginIsIn["adfadf"].Name)

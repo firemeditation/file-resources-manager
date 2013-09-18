@@ -1,4 +1,4 @@
-// userIsLogin 内含 IsLoginInfo
+// userIsLogin 内含 UserPower，IsLoginInfo
 
 
 package main
@@ -8,25 +8,50 @@ import (
 	"fmt"
 )
 
+
+//UserPower 用户具体权限为[权限大类][权限小类]权限级别
+type UserPower map[string]map[string]uint16
+
 // IsLoginInfo 是一个记录单个已经登录的人员信息的表
 type IsLoginInfo struct {
 	Name string //用户名
-	Level int //权限级别
+	Level uint16 //权限级别
 	LastTime time.Time //最后操作时间
+	Utype uint8 //用户类型
+	UPower UserPower
 }
 
 // NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
-func NewIsLoginInfo(name string, level int, lastTime time.Time) *IsLoginInfo{
-	return &IsLoginInfo{name, level, lastTime}
+func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo{
+	return &IsLoginInfo{name, level, lastTime, utype, make(UserPower)}
 }
 
 // CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
-func (ili *IsLoginInfo) CheckLevel (asklevel int) bool {
+func (ili *IsLoginInfo) CheckLevel (asklevel uint16) bool {
 	if ili.Level >= asklevel {
 		return true
 	}else{
 		return false
 	}
+}
+
+// CheckPowerLevel 检查UPower的权限
+func (ili *IsLoginInfo) CheckPowerLevel (topp string, secp string, asklevel uint16) bool {
+	_, found := ili.UPower[topp][secp]
+	if found == true {
+		if ili.UPower[topp][secp] >= asklevel {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+}
+
+// UpdatePowerLevel 更新UserPower的值
+func (ili *IsLoginInfo) UpdatePowerLevel (topp string, secp string, asklevel uint16) {
+	ili.UPower[topp][secp] = asklevel
 }
 
 // NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
@@ -58,13 +83,23 @@ func NewUserIsLogin () UserIsLogin {
 }
 
 // Add 增加一条用户信息，返回响应的IsLoginInfo，如果ckcode重复，则返回错误
-func (uil UserIsLogin) Add (ckcode string, name string, level int, lastTime time.Time) (ili *IsLoginInfo, err error) {
+func (uil UserIsLogin) Add (ckcode string, name string, level uint16, lastTime time.Time, utype uint8) (ili *IsLoginInfo, err error) {
 	_, found := uil[ckcode]
 	if  found == false {
-		uil[ckcode] = NewIsLoginInfo(name, level, lastTime)
+		uil[ckcode] = NewIsLoginInfo(name, level, lastTime, utype)
 		return uil[ckcode], err
 	}else{
 		err = fmt.Errorf("键值 %x 已经存在，不能新建", ckcode)
+		return ili, err
+	}
+}
+
+// Get 获得ckode的用户登录信息，如果err不为nil则为找不到
+func (uil UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error) {
+	if ili , found := uil[ckcode] ; found == true {
+		return ili, nil
+	}else{
+		err = fmt.Errorf("键值 %x 不存在", ckcode)
 		return ili, err
 	}
 }
