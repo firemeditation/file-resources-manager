@@ -8,7 +8,11 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"net"
+	"bufio"
 )
+
+const bytelen = 1024
 
 // GetConfig 为获取配置文件信息
 func GetConfig(sorc string) *goconfig.ConfigFile {
@@ -72,3 +76,62 @@ func GetSha1(data string) string {
     return fmt.Sprintf("%x",t.Sum(nil));
 }
 
+// ReadSocketToFile 从soket读出文件，用带缓冲的方式写入文件里
+func ReadSocketToFile(conn net.Conn, len uint64, file *os.File) (err error) {
+	write := bufio.NewWriter(file)
+	for {
+		tempdata := []byte{}
+		if len < uint64(bytelen) {
+			tempdata = make([]byte, len)
+		} else {
+			tempdata = make([]byte, bytelen)
+		}
+		r, err := conn.Read(tempdata)
+		if err != nil {
+			return err
+		}
+		if r != 0 {
+			write.Write(tempdata[0:r])
+			len = len - uint64(r)
+		}
+
+		if len == 0 {
+			break
+		}
+	}
+	write.Flush()
+	return err
+}
+
+// ReadSocketBytes 从socket读出一定长度的数据，放入[]byte中，保证完整读出
+func ReadSocketBytes(conn net.Conn, len uint64) (returnByte []byte, err error) {
+	returnByte = make([]byte, 0, len)
+	for {
+		tempdata := []byte{}
+		if len < uint64(bytelen) {
+			tempdata = make([]byte, len)
+		} else {
+			tempdata = make([]byte, bytelen)
+		}
+		r, err := conn.Read(tempdata)
+		if err != nil {
+			return returnByte, err
+		}
+		returnByte = append(returnByte, tempdata[:r]...)
+
+		len = len - uint64(r)
+
+		if len == 0 {
+			break
+		}
+	}
+	return returnByte, err
+}
+
+func SendSocketBytes (conn *net.TCPConn, bytes []byte, len uint64) error {
+	n, err := conn.Write(bytes)
+	if uint64(n) != len {
+		err = fmt.Errorf("不能完整发送信息")
+	}
+	return err
+}

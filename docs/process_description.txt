@@ -10,7 +10,7 @@
     1. C{1byte[version](版本号) | 1byte[1](要求登陆)} -->
     2. S{1byte[1](1表示OK可以进行) | 40byte[sha1](用时间生成sha1)} -->
     3. C{2byte[len](用户名长度) | nbyte(用户名) | 40byte(pass)[密码+SHA1再进行sha1运算]} -->
-    4. S{1byte[1](验证成功可以登录) | 40byte[sha1](随机生成的登录身份验证标识)} <or> S{1byte[2](验证不通过)} -->
+    4. S{1byte[1](验证成功可以登录) | 8byte[len](SelfLoginInfo的长度) | []byte[SelfLoginInfo](一个包含验证信息的个人登录信息类型gob)} <or> S{1byte[2](验证不通过)} -->
     5. S关闭连接
     
     第四步认证成功后的S身份认证记录(S内)：

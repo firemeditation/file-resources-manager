@@ -27,7 +27,7 @@ type IsLoginInfo struct {
 
 // NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
 func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo{
-	return &IsLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, lastTime}
+	return &IsLoginInfo{IsLoginInfoBasic {name, level, utype, UserPower{"main":{"main":1}} }, lastTime}
 }
 
 // CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
@@ -120,5 +120,5 @@ type SelfLoginInfo struct {
 }
 
 func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *SelfLoginInfo{
-	return &SelfLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, sid}
+	return &SelfLoginInfo{IsLoginInfoBasic {name, level, utype, UserPower{"main":{"main":1}} }, sid}
 }

@@ -7,8 +7,6 @@ import (
 	. "frm_pkg"
 	"github.com/msbranco/goconfig"
 	"github.com/mewpkg/gopass"
-	"net"
-	"os"
 )
 
 var clientConfig  *goconfig.ConfigFile
@@ -19,30 +17,15 @@ func init() {
 }
 
 func main() {
-	doLogin()
+	Login()
 }
 
 
-func doLogin() {
+func Login() {
 	fmt.Print("您好！请输入用户名和密码进行登录\n")
 	fmt.Print("用户名：")
 	var username string
 	fmt.Scan(&username)
 	passwd, _ := gopass.GetPass("密码：")
-	fmt.Println("用户名为",username,"密码为", passwd)
-}
-
-func connectServer() *net.TCPConn {
-	serviceAddr, _ := clientConfig.GetString("server","addr")
-	IPAdrr, err := net.ResolveTCPAddr("tcp", serviceAddr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
-		os.Exit(1)
-	}
-	Connecter, err := net.DialTCP("tcp", nil, IPAdrr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
-		os.Exit(1)
-	}
-	return Connecter
+	doLogin(username, passwd)
 }
