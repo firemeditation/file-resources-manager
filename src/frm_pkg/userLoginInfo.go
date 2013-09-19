@@ -119,6 +119,6 @@ type SelfLoginInfo struct {
 	SID string
 }
 
-func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *MyLoginInfo{
-	return &MyLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, sid}
+func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *SelfLoginInfo{
+	return &SelfLoginInfo{IsLoginInfoBasic {name, level, utype, make(UserPower) }, sid}
 }
