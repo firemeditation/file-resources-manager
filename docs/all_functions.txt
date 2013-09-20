@@ -1,0 +1,140 @@
+frm_pkg/ga.go
+
+    // GetConfig 为获取配置文件信息，接收"server"、"client"，未来支持"web"
+	func GetConfig(sorc string) *goconfig.ConfigFile
+	
+	// 一套int类型和[]byte类型间的相互转换
+	func Uint64ToBytes(i uint64) []byte
+	func BytesToUint64(buf []byte) uint64
+	func Uint32ToBytes(i uint32) []byte
+	func BytesToUint32(buf []byte) uint32
+	func Uint16ToBytes(i uint16) []byte
+	func BytesToUint16(buf []byte) uint16
+	func Uint8ToBytes(i uint8) []byte
+	func BytesToUint8(buf []byte) uint8
+	
+	// GetSha1 生成SHA1值
+	func GetSha1(data string) string
+	
+	// ReadSocketToFile 从soket读出文件，用带缓冲的方式写入文件里
+    func ReadSocketToFile(conn net.Conn, len uint64, file *os.File) (err error)
+
+    // ReadSocketBytes 从socket读出一定长度的数据，放入[]byte中，保证完整读出
+    func ReadSocketBytes(conn net.Conn, len uint64) (returnByte []byte, err error)
+
+    // SendSocketBytes 向Socket发送信息
+    func SendSocketBytes (conn *net.TCPConn, bytes []byte, len uint64) error
+
+
+frm_pkg/userLoginInfo.go
+
+    //UserPower 用户具体权限为[权限大类][权限小类]权限级别
+    type UserPower map[string]map[string]uint16
+
+    // IsLoginInfo 是一个记录单个已经登录的人员信息的表
+	type IsLoginInfoBasic struct {
+		Name string //用户名
+		Level uint16 //权限级别
+		Utype uint8 //用户类型
+		UPower UserPower
+	}
+
+	type IsLoginInfo struct {
+		IsLoginInfoBasic
+		LastTime time.Time
+	}
+
+	// NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
+	func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo
+
+	// CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
+	func (ili IsLoginInfoBasic) CheckLevel (asklevel uint16) bool
+
+	// CheckPowerLevel 检查UPower的权限
+	func (ili IsLoginInfoBasic) CheckPowerLevel (topp string, secp string, asklevel uint16) bool
+
+	// UpdatePowerLevel 更新UserPower的值
+	func (ili IsLoginInfoBasic) UpdatePowerLevel (topp string, secp string, asklevel uint16)
+
+	// NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
+	func (ili *IsLoginInfo) NotTimeOut (timeout int) bool
+
+	// UpdateLastTime 已当前时间写入LastTime中进行更新，并返回写入的时间
+	func (ili *IsLoginInfo) UpdateLastTime () time.Time
+
+	// UserIsLogin 是一个map，记录所有已经登录的人员信息
+	type UserIsLogin map[string]*IsLoginInfo
+
+	// NewUserIsLogin 初始化UserIsLogin的map
+	func NewUserIsLogin () UserIsLogin
+
+	// Add 增加一条用户信息，返回响应的IsLoginInfo，如果ckcode重复，则返回错误
+	func (uil UserIsLogin) Add (ckcode string, name string, level uint16, lastTime time.Time, utype uint8) (ili *IsLoginInfo, err error)
+
+	// Get 获得ckode的用户登录信息，如果err不为nil则为找不到
+	func (uil UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error)
+
+	// Del 删除一条用户信息，通常是在其过期之后
+	func (uil UserIsLogin) Del (ckcode string)
+
+	// SelfLoginInfo 客户端使用
+	type SelfLoginInfo struct {
+		IsLoginInfoBasic
+		SID string
+	}
+
+	func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *SelfLoginInfo
+
+
+
+frm_pkg/structAndGobAndBytes.go
+
+	// StructGobBytes 将结构体数据转成Gob再转成[]Byte
+	func StructGobBytes(e interface{}) []byte
+
+	// BytesGobStruct 将[]byte转成Gob再转成结构体
+	func BytesGobStruct(f_b []byte, stur interface{})
+
+
+
+frm_pkg/editLock.go
+
+	//EditLock 为编辑锁
+	type EditLock map[string]*sync.RWMutex
+	func NewEditLock () EditLock
+	func (el EditLock) Lock (ck string)
+	func (el EditLock) RLock (ck string)
+	func (el EditLock) Unlock (ck string)
+	func (el EditLock) RUnlock (ck string)
+
+
+
+frm_client/public.go
+
+	//sendTheFirstRequest 发送版本号和请求操作的类型
+	func sendTheFirstRequest (version , retype uint8, conn *net.TCPConn) error
+
+	//connectServer 根据配置文件地址连接服务器
+	func connectServer() *net.TCPConn
+
+
+
+frm_server/frm_server.go
+
+	// getFirstRequest 获取版本号和请求操作的类型
+	func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8)
+
+
+
+github.com/msbranco/goconfig/configfile.go
+
+	func ReadConfigFile(fname string) (*ConfigFile, error)
+	func (c *ConfigFile) GetSections() (sections []string)
+	func (c *ConfigFile) HasSection(section string) bool
+	func (c *ConfigFile) GetOptions(section string) ([]string, error)
+	func (c *ConfigFile) HasOption(section string, option string) bool
+	func (c *ConfigFile) GetRawString(section string, option string) (string, error)
+	func (c *ConfigFile) GetString(section string, option string) (string, error)
+	func (c *ConfigFile) GetInt64(section string, option string) (int64, error)
+	func (c *ConfigFile) GetFloat(section string, option string) (float64, error)
+	func (c *ConfigFile) GetBool(section string, option string) (bool, error)
