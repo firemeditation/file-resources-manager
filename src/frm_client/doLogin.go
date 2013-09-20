@@ -41,7 +41,7 @@ func doLogin (username, passwd string) bool {
 	sli_b, _ := ReadSocketBytes(conn, sli_len)
 	BytesGobStruct(sli_b, &myLogin)
 	
-	fmt.Println("用户名：", myLogin.Name, "SID:",myLogin.SID, "一个UPower是：",myLogin.UPower["main"]["power1"])
+	//fmt.Println("用户名：", myLogin.Name, "SID:",myLogin.SID, "一个UPower是：",myLogin.UPower["main"]["power1"])
 	
 	return true
 }

@@ -116,6 +116,9 @@ frm_client/public.go
 
 	//connectServer 根据配置文件地址连接服务器
 	func connectServer() *net.TCPConn
+	
+	//clearScreen 清空屏幕内容
+	func clearScreen()
 
 
 

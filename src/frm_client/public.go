@@ -5,6 +5,7 @@ import (
 	"os"
 	"fmt"
 	. "frm_pkg"
+	"os/exec"
 )
 
 //sendTheFirstRequest 发送版本号和请求操作的类型
@@ -36,5 +37,12 @@ func connectServer() *net.TCPConn {
 		os.Exit(1)
 	}
 	return Connecter
+}
+
+//clearScreen 清空屏幕内容
+func clearScreen() {
+	c := exec.Command("clear")  //清空屏幕
+    c.Stdout = os.Stdout
+    c.Run()
 }
 
