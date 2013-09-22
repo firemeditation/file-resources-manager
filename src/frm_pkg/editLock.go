@@ -3,44 +3,23 @@
 package frm_pkg
 
 
-import (
-	"sync"
-)
-
-type EditLock map[string]*sync.RWMutex
+type EditLock map[string]bool
 
 func NewEditLock () EditLock {
 	return EditLock{}
 }
 
-func (el EditLock) Lock (ck string) {
+func (el EditLock) Lock (ck string) bool {
 	if _ , found := el[ck] ; found == true {
-		el[ck].Lock()
+		return false
 	}else{
-		el[ck] = new(sync.RWMutex)
-		el[ck].Lock()
-	}
-}
-
-func (el EditLock) RLock (ck string) {
-	if _ , found := el[ck] ; found == true {
-		el[ck].RLock()
-	}else{
-		el[ck] = new(sync.RWMutex)
-		el[ck].RLock()
+		el[ck] = true
+		return true
 	}
 }
 
 func (el EditLock) Unlock (ck string){
 	if _ , found := el[ck] ; found == true {
-		el[ck].Unlock()
-		delete(el,ck)
-	}
-}
-
-func (el EditLock) RUnlock (ck string){
-	if _ , found := el[ck] ; found == true {
-		el[ck].RUnlock()
 		delete(el,ck)
 	}
 }
