@@ -1,0 +1,26 @@
+fakerDB
+
+    实现一个数据库的按需路由，比如多数据库的随机负载，指定专门的写入数据库和读出数据库，按照sql语句进行路由等。
+    首先实现支持PostgreSQL数据库，暂定使用github.com/lib/pq库，使用golang自带的database/sql驱动接口。
+    配置文件使用json格式。
+    包名：fakerdb
+    包文件：fakerdb.go、fakerdb.json
+    
+    json配置文件的结构如下：
+    {
+    	"database":{
+    		[{
+				"name":"database name",
+				"addr":"127.0.0.1",
+				"port":5432,
+				"user":"user name",
+				"passwd":"password",
+				"rw":"r"/"w"/"rw"
+			},
+			...]
+    	},
+    	"router":{
+    		"一串正则":"database name"/"r"/"w",  //如果是rw之类的，则自动在r或w找，如果是databasename则找相应的database。
+    		"一串正则":...
+    	}
+    }

@@ -35,12 +35,13 @@
     	Rtype uint16 //资源类型，数据库中的类型表ID
     	Rinfo string //资源描述，数据库为TEXT
     	Rbtime int64 //创建时间，Unix时间戳
+    	HashID string  //40字符长度的sha1哈希值（通过time.Now()加资源名称等合并生成）
     }
     
     0. C建立连接 -->
     1. C{1byte[version](版本号) | 1byte[2](2为申请添加一个资源条目) | 40byte[sha1](身份验证标识)} -->
     2. S{1byte[1](1表示OK可以进行)} -->
     3. C{4byte[len](后面结构体的长度) | xbyte[ResourceInfo结构体gob转码](RID留空)} -->
-    4. S{1byte[1](建立成功) | 4byte[RID](返回建立好的资源条目的RID)} <or> S{1byte[2](建立失败) | 4byte[len](错误长度)|xbyte[错误原因]} -->
+    4. S{1byte[1](建立成功) | 40byte[HashID](返回建立好的资源条目的HashID)} <or> S{1byte[2](建立失败) | 4byte[len](错误长度)|xbyte[错误原因]} -->
     5. S关闭连接
 
