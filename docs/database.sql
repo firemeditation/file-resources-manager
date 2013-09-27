@@ -1,5 +1,5 @@
 -- 机构表
--- drop table units;
+drop table IF EXISTS units CASCADE;
 create table units (
 	id serial NOT NULL,
 	name char(200),
@@ -11,7 +11,7 @@ create table units (
 insert into units VALUES (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
 
 -- 组表
--- drop table groups
+drop table IF EXISTS groups CASCADE;
 create table groups (
 	id serial not null,
 	name char(200),
@@ -23,7 +23,7 @@ create table groups (
 insert into groups values (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理组');
 
 -- Table: users
--- drop table users
+drop table IF EXISTS users CASCADE;
 CREATE TABLE users
 (
   id serial NOT NULL,
@@ -42,7 +42,7 @@ INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root'
 
 
 -- Table: resourceType
--- drop table resourceType
+drop table IF EXISTS resourceType CASCADE;
 CREATE TABLE resourceType
 (
 	id serial NOT NULL,
@@ -57,7 +57,7 @@ INSERT INTO resourceType VALUES (1, '图书', 1, 0, '图书分类');
 
 
 -- Table: 资源聚集
--- drop table resourceGroup
+drop table IF EXISTS resourceGroup CASCADE;
 CREATE TABLE resourceGroup
 (
   hashid char(40),
@@ -65,6 +65,7 @@ CREATE TABLE resourceGroup
   rt_id smallint NOT NULL default 0, -- 资源类型
   info text,
   btime bigint, -- 创建时间
+  derivative char(40),  -- 衍生自哪个resourceGroup，这是衍生的hashid，如果没有衍生就是null
   units_id int not null default 0,  -- 对应的机构
   powerlevel int default 1,
   users_id int NOT NULL default 0, -- 最后操作用户
@@ -73,15 +74,17 @@ CREATE TABLE resourceGroup
 );
 CREATE INDEX rg_hashid ON resourceGroup USING btree (hashid);
 CREATE INDEX rg_unitid ON resourceGroup USING btree (units_id);
+CREATE INDEX rg_derivative ON resourceGroup USING btree (derivative);
 CREATE INDEX rg_name ON resourceGroup USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE resourceGroup ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (rt_id) REFERENCES resourceType (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE resourceGroup ADD FOREIGN KEY (derivative) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 
 
 
 -- Table: 资源条目
--- drop table resourceItem
+drop table IF EXISTS resourceItem CASCADE;
 CREATE TABLE resourceItem
 (
 	hashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
@@ -89,6 +92,7 @@ CREATE TABLE resourceItem
 	lasttime bigint,  -- 最后更新日期
 	verson int,  -- 版本，每改一次加一
 	rg_hashid char(40), -- 资源条目的原始聚集ID
+	derivative char(40),  -- 衍生自哪个resourceItem，这是衍生的hashid，如果没有衍生就是null
 	units_id int not null default 0,  -- 对应的机构
 	powerlevel int default 1,
 	users_id int NOT NULL default 0, -- 最后操作用户
@@ -98,11 +102,14 @@ CREATE TABLE resourceItem
 CREATE INDEX riname ON resourceItem USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 CREATE INDEX riunitid ON resourceItem USING btree (units_id);
 CREATE INDEX ri_rg_hashid ON resourceItem USING btree (rg_hashid);
+CREATE INDEX ri_rg_derivative ON resourceItem USING btree (derivative);
 ALTER TABLE resourceItem ADD FOREIGN KEY (rg_hashid) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE SET NULL;
 ALTER TABLE resourceItem ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE resourceItem ADD FOREIGN KEY (derivative) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 
 -- Table: 资源文件 从资源条目继承
+drop table if exists resourceFile cascade;
 create table resourceFile (
 	fname char(2000) ,  -- 文件名
 	extname char(50) NOT NULL DEFAULT '', -- 文件扩展名
@@ -122,7 +129,7 @@ CREATE INDEX rf_rg_id ON resourceFile USING btree (rg_hashid);
 
 
 -- Table: 资源文本 从资源条目继承
--- drop table resourceText
+drop table IF EXISTS resourceText cascade;
 create table resourceText (
 	conent text,
 	metadata json, -- 元数据
@@ -135,7 +142,7 @@ CREATE INDEX rft_rg_id ON resourceText USING btree (rg_hashid);
 
 
 -- 资源聚集关系
--- drop table resourceRelation
+drop table IF EXISTS resourceRelation CASCADE;
 create table resourceRelation (
 	quote_side char(40),  -- 引用方
 	be_quote char(40),  -- 被引用方
