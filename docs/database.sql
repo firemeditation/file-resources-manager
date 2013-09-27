@@ -90,6 +90,6 @@ CREATE INDEX rfsite ON resourceFile USING btree (rfsite);
 CREATE INDEX rfname ON resourceFile USING btree (rfname COLLATE pg_catalog."zh_CN.utf8");
 CREATE INDEX rfextname ON resourceFile USING btree (rfextname);
 CREATE INDEX rfunitid ON resourceFile USING btree (unitid);
-ALTER TABLE resourcefile ADD FOREIGN KEY (rid) REFERENCES resources (rid) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE resourcefile ADD FOREIGN KEY (rid) REFERENCES resourceGroup (rid) ON UPDATE NO ACTION ON DELETE CASCADE;
 ALTER TABLE resourcefile ADD FOREIGN KEY (uid) REFERENCES users (uid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourcefile ADD FOREIGN KEY (unitid) REFERENCES units (unitid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
