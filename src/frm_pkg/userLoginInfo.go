@@ -15,8 +15,7 @@ type UserPower map[string]map[string]uint16
 // IsLoginInfo 是一个记录单个已经登录的人员信息的表
 type IsLoginInfoBasic struct {
 	Name string //用户名
-	Level uint16 //权限级别
-	Utype uint8 //用户类型
+	Group uint16 //所在组
 	UPower UserPower
 }
 
@@ -26,17 +25,8 @@ type IsLoginInfo struct {
 }
 
 // NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
-func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo{
-	return &IsLoginInfo{IsLoginInfoBasic {name, level, utype, UserPower{"main":{"main":1}} }, lastTime}
-}
-
-// CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
-func (ili IsLoginInfoBasic) CheckLevel (asklevel uint16) bool {
-	if ili.Level >= asklevel {
-		return true
-	}else{
-		return false
-	}
+func NewIsLoginInfo(name string, group uint16, lastTime time.Time) *IsLoginInfo{
+	return &IsLoginInfo{IsLoginInfoBasic {name, group, UserPower{"main":{"main":1}} }, lastTime}
 }
 
 // CheckPowerLevel 检查UPower的权限
@@ -87,10 +77,10 @@ func NewUserIsLogin () UserIsLogin {
 }
 
 // Add 增加一条用户信息，返回响应的IsLoginInfo，如果ckcode重复，则返回错误
-func (uil UserIsLogin) Add (ckcode string, name string, level uint16, lastTime time.Time, utype uint8) (ili *IsLoginInfo, err error) {
+func (uil UserIsLogin) Add (ckcode string, name string, group uint16, lastTime time.Time) (ili *IsLoginInfo, err error) {
 	_, found := uil[ckcode]
 	if  found == false {
-		uil[ckcode] = NewIsLoginInfo(name, level, lastTime, utype)
+		uil[ckcode] = NewIsLoginInfo(name, group, lastTime)
 		return uil[ckcode], err
 	}else{
 		err = fmt.Errorf("键值 %x 已经存在，不能新建", ckcode)
@@ -119,6 +109,6 @@ type SelfLoginInfo struct {
 	SID string
 }
 
-func NewSelfLoginInfo (name string, level uint16 ,sid string, utype uint8) *SelfLoginInfo{
-	return &SelfLoginInfo{IsLoginInfoBasic {name, level, utype, UserPower{"main":{"main":1}} }, sid}
+func NewSelfLoginInfo (name string, group uint16 ,sid string) *SelfLoginInfo{
+	return &SelfLoginInfo{IsLoginInfoBasic {name, group, UserPower{"main":{"main":1}} }, sid}
 }

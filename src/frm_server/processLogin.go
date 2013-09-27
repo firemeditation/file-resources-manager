@@ -25,8 +25,8 @@ func processLogin(conn *net.TCPConn) {
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	userLoginStatus.Add(sha1, name, 100, time.Now(), 1)
-	nameSelfLogin := NewSelfLoginInfo(name, 100, sha1, 1)
+	userLoginStatus.Add(sha1, name, 1, time.Now())
+	nameSelfLogin := NewSelfLoginInfo(name, 1, sha1)
 	
 	nameSelfLogin.UPower["main"]["power1"] = 2
 	
