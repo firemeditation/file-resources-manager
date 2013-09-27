@@ -1,112 +1,148 @@
 -- 机构表
+-- drop table units;
 create table units (
-	unitid serial NOT NULL,
-	unitname char(200),
+	id serial NOT NULL,
+	name char(200),
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
 	powerlevel json,  -- 使用json的语法存放权限等级值
 	info text, -- 机构信息
-	CONSTRAINT unitid PRIMARY KEY (unitid)
+	CONSTRAINT units_id PRIMARY KEY (id)
 );
 insert into units VALUES (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
 
 -- 组表
+-- drop table groups
 create table groups (
-	groupid serial not null,
-	groupname char(200),
+	id serial not null,
+	name char(200),
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
 	powerlevel json,
 	info text,  -- 组信息
-	constraint groupid primary key (groupid)
+	constraint groups_id primary key (id)
 );
 insert into groups values (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理组');
 
 -- Table: users
+-- drop table users
 CREATE TABLE users
 (
-  uid serial NOT NULL,
-  uname char(200),  --用户名
+  id serial NOT NULL,
+  name char(200),  --用户名
   passwd char(40), --用户密码
-  unitid int not null default 0, -- 用户所属机构
-  groupid int not null default 0, -- 用户所属组
+  units_id int not null default 0, -- 用户所属机构
+  groups_id int not null default 0, -- 用户所属组
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
   powerlevel json,
-  CONSTRAINT uid PRIMARY KEY (uid)
+  CONSTRAINT uid PRIMARY KEY (id)
 );
-CREATE INDEX uname ON users USING btree (uname COLLATE pg_catalog."zh_CN.utf8");
-ALTER TABLE users ADD FOREIGN KEY (unitid) REFERENCES units (unitid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-ALTER TABLE users ADD FOREIGN KEY (groupid) REFERENCES groups (groupid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-INSERT INTO users (uname, passwd, unitid, groupid, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1,'{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}');
+CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1,'{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}');
 
 
 -- Table: resourceType
+-- drop table resourceType
 CREATE TABLE resourceType
 (
-	rtid serial NOT NULL,
-	rtname char(100),
+	id serial NOT NULL,
+	name char(100),
 	powerlevel int default 1,
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
 	info text,
-	CONSTRAINT rtid PRIMARY KEY (rtid)
+	CONSTRAINT rtid PRIMARY KEY (id)
 );
-CREATE INDEX rtname ON resourceType USING btree (rtname COLLATE pg_catalog."zh_CN.utf8");
+CREATE INDEX rt_name ON resourceType USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 INSERT INTO resourceType VALUES (1, '图书', 1, 0, '图书分类');
 
 
 -- Table: 资源聚集
+-- drop table resourceGroup
 CREATE TABLE resourceGroup
 (
-  rgid bigserial NOT NULL,
-  rname char(1000),
-  rtid smallint NOT NULL default 0, -- 资源类型
-  rinfo text,
-  rbtime bigint,
-  rhashid char(40),
-  unitid int not null default 0,  -- 对应的机构
+  hashid char(40),
+  name char(1000),
+  rt_id smallint NOT NULL default 0, -- 资源类型
+  info text,
+  btime bigint, -- 创建时间
+  units_id int not null default 0,  -- 对应的机构
   powerlevel int default 1,
-  uid int NOT NULL default 0, -- 最后操作用户
+  users_id int NOT NULL default 0, -- 最后操作用户
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
-  CONSTRAINT rgid PRIMARY KEY (rgid)
+  CONSTRAINT rgkey_hashid PRIMARY KEY (hashid)
 );
-CREATE INDEX rhashid ON resourceGroup USING btree (rhashid);
-CREATE INDEX rg_unitid ON resourceGroup USING btree (unitid);
-CREATE INDEX rname ON resourceGroup USING btree (rname COLLATE pg_catalog."zh_CN.utf8");
-ALTER TABLE resourceGroup ADD FOREIGN KEY (uid) REFERENCES users (uid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-ALTER TABLE resourceGroup ADD FOREIGN KEY (rtid) REFERENCES resourceType (rtid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-ALTER TABLE resourceGroup ADD FOREIGN KEY (unitid) REFERENCES units (unitid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+CREATE INDEX rg_hashid ON resourceGroup USING btree (hashid);
+CREATE INDEX rg_unitid ON resourceGroup USING btree (units_id);
+CREATE INDEX rg_name ON resourceGroup USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+ALTER TABLE resourceGroup ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE resourceGroup ADD FOREIGN KEY (rt_id) REFERENCES resourceType (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE resourceGroup ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 
 
 
--- Table: resourceFile
-CREATE TABLE resourceFile
+-- Table: 资源条目
+-- drop table resourceItem
+CREATE TABLE resourceItem
 (
-	rfhashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
-	rfname char(1000) NOT NULL,  -- 文件名
-	rfextname char(50) NOT NULL DEFAULT '', -- 文件扩展名
-	rfpath char(2000) NOT NULL, -- 文件存放位置相对路径完整名字
-	rfsite int NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方，由服务器配置文件制定序号
-	rfsize bigint NOT NULL DEFAULT 0,  -- 文件字节数
-	rflasttime bigint,  -- 最后更新日期
-	rfver int,  -- 版本，每改一次加一
-	unitid int not null default 0,  -- 对应的机构
+	hashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
+	name char(1000) NOT NULL,  -- 文件名
+	lasttime bigint,  -- 最后更新日期
+	verson int,  -- 版本，每改一次加一
+	rg_hashid char(40), -- 资源条目的原始聚集ID
+	units_id int not null default 0,  -- 对应的机构
 	powerlevel int default 1,
-	uid int NOT NULL default 0, -- 最后操作用户
+	users_id int NOT NULL default 0, -- 最后操作用户
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
-	CONSTRAINT rfhashid PRIMARY KEY (rfhashid)
+	CONSTRAINT ri_hashid PRIMARY KEY (hashid)
 );
-CREATE INDEX rfsite ON resourceFile USING btree (rfsite);
-CREATE INDEX rfname ON resourceFile USING btree (rfname COLLATE pg_catalog."zh_CN.utf8");
-CREATE INDEX rfextname ON resourceFile USING btree (rfextname);
-CREATE INDEX rfunitid ON resourceFile USING btree (unitid);
-ALTER TABLE resourcefile ADD FOREIGN KEY (uid) REFERENCES users (uid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-ALTER TABLE resourcefile ADD FOREIGN KEY (unitid) REFERENCES units (unitid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+CREATE INDEX riname ON resourceItem USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+CREATE INDEX riunitid ON resourceItem USING btree (units_id);
+CREATE INDEX ri_rg_hashid ON resourceItem USING btree (rg_hashid);
+ALTER TABLE resourceItem ADD FOREIGN KEY (rg_hashid) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE SET NULL;
+ALTER TABLE resourceItem ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
+
+-- Table: 资源文件 从资源条目继承
+create table resourceFile (
+	fname char(2000) ,  -- 文件名
+	extname char(50) NOT NULL DEFAULT '', -- 文件扩展名
+	opath char(200) NOT NULL, -- 文件的原始相对路径
+	fpath char(2000) NOT NULL, -- 文件存放位置相对路径完整名字
+	fsite int NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方，由服务器配置文件制定序号
+	fsize bigint NOT NULL DEFAULT 0,  -- 文件字节数
+	metadata json, -- 元数据
+	CONSTRAINT rf_hashid PRIMARY KEY (hashid)
+) INHERITS (resourceItem);
+CREATE INDEX rfsite ON resourceFile USING btree (fsite);
+CREATE INDEX rfextname ON resourceFile USING btree (extname);
+CREATE INDEX rthashid ON resourceFile USING btree (hashid);
+CREATE INDEX rfname ON resourceFile USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+CREATE INDEX rfunitid ON resourceFile USING btree (units_id);
+CREATE INDEX rf_rg_id ON resourceFile USING btree (rg_hashid);
+
+
+-- Table: 资源文本 从资源条目继承
+-- drop table resourceText
+create table resourceText (
+	conent text,
+	metadata json, -- 元数据
+	CONSTRAINT rtf_hashid PRIMARY KEY (hashid)
+) INHERITS (resourceItem);
+CREATE INDEX rtfhashid ON resourceText USING btree (hashid);
+CREATE INDEX rtfname ON resourceText USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+CREATE INDEX rtfunitid ON resourceText USING btree (units_id);
+CREATE INDEX rft_rg_id ON resourceText USING btree (rg_hashid);
 
 
 -- 资源聚集关系
+-- drop table resourceRelation
 create table resourceRelation (
-	rgid int,
-	rfhashid char(40)
+	quote_side char(40),  -- 引用方
+	be_quote char(40),  -- 被引用方
+	rr_type int  --聚集类型，1文件聚集（引用方指resourceGroup），2嵌入聚集（引用方指resourceItem）
 );
-create index rr_rgid on resourceRelation using btree (rgid);
-create index rr_rfhashid on resourceRelation using btree (rfhashid);
-ALTER TABLE resourceRelation ADD FOREIGN KEY (rgid) REFERENCES resourceGroup (rgid) ON UPDATE NO ACTION ON DELETE CASCADE;
-ALTER TABLE resourceRelation ADD FOREIGN KEY (rfhashid) REFERENCES resourceFile (rfhashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+create index rr_rgid on resourceRelation using btree (quote_side);
+create index rr_rfhashid on resourceRelation using btree (be_quote);
+ALTER TABLE resourceRelation ADD FOREIGN KEY (quote_side) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE resourceRelation ADD FOREIGN KEY (quote_side) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE resourceRelation ADD FOREIGN KEY (be_quote) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
