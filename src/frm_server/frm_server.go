@@ -10,15 +10,18 @@ import (
 	"github.com/msbranco/goconfig"
 	"runtime"
 	"log"
+	"database/sql"
 )
 
 var serverConfig  *goconfig.ConfigFile
 var userLoginStatus UserIsLogin
+var dbConn *sql.DB
 
 func init() {
 	serverConfig = GetConfig("server")
 	userLoginStatus = NewUserIsLogin()
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	dbConn = connDB()
 }
 
 func main() {

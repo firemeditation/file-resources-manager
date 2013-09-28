@@ -18,15 +18,33 @@ func processLogin(conn *net.TCPConn) {
 	name_l := BytesToUint16(name_l_b)
 	name_b, _ := ReadSocketBytes(conn, uint64(name_l))
 	name := string(name_b)
-	fmt.Println("用户名：", name)
 	passwd_b ,_ := ReadSocketBytes(conn, 40)
 	passwd := string(passwd_b)
-	fmt.Println("密码：", passwd)
+	
+	// 开始检查用户名和密码，并将需要返回的东西全部返回
+	var ck_passwd string
+	var units_id int
+	var groups_id uint16
+	var powerlevel string
+	err := dbConn.QueryRow("select passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&ck_passwd, &units_id, &groups_id, &powerlevel)
+	if err != nil {
+		SendSocketBytes (conn , Uint8ToBytes(2), 1)
+		return
+	}
+	
+	ck_passwd = ck_passwd + sha1
+	ck_passwd = GetSha1(ck_passwd)
+	
+	if passwd != ck_passwd {
+		SendSocketBytes (conn , Uint8ToBytes(2), 1)
+		return
+	} 
+	// 用户名和密码检查完毕
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	userLoginStatus.Add(sha1, name, 1, time.Now())
-	nameSelfLogin := NewSelfLoginInfo(name, 1, sha1)
+	userLoginStatus.Add(sha1, name, groups_id, time.Now())
+	nameSelfLogin := NewSelfLoginInfo(name, groups_id, sha1)
 	
 	nameSelfLogin.UPower["main"]["power1"] = 2
 	
