@@ -22,7 +22,7 @@ func processLogin(conn *net.TCPConn) {
 	passwd := string(passwd_b)
 	
 	// 开始检查用户名和密码，并将需要返回的东西全部返回
-	var ck_passwd string
+	/*var ck_passwd string
 	var units_id int
 	var groups_id uint16
 	var powerlevel string
@@ -32,8 +32,16 @@ func processLogin(conn *net.TCPConn) {
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
+	*/
+	var cku UsersTable
+	err := dbConn.QueryRow("select passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&cku.Passwd, &cku.UnitsId, &cku.GroupsId, &cku.PowerLevel)
+	if err != nil {
+		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
+		SendSocketBytes (conn , Uint8ToBytes(2), 1)
+		return
+	}
 	
-	ck_passwd = ck_passwd + sha1
+	ck_passwd := cku.Passwd + sha1
 	ck_passwd = GetSha1(ck_passwd)
 	
 	if passwd != ck_passwd {
@@ -46,8 +54,8 @@ func processLogin(conn *net.TCPConn) {
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	userLoginStatus.Add(sha1, name, groups_id, time.Now())
-	nameSelfLogin := NewSelfLoginInfo(name, groups_id, sha1)
+	userLoginStatus.Add(sha1, name, cku.GroupsId, time.Now())
+	nameSelfLogin := NewSelfLoginInfo(name, cku.GroupsId, sha1)
 	
 	nameSelfLogin.UPower["main"]["power1"] = 2
 	

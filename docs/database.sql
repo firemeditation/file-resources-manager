@@ -90,7 +90,7 @@ CREATE TABLE resourceItem
 	hashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
 	name char(1000) NOT NULL,  -- 文件名
 	lasttime bigint,  -- 最后更新日期
-	verson int,  -- 版本，每改一次加一
+	version int,  -- 版本，每改一次加一
 	rg_hashid char(40), -- 资源条目的原始聚集ID
 	derivative char(40),  -- 衍生自哪个resourceItem，这是衍生的hashid，如果没有衍生就是null
 	units_id int not null default 0,  -- 对应的机构
