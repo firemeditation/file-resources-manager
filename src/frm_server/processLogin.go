@@ -28,6 +28,7 @@ func processLogin(conn *net.TCPConn) {
 	var powerlevel string
 	err := dbConn.QueryRow("select passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&ck_passwd, &units_id, &groups_id, &powerlevel)
 	if err != nil {
+		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
@@ -36,10 +37,12 @@ func processLogin(conn *net.TCPConn) {
 	ck_passwd = GetSha1(ck_passwd)
 	
 	if passwd != ck_passwd {
+		logInfo.Printf("登录错误：密码错误：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	} 
 	// 用户名和密码检查完毕
+	logInfo.Printf("登录成功：用户：%s", name)
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
@@ -51,10 +54,6 @@ func processLogin(conn *net.TCPConn) {
 	gob_b := StructGobBytes(nameSelfLogin)  //将结构体转为gob，进而转成bytes
 	
 	gob_len := len(gob_b)
-	
-	fmt.Println("长度",gob_len)
-	
-	fmt.Println(userLoginStatus[sha1].LastTime)
 	
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	SendSocketBytes (conn , Uint64ToBytes(uint64(gob_len)), 8)

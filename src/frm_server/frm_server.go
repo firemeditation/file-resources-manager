@@ -16,12 +16,14 @@ import (
 var serverConfig  *goconfig.ConfigFile
 var userLoginStatus UserIsLogin
 var dbConn *sql.DB
+var logInfo *log.Logger
 
 func init() {
 	serverConfig = GetConfig("server")
 	userLoginStatus = NewUserIsLogin()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	dbConn = connDB()
+	prepareLog()
 }
 
 func main() {
@@ -63,4 +65,10 @@ func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8) {
 	vtype_b , _ := ReadSocketBytes(conn, 1)
 	vtype = BytesToUint8(vtype_b)
 	return ver , vtype
+}
+
+func prepareLog() {
+	logFile, _ := serverConfig.GetString("server","log")
+	logw, _ := os.OpenFile(logFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0664)
+	logInfo = log.New(logw, "frm_server : ", log.Ldate | log.Ltime)
 }
