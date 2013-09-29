@@ -32,14 +32,14 @@ type UsersTable struct {
 	Expend uint16
 	PowerLevel string
 }
-type ResourceType struct {
+type ResourceTypeTable struct {
 	id uint32 `PK`
 	Name string
 	PowerLevel uint8
 	Expend uint16
 	Info string
 }
-type ResourceGroup struct {
+type ResourceGroupTable struct {
 	HashId string
 	Name string
 	RtId uint32
@@ -51,7 +51,7 @@ type ResourceGroup struct {
 	UsersId uint32
 	Expand uint16
 }
-type ResourceItem struct {
+type ResourceItemTable struct {
 	HashId string
 	Name string
 	LastTime uint64
@@ -63,8 +63,8 @@ type ResourceItem struct {
 	UsersId uint32
 	Expand uint16
 }
-type ResourceFile struct {
-	ResourceItem
+type ResourceFileTable struct {
+	ResourceItemTable
 	Fname string
 	ExtName string
 	Opath string
@@ -73,12 +73,12 @@ type ResourceFile struct {
 	Fsize uint64
 	MetaData string
 } 
-type ResourceText struct {
-	ResourceItem
+type ResourceTextTable struct {
+	ResourceItemTable
 	Conent string
 	MetaData string
 }
-type ResourceRelation struct {
+type ResourceRelationTable struct {
 	QuoteSide string
 	BeQuote string
 	RrType uint8

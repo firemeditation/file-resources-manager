@@ -34,7 +34,7 @@ func processLogin(conn *net.TCPConn) {
 	}
 	*/
 	var cku UsersTable
-	err := dbConn.QueryRow("select passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&cku.Passwd, &cku.UnitsId, &cku.GroupsId, &cku.PowerLevel)
+	err := dbConn.QueryRow("select id, passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&cku.Id, &cku.Passwd, &cku.UnitsId, &cku.GroupsId, &cku.PowerLevel)
 	if err != nil {
 		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
@@ -54,8 +54,8 @@ func processLogin(conn *net.TCPConn) {
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	userLoginStatus.Add(sha1, name, cku.GroupsId, time.Now())
-	nameSelfLogin := NewSelfLoginInfo(name, cku.GroupsId, sha1)
+	userLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, time.Now())
+	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, sha1)
 	
 	nameSelfLogin.UPower["main"]["power1"] = 2
 	
