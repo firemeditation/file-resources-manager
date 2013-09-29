@@ -8,6 +8,7 @@ create table units (
 	info text, -- 机构信息
 	CONSTRAINT units_id PRIMARY KEY (id)
 );
+ALTER TABLE units ADD UNIQUE (name);
 insert into units VALUES (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
 
 -- 组表
@@ -20,6 +21,7 @@ create table groups (
 	info text,  -- 组信息
 	constraint groups_id primary key (id)
 );
+ALTER TABLE groups ADD UNIQUE (name);
 insert into groups values (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理组');
 
 -- Table: users
@@ -35,6 +37,7 @@ CREATE TABLE users
   powerlevel json,
   CONSTRAINT uid PRIMARY KEY (id)
 );
+ALTER TABLE users ADD UNIQUE (name);
 CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
@@ -80,7 +83,7 @@ ALTER TABLE resourceGroup ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UP
 ALTER TABLE resourceGroup ADD FOREIGN KEY (rt_id) REFERENCES resourceType (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (derivative) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
-
+ALTER TABLE resourceGroup ADD UNIQUE (hashid);
 
 
 -- Table: 资源条目
@@ -107,7 +110,8 @@ ALTER TABLE resourceItem ADD FOREIGN KEY (rg_hashid) REFERENCES resourceGroup (h
 ALTER TABLE resourceItem ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceItem ADD FOREIGN KEY (derivative) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
-
+ALTER TABLE resourceItem ADD UNIQUE (hashid);
+  
 -- Table: 资源文件 从资源条目继承
 drop table if exists resourceFile cascade;
 create table resourceFile (
