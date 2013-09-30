@@ -12,6 +12,35 @@ import (
 //UserPower 用户具体权限为[权限大类][权限小类]权限级别
 type UserPower map[string]map[string]uint8
 
+
+//AddPower 增加一个Power值
+func (up UserPower) Add (key1, key2 string, value uint8) {
+	if _, f := up[key1] ; f == false {
+		up[key1] = make(map[string]uint8)
+	}
+	up[key1][key2] = value
+}
+
+// CheckPowerLevel 检查UPower的权限
+func (up UserPower) CheckPowerLevel (topp string, secp string, asklevel uint8) bool {
+	_, found := up[topp][secp]
+	if found == true {
+		if up[topp][secp] >= asklevel {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+}
+
+// UpdatePowerLevel 更新UserPower的值
+func (up UserPower) UpdatePowerLevel (topp string, secp string, asklevel uint8) {
+	up[topp][secp] = asklevel
+}
+
+
 // IsLoginInfo 是一个记录单个已经登录的人员信息的表
 type IsLoginInfoBasic struct {
 	Id uint32  //用户ID
@@ -27,26 +56,7 @@ type IsLoginInfo struct {
 
 // NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
 func NewIsLoginInfo(id uint32, name string, group uint16, lastTime time.Time) *IsLoginInfo{
-	return &IsLoginInfo{IsLoginInfoBasic {id, name, group, UserPower{"user":{"user":0}} }, lastTime}
-}
-
-// CheckPowerLevel 检查UPower的权限
-func (ili IsLoginInfoBasic) CheckPowerLevel (topp string, secp string, asklevel uint8) bool {
-	_, found := ili.UPower[topp][secp]
-	if found == true {
-		if ili.UPower[topp][secp] >= asklevel {
-			return true
-		} else {
-			return false
-		}
-	} else {
-		return false
-	}
-}
-
-// UpdatePowerLevel 更新UserPower的值
-func (ili IsLoginInfoBasic) UpdatePowerLevel (topp string, secp string, asklevel uint8) {
-	ili.UPower[topp][secp] = asklevel
+	return &IsLoginInfo{IsLoginInfoBasic {id, name, group, UserPower{} }, lastTime}
 }
 
 // NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
@@ -111,5 +121,5 @@ type SelfLoginInfo struct {
 }
 
 func NewSelfLoginInfo (id uint32, name string, group uint16 ,sid string) *SelfLoginInfo{
-	return &SelfLoginInfo{IsLoginInfoBasic {id, name, group, UserPower{"user":{"user":0}} }, sid}
+	return &SelfLoginInfo{IsLoginInfoBasic {id, name, group, UserPower{}}, sid}
 }

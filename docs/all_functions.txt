@@ -1,4 +1,4 @@
-frm_pkg/ga.go
+frmPkg/ga.go
 
     // GetConfig 为获取配置文件信息，接收"server"、"client"，未来支持"web"
 	func GetConfig(sorc string) *goconfig.ConfigFile
@@ -26,10 +26,20 @@ frm_pkg/ga.go
     func SendSocketBytes (conn *net.TCPConn, bytes []byte, len uint64) error
 
 
-frm_pkg/userLoginInfo.go
+frmPkg/userLoginInfo.go
 
     //UserPower 用户具体权限为[权限大类][权限小类]权限级别
     type UserPower map[string]map[string]uint16
+    
+    //AddPower 增加一个Power值
+	func (up UserPower) Add (key1, key2 string, value uint8)
+	
+	// CheckPowerLevel 检查UPower的权限
+	func (up UserPower) CheckPowerLevel (topp string, secp string, asklevel uint8) bool
+
+	// UpdatePowerLevel 更新UserPower的值
+	func (up UserPower) UpdatePowerLevel (topp string, secp string, asklevel uint8)
+	
 
     // IsLoginInfo 是一个记录单个已经登录的人员信息的表
 	type IsLoginInfoBasic struct {
@@ -46,15 +56,6 @@ frm_pkg/userLoginInfo.go
 
 	// NewIsLoginInfo 是初始化一个人员信息，必须给定name, level, lastTime
 	func NewIsLoginInfo(name string, level uint16, lastTime time.Time, utype uint8) *IsLoginInfo
-
-	// CheckLevel 检查用户的权限是否达到已经级别，如果用户的权限比所需权限高，则返回true，否则返回false
-	func (ili IsLoginInfoBasic) CheckLevel (asklevel uint16) bool
-
-	// CheckPowerLevel 检查UPower的权限
-	func (ili IsLoginInfoBasic) CheckPowerLevel (topp string, secp string, asklevel uint16) bool
-
-	// UpdatePowerLevel 更新UserPower的值
-	func (ili IsLoginInfoBasic) UpdatePowerLevel (topp string, secp string, asklevel uint16)
 
 	// NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
 	func (ili *IsLoginInfo) NotTimeOut (timeout int) bool
@@ -87,17 +88,25 @@ frm_pkg/userLoginInfo.go
 
 
 
-frm_pkg/structAndGobAndBytes.go
+frmPkg/structAndGobAndBytes.go
 
 	// StructGobBytes 将结构体数据转成Gob再转成[]Byte
 	func StructGobBytes(e interface{}) []byte
 
 	// BytesGobStruct 将[]byte转成Gob再转成结构体
 	func BytesGobStruct(f_b []byte, stur interface{})
+	
+frmPkg/structAndJson.go
+
+	// StructToJson 将结构体转成Json的字符串
+	func StructToJson(e interface{}) string
+	
+	// JsonToStruct 将json的字符串转成结构体
+	func JsonToStruct(f_b string, stur interface{})
 
 
 
-frm_pkg/editLock.go
+frmPkg/editLock.go
 
 	//EditLock 为编辑锁
 	type EditLock map[string]*sync.RWMutex
@@ -109,7 +118,7 @@ frm_pkg/editLock.go
 
 
 
-frm_client/public.go
+frmClient/public.go
 
 	//sendTheFirstRequest 发送版本号和请求操作的类型
 	func sendTheFirstRequest (version , retype uint8, conn *net.TCPConn) error
@@ -122,10 +131,21 @@ frm_client/public.go
 
 
 
-frm_server/frm_server.go
+frmServer/frmServer.go
 
 	// getFirstRequest 获取版本号和请求操作的类型
 	func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8)
+
+
+
+frmServer/public.go
+
+	// mergePower 根据Unit、Group、User中的权限合并出最大值
+	func mergePower(p1, p2, p3 UserPower) UserPower
+	
+	// mergePowerAss 为mergePower的辅助函数
+	func mergePowerAss(p1, p2 UserPower) UserPower
+
 
 
 
