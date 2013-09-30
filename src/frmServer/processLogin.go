@@ -46,8 +46,6 @@ func processLogin(conn *net.TCPConn) {
 	userLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, time.Now())
 	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, sha1)
 	
-	nameSelfLogin.UPower["main"]["power1"] = 2
-	
 	gob_b := StructGobBytes(nameSelfLogin)  //将结构体转为gob，进而转成bytes
 	
 	gob_len := len(gob_b)
