@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
-	. "frm_pkg"
+	. "frmPkg"
 	"github.com/msbranco/goconfig"
 	"runtime"
 	"log"

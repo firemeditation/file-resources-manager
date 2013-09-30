@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"fmt"
-	. "frm_pkg"
+	. "frmPkg"
 	//"encoding/gob"
 	//"bytes"
 )

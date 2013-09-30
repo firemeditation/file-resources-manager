@@ -1,7 +1,7 @@
 // userIsLogin 内含 UserPower，IsLoginInfo
 
 
-package frm_pkg
+package frmPkg
 
 import (
 	"time"

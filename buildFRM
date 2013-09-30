@@ -6,11 +6,11 @@ export GOPATH="$OLDGOPATH":"$CURDIR"
 
 #gofmt -w src
 
-go install frm_server
-cp -r src/frm_server/*.cfg bin/
+go install frmServer
+cp -r src/frmServer/*.cfg bin/
 
-go install frm_client
-cp -r src/frm_client/*.cfg bin/
+go install frmClient
+cp -r src/frmClient/*.cfg bin/
 
 
 export GOPATH="$OLDGOPATH"

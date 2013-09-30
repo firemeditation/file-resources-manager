@@ -4,7 +4,7 @@ import (
 	"net"
 	"os"
 	"fmt"
-	. "frm_pkg"
+	. "frmPkg"
 	"os/exec"
 )
 

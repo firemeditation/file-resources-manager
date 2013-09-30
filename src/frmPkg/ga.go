@@ -1,4 +1,4 @@
-package frm_pkg
+package frmPkg
 
 import (
 	"os"

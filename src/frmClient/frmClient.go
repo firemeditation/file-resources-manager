@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	. "frm_pkg"
+	. "frmPkg"
 	"github.com/msbranco/goconfig"
 	"github.com/mewpkg/gopass"
 	"os"

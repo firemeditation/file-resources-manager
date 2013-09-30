@@ -2,7 +2,7 @@ package main
 
 import (
 	"net"
-	. "frm_pkg"
+	. "frmPkg"
 	"time"
 	"fmt"
 	//"bytes"

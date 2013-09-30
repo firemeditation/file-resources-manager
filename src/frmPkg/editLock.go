@@ -1,6 +1,6 @@
 //EditLock 为编辑锁
 
-package frm_pkg
+package frmPkg
 
 
 type EditLock map[string]bool
