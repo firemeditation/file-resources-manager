@@ -5,8 +5,7 @@ import (
 	. "frmPkg"
 	"time"
 	"fmt"
-	//"bytes"
-	//"encoding/gob"
+	"strings"
 )
 
 func processLogin(conn *net.TCPConn) {
@@ -41,10 +40,28 @@ func processLogin(conn *net.TCPConn) {
 	logInfo.Printf("登录成功：用户：%s", name)
 	// 用户名和密码检查完毕
 	
+	//开始合并权限
+	var ckuu UnitsTable  //获取所在Unit的名称和权限
+	dbConn.QueryRow("select name, powerlevel from units where id = $1", cku.UnitsId).Scan(&ckuu.Name, &ckuu.PowerLevel)
+	
+	var ckug GroupsTable  //获取所在Group的权限
+	dbConn.QueryRow("select powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.PowerLevel)
+	
+	var cku_p, ckuu_p, ckug_p UserPower
+	JsonToStruct(cku.PowerLevel, &cku_p)
+	JsonToStruct(ckuu.PowerLevel, &ckuu_p)
+	JsonToStruct(ckug.PowerLevel, &ckug_p)
+	allpower := mergePower(cku_p, ckuu_p, ckug_p)
+	
+	ckuu.Name = strings.Trim(ckuu.Name, " ")
+	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	userLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, time.Now())
-	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, sha1)
+	thisU, _ := userLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, ckuu.Id, ckuu.Name, time.Now())
+	thisU.UPower = allpower
+	
+	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, ckuu.Id, ckuu.Name, sha1)
+	nameSelfLogin.UPower = allpower
 	
 	gob_b := StructGobBytes(nameSelfLogin)  //将结构体转为gob，进而转成bytes
 	

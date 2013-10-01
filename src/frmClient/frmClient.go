@@ -26,7 +26,8 @@ func main() {
 func mainLoop(){
 	clearScreen()
     
-	fmt.Println("这里是《文件资源管理系统》\n欢迎", myLogin.Name, "成功登录系统")
+	//fmt.Println("这里是《文件资源管理系统》\n欢迎", myLogin.UnitName,"的", myLogin.Name, "成功登录系统")
+	fmt.Printf("这里是《文件资源管理系统》\n欢迎%s的%s成功登录系统", myLogin.UnitName, myLogin.Name)
 	for {
 		fmt.Print("\n")
 		fmt.Print("请选择如下操作：\n")
