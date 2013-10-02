@@ -4,12 +4,13 @@ create table units (
 	id serial NOT NULL,
 	name char(200),
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
-	powerlevel json,  -- 使用json的语法存放权限等级值
+	powerlevel json default '{}',  -- 使用json的语法存放权限等级值
 	info text, -- 机构信息
 	CONSTRAINT units_id PRIMARY KEY (id)
 );
 ALTER TABLE units ADD UNIQUE (name);
 insert into units VALUES (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
+insert into units VALUES (2, '机构一', 0, '{"user":{"user":0, "unit":0, "group":0},"resource":{"origin":1}}', '某一个机构');
 
 -- 组表
 drop table IF EXISTS groups CASCADE;
@@ -17,12 +18,14 @@ create table groups (
 	id serial not null,
 	name char(200),
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
-	powerlevel json,
+	powerlevel json default '{}',
 	info text,  -- 组信息
 	constraint groups_id primary key (id)
 );
 ALTER TABLE groups ADD UNIQUE (name);
-insert into groups values (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理组');
+insert into groups values (1, '管理', 0, '{"user":{"user":100, "unit":100, "group":100},"resource":{"origin":10}}', '管理组');
+insert into groups values (2, '机构管理员', 0, '{"user":{"user":10, "unit":10, "group":10},"resource":{"origin":10}}', '某一个机构的管理员');
+insert into groups values (3, '普通使用者', 0, '{"resource":{"origin":10}}', '某一个机构的管理员');
 
 -- Table: users
 drop table IF EXISTS users CASCADE;
@@ -34,14 +37,16 @@ CREATE TABLE users
   units_id int not null default 0, -- 用户所属机构
   groups_id int not null default 0, -- 用户所属组
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
-  powerlevel json,
+  powerlevel json default '{}',
   CONSTRAINT uid PRIMARY KEY (id)
 );
 ALTER TABLE users ADD UNIQUE (name);
 CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1,'{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}');
+INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1,'{"resource":{"origin":100}}');
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 3);
 
 
 -- Table: resourceType
