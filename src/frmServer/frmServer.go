@@ -56,6 +56,8 @@ func doAccept (conn *net.TCPConn) {
 	switch vtype {
 		case 1 :
 			processLogin(conn)
+		case 2 :
+			processAddNewResource(conn)
 	}
 }
 

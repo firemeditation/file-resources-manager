@@ -6,4 +6,4 @@
     [user][user] --用户管理
     [user][unit] --机构管理
     [user][group] --组管理
-    [resource][original] --原始资源
+    [resource][origin] --原始资源

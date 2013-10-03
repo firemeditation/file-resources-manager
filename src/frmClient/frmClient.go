@@ -38,6 +38,8 @@ func mainLoop(){
 		switch otype {
 			case "0":
 				os.Exit(0)
+			case "2":
+				newResource()
 			default :
 				continue
 		}
