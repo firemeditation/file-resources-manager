@@ -1,4 +1,4 @@
-package main
+package frmPkg
 
 
 // 一组数据库表对应结构体
