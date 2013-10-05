@@ -26,7 +26,7 @@ type UsersTable struct {
 	PowerLevel string
 }
 type ResourceTypeTable struct {
-	id uint32 `PK`
+	Id uint32 `PK`
 	Name string
 	PowerLevel uint8
 	Expend uint16

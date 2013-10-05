@@ -41,5 +41,10 @@ func doLogin (username, passwd string) bool {
 	sli_b, _ := ReadSocketBytes(conn, sli_len)
 	BytesGobStruct(sli_b, &myLogin)
 	
+	rt_len_b, _ := ReadSocketBytes(conn, 8)
+	rt_len := BytesToUint64(rt_len_b)
+	rt_b,_ := ReadSocketBytes(conn, rt_len)
+	BytesGobStruct(rt_b,&resourceType)
+	
 	return true
 }

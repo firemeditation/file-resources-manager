@@ -60,7 +60,7 @@ frmPkg/userLoginInfo.go
 	func NewIsLoginInfo(id uint32, name string, groupid uint16, unitid uint16, unitname string, lastTime time.Time) *IsLoginInfo
 
 	// NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
-	func (ili *IsLoginInfo) NotTimeOut (timeout int) bool
+	func (ili *IsLoginInfo) NotTimeOut (timeout int64) bool
 
 	// UpdateLastTime 已当前时间写入LastTime中进行更新，并返回写入的时间
 	func (ili *IsLoginInfo) UpdateLastTime () time.Time
@@ -147,6 +147,9 @@ frmServer/public.go
 	
 	// mergePowerAss 为mergePower的辅助函数
 	func mergePowerAss(p1, p2 UserPower) UserPower
+	
+	// ckLogedUser 检查已经登录的用户是否存在，或者是否登录超时
+	func ckLogedUser (ckcode string) (ili *IsLoginInfo, ok bool)
 
 
 

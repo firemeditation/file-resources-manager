@@ -37,3 +37,30 @@ func mergePowerAss(p1, p2 UserPower) UserPower {
 	}
 	return tp
 }
+
+// ckLogedUser 检查已经登录的用户是否存在，或者是否登录超时
+func ckLogedUser (ckcode string) (ili *IsLoginInfo, ok bool) {
+	
+	// begin 查看用户是否存在
+	ili, found := userLoginStatus.Get(ckcode)
+	if found != nil {
+		userLoginStatus.Del(ckcode)
+		ok = false
+		return ili, ok
+	}
+	// end
+	
+	// begin 查看用户是否超时
+	timeout_time, _ := serverConfig.GetInt64("user","timeout")
+	ck_timeout := ili.NotTimeOut(timeout_time)
+	if ck_timeout == false {
+		userLoginStatus.Del(ckcode)
+		ok = false
+		return ili, ok
+	}
+	// end
+	
+	ok = true
+	
+	return  ili, ok
+}

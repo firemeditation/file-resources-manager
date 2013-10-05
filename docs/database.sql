@@ -62,6 +62,7 @@ CREATE TABLE resourceType
 );
 CREATE INDEX rt_name ON resourceType USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 INSERT INTO resourceType VALUES (1, '图书', 1, 0, '图书分类');
+INSERT INTO resourceType VALUES (2, '杂志', 1, 0, '杂志分类');
 
 
 -- Table: 资源聚集

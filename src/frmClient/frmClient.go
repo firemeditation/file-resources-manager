@@ -12,6 +12,7 @@ import (
 
 var clientConfig  *goconfig.ConfigFile
 var myLogin SelfLoginInfo
+var resourceType []ResourceTypeTable
 
 func init() {
 	clientConfig = GetConfig("client")

@@ -33,7 +33,15 @@ func newResource () {
 	
 	// start 查看服务器是否同意添加
 	ckl, _ := ReadSocketBytes(conn, 1)
-	if BytesToUint8(ckl) != 1 {
+	
+	if BytesToUint8(ckl) == 3 {
+		fmt.Print("服务器端身份验证失败，可能是连接超时，请重新登录。按任意键继续。")
+		var tep string
+		fmt.Scanln(&tep)
+		return
+	}
+	
+	if BytesToUint8(ckl) == 2 {
 		fmt.Print("服务器端禁止添加条目，可能是没有权限，按任意键继续。")
 		var tep string
 		fmt.Scanln(&tep)

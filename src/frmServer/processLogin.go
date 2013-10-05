@@ -70,4 +70,18 @@ func processLogin(conn *net.TCPConn) {
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	SendSocketBytes (conn , Uint64ToBytes(uint64(gob_len)), 8)
 	SendSocketBytes (conn , gob_b, uint64(gob_len))
+	
+	//开始发送所有的资源类型
+	var resourceType []ResourceTypeTable
+	rts, _ := dbConn.Query("select * from resourcetype")
+	for rts.Next(){
+		var onert ResourceTypeTable
+		rts.Scan(&onert.Id, &onert.Name, &onert.PowerLevel, &onert.Expend, &onert.Info)
+		onert.Name = strings.Trim(onert.Name, " ")
+		resourceType = append(resourceType, onert)
+	}
+	rt_b := StructGobBytes(resourceType)
+	rt_b_len := len(rt_b)
+	SendSocketBytes (conn , Uint64ToBytes(uint64(rt_b_len)), 8)
+	SendSocketBytes (conn , rt_b, uint64(rt_b_len))
 }

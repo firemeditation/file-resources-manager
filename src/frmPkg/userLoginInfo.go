@@ -62,10 +62,10 @@ func NewIsLoginInfo(id uint32, name string, groupid uint16, unitid uint16, unitn
 }
 
 // NotTimeOut 根据给定的int类型的秒数，判断登录是否已经超时，没超时返回true，超时返回false
-func (ili *IsLoginInfo) NotTimeOut (timeout int) bool {
+func (ili *IsLoginInfo) NotTimeOut (timeout int64) bool {
 	oldtime := ili.LastTime.Unix()
 	nowtime := time.Now().Unix()
-	if oldtime + int64(timeout) < nowtime {
+	if oldtime + timeout < nowtime {
 		return false
 	}else{
 		return true
