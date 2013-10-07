@@ -37,7 +37,7 @@ type ResourceGroupTable struct {
 	Name string
 	RtId uint32
 	Info string
-	Btime uint64
+	Btime int64
 	Derivative string
 	UnitsId uint16
 	PowerLevel uint8
@@ -47,7 +47,7 @@ type ResourceGroupTable struct {
 type ResourceItemTable struct {
 	HashId string
 	Name string
-	LastTime uint64
+	LastTime int64
 	Version uint16
 	RgHashId string
 	Derivative string

@@ -9,8 +9,9 @@ create table units (
 	CONSTRAINT units_id PRIMARY KEY (id)
 );
 ALTER TABLE units ADD UNIQUE (name);
-insert into units VALUES (1, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
-insert into units VALUES (2, '机构一', 0, '{"user":{"user":0, "unit":0, "group":0},"resource":{"origin":1}}', '某一个机构');
+insert into units VALUES (1, '空机构', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '空置机构');
+insert into units VALUES (2, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
+insert into units VALUES (3, '机构一', 0, '{"user":{"user":0, "unit":0, "group":0},"resource":{"origin":1}}', '某一个机构');
 
 -- 组表
 drop table IF EXISTS groups CASCADE;
@@ -23,9 +24,10 @@ create table groups (
 	constraint groups_id primary key (id)
 );
 ALTER TABLE groups ADD UNIQUE (name);
-insert into groups values (1, '管理', 0, '{"user":{"user":100, "unit":100, "group":100},"resource":{"origin":10}}', '管理组');
-insert into groups values (2, '机构管理员', 0, '{"user":{"user":10, "unit":10, "group":10},"resource":{"origin":10}}', '某一个机构的管理员');
-insert into groups values (3, '普通使用者', 0, '{"resource":{"origin":10}}', '某一个机构的管理员');
+insert into groups values (1, '空组', 0, '{}', '空组');
+insert into groups values (2, '管理', 0, '{"user":{"user":100, "unit":100, "group":100},"resource":{"origin":10}}', '管理组');
+insert into groups values (3, '机构管理员', 0, '{"user":{"user":10, "unit":10, "group":10},"resource":{"origin":10}}', '某一个机构的管理员');
+insert into groups values (4, '普通使用者', 0, '{"resource":{"origin":10}}', '某一个机构的管理员');
 
 -- Table: users
 drop table IF EXISTS users CASCADE;
@@ -44,9 +46,10 @@ ALTER TABLE users ADD UNIQUE (name);
 CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, 1,'{"resource":{"origin":100}}');
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 3);
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('nobody', '0000000000000000000000000000000000000000', 1, 1);
+INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2,'{"resource":{"origin":100}}');
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 3);
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 4);
 
 
 -- Table: resourceType
@@ -61,8 +64,9 @@ CREATE TABLE resourceType
 	CONSTRAINT rtid PRIMARY KEY (id)
 );
 CREATE INDEX rt_name ON resourceType USING btree (name COLLATE pg_catalog."zh_CN.utf8");
-INSERT INTO resourceType VALUES (1, '图书', 1, 0, '图书分类');
-INSERT INTO resourceType VALUES (2, '杂志', 1, 0, '杂志分类');
+INSERT INTO resourceType VALUES (1, '无分类', 1, 0, '无分类');
+INSERT INTO resourceType VALUES (2, '图书', 1, 0, '图书分类');
+INSERT INTO resourceType VALUES (3, '杂志', 1, 0, '杂志分类');
 
 
 -- Table: 资源聚集
@@ -71,13 +75,13 @@ CREATE TABLE resourceGroup
 (
   hashid char(40),
   name char(1000),
-  rt_id smallint NOT NULL default 0, -- 资源类型
+  rt_id smallint NOT NULL default 1, -- 资源类型
   info text,
   btime bigint, -- 创建时间
-  derivative char(40),  -- 衍生自哪个resourceGroup，这是衍生的hashid，如果没有衍生就是null
-  units_id int not null default 0,  -- 对应的机构
+  derivative char(40) not null default '0000000000000000000000000000000000000000',  -- 衍生自哪个resourceGroup，这是衍生的hashid，如果没有衍生就是null
+  units_id int not null default 1,  -- 对应的机构
   powerlevel int default 1,
-  users_id int NOT NULL default 0, -- 最后操作用户
+  users_id int NOT NULL default 1, -- 最后操作用户
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
   CONSTRAINT rgkey_hashid PRIMARY KEY (hashid)
 );
@@ -85,10 +89,13 @@ CREATE INDEX rg_hashid ON resourceGroup USING btree (hashid);
 CREATE INDEX rg_unitid ON resourceGroup USING btree (units_id);
 CREATE INDEX rg_derivative ON resourceGroup USING btree (derivative);
 CREATE INDEX rg_name ON resourceGroup USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+
+insert into resourceGroup (hashid, name, info, btime) values ('0000000000000000000000000000000000000000', '空资源聚集','空资源聚集',1);
+
 ALTER TABLE resourceGroup ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (rt_id) REFERENCES resourceType (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-ALTER TABLE resourceGroup ADD FOREIGN KEY (derivative) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+ALTER TABLE resourceGroup ADD FOREIGN KEY (derivative) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceGroup ADD UNIQUE (hashid);
 
 
@@ -99,12 +106,12 @@ CREATE TABLE resourceItem
 	hashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
 	name char(1000) NOT NULL,  -- 文件名
 	lasttime bigint,  -- 最后更新日期
-	version int,  -- 版本，每改一次加一
-	rg_hashid char(40), -- 资源条目的原始聚集ID
-	derivative char(40),  -- 衍生自哪个resourceItem，这是衍生的hashid，如果没有衍生就是null
-	units_id int not null default 0,  -- 对应的机构
+	version int not null default 1,  -- 版本，每改一次加一
+	rg_hashid char(40) not null default '0000000000000000000000000000000000000000', -- 资源条目的原始聚集ID
+	derivative char(40) not null default '0000000000000000000000000000000000000000',  -- 衍生自哪个resourceItem，这是衍生的hashid，如果没有衍生就是null
+	units_id int not null default 1,  -- 对应的机构
 	powerlevel int default 1,
-	users_id int NOT NULL default 0, -- 最后操作用户
+	users_id int NOT NULL default 1, -- 最后操作用户
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
 	CONSTRAINT ri_hashid PRIMARY KEY (hashid)
 );
@@ -112,6 +119,9 @@ CREATE INDEX riname ON resourceItem USING btree (name COLLATE pg_catalog."zh_CN.
 CREATE INDEX riunitid ON resourceItem USING btree (units_id);
 CREATE INDEX ri_rg_hashid ON resourceItem USING btree (rg_hashid);
 CREATE INDEX ri_rg_derivative ON resourceItem USING btree (derivative);
+
+insert into resourceItem (hashid, name, lasttime) values ('0000000000000000000000000000000000000000', '空资源条目', 1);
+
 ALTER TABLE resourceItem ADD FOREIGN KEY (rg_hashid) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE SET NULL;
 ALTER TABLE resourceItem ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
