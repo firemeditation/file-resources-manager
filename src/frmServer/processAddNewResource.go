@@ -36,7 +36,8 @@ func processAddNewResource(conn *net.TCPConn) {
 	
 	n_rgt, err := dbConn.Prepare("insert into resourceGroup (hashid, name, rt_id, info, btime, units_id, users_id) values ($1, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
-		fmt.Println("prepare错误：",err)
+		logInfo.Println("数据库错误：", err)
+		return
 	}
 	sha1string := fmt.Sprint(time.Now(), rgt.Name, theUser.Name)
 	rgt.HashId = GetSha1(sha1string)
@@ -45,7 +46,8 @@ func processAddNewResource(conn *net.TCPConn) {
 	rgt.UsersId = theUser.Id
 	_, err = n_rgt.Exec(rgt.HashId, rgt.Name, rgt.RtId, rgt.Info, rgt.Btime, rgt.UnitsId, rgt.UsersId)
 	if err != nil {
-		fmt.Println("exec错误：",err)
+		logInfo.Println("数据库错误：", err)
+		return
 	}
 	
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
@@ -53,4 +55,7 @@ func processAddNewResource(conn *net.TCPConn) {
 	
 	logInfo.Printf("添加资源条目：%s：用户：%s", rgt.Name, theUser.Name)
 	// end
+	
+	// 更新用户的最后操作时间
+	theUser.UpdateLastTime()
 }
