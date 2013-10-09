@@ -6,7 +6,6 @@ import (
 	"fmt"
 	. "frmPkg"
 	"github.com/msbranco/goconfig"
-	"github.com/mewpkg/gopass"
 	"os"
 )
 
@@ -45,16 +44,4 @@ func mainLoop(){
 				continue
 		}
 	}
-}
-
-
-func Login() {
-	clearScreen()
-	
-	fmt.Print("您好！请输入用户名和密码进行登录\n")
-	fmt.Print("用户名：")
-	var username string
-	fmt.Scan(&username)
-	passwd, _ := gopass.GetPass("密码：")
-	doLogin(username, passwd)
 }
