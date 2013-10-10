@@ -19,7 +19,7 @@ func processAddNewResource(conn *net.TCPConn) {
 	// end
 	
 	// start 查看用户是否有建立资源的权力
-	if theUser.UPower["resource"]["origin"] < 10 {
+	if theUser.UPower["resource"]["origin"] < 2 {
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}else{

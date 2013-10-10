@@ -9,7 +9,7 @@ import (
 func newResource () {
 	
 	// start 自身判断权限
-	if myLogin.UPower["resource"]["origin"] < 10 {
+	if myLogin.UPower["resource"]["origin"] < 2 {
 		fmt.Print("您没有新建资源条目的权力，按任意键继续。")
 		var tep string
 		fmt.Scanln(&tep)

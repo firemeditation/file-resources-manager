@@ -9,8 +9,8 @@ create table units (
 	CONSTRAINT units_id PRIMARY KEY (id)
 );
 ALTER TABLE units ADD UNIQUE (name);
-insert into units VALUES (1, '空机构', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '空置机构');
-insert into units VALUES (2, '管理', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '管理机构');
+insert into units VALUES (1, '空机构', 0, '{}', '空置机构');
+insert into units VALUES (2, '总管', 0, '{"user":{"user":1, "unit":1, "group":1},"resource":{"origin":1}}', '系统的中心管理者');
 insert into units VALUES (3, '机构一', 0, '{"user":{"user":0, "unit":0, "group":0},"resource":{"origin":1}}', '某一个机构');
 
 -- 组表
@@ -25,9 +25,9 @@ create table groups (
 );
 ALTER TABLE groups ADD UNIQUE (name);
 insert into groups values (1, '空组', 0, '{}', '空组');
-insert into groups values (2, '管理', 0, '{"user":{"user":100, "unit":100, "group":100},"resource":{"origin":10}}', '管理组');
-insert into groups values (3, '机构管理员', 0, '{"user":{"user":10, "unit":10, "group":10},"resource":{"origin":10}}', '某一个机构的管理员');
-insert into groups values (4, '普通使用者', 0, '{"resource":{"origin":10}}', '某一个机构的管理员');
+insert into groups values (2, '管理', 0, '{"user":{"user":5, "unit":5, "group":5},"resource":{"origin":5}}', '管理组');
+insert into groups values (3, '机构管理员', 0, '{"user":{"user":4, "unit":4, "group":4},"resource":{"origin":4}}', '某一个机构的管理员');
+insert into groups values (4, '普通使用者', 0, '{"resource":{"origin":2}}', '某一个机构的普通使用者');
 
 -- Table: users
 drop table IF EXISTS users CASCADE;
@@ -47,7 +47,7 @@ CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('nobody', '0000000000000000000000000000000000000000', 1, 1);
-INSERT INTO users (name, passwd, units_id, groups_id, powerlevel) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2,'{"resource":{"origin":100}}');
+INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
 INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 3);
 INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 4);
 
