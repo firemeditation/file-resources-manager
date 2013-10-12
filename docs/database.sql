@@ -36,8 +36,8 @@ CREATE TABLE users
   id serial NOT NULL,
   name char(200),  --用户名
   passwd char(40), --用户密码
-  units_id int not null default 0, -- 用户所属机构
-  groups_id int not null default 0, -- 用户所属组
+  units_id int not null default 1, -- 用户所属机构
+  groups_id int not null default 1, -- 用户所属组
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
   powerlevel json default '{}',
   CONSTRAINT uid PRIMARY KEY (id)
