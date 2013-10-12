@@ -17,6 +17,15 @@ func processLogin(conn *net.TCPConn) {
 	name_l := BytesToUint16(name_l_b)
 	name_b, _ := ReadSocketBytes(conn, uint64(name_l))
 	name := string(name_b)
+	
+	// 禁止nobody登录
+	nobody, _ := serverConfig.GetString("user","nobody")
+	if name == nobody {
+		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
+		SendSocketBytes (conn , Uint8ToBytes(2), 1)
+		return
+	}
+	
 	passwd_b ,_ := ReadSocketBytes(conn, 40)
 	passwd := string(passwd_b)
 	

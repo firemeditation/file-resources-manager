@@ -46,10 +46,10 @@ ALTER TABLE users ADD UNIQUE (name);
 CREATE INDEX name ON users USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 ALTER TABLE users ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE users ADD FOREIGN KEY (groups_id) REFERENCES groups (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('nobody', '0000000000000000000000000000000000000000', 1, 1);
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 3);
-INSERT INTO users (name, passwd, units_id, groups_id) VALUES ('admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 4);
+INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (1, 'nobody', '0000000000000000000000000000000000000000', 1, 1);
+INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (2, 'root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
+INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (3, 'admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 3);
+INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (4, 'admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 4);
 
 
 -- Table: resourceType
