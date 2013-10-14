@@ -83,6 +83,7 @@ CREATE TABLE resourceGroup
   powerlevel int default 1,
   users_id int NOT NULL default 1, -- 最后操作用户
   expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
+  metadata json not null default '{}',
   CONSTRAINT rgkey_hashid PRIMARY KEY (hashid)
 );
 CREATE INDEX rg_hashid ON resourceGroup USING btree (hashid);
@@ -99,12 +100,32 @@ ALTER TABLE resourceGroup ADD FOREIGN KEY (derivative) REFERENCES resourceGroup 
 ALTER TABLE resourceGroup ADD UNIQUE (hashid);
 
 
+-- 资源聚集状态
+drop table IF EXISTS resourceGroupStatus  CASCADE;
+create table resourceGroupStatus
+(
+	hashid char(40) not null,
+	status1 int not null default 0,
+	status2 int not null default 0,
+	status3 int not null default 0,
+	status4 int not null default 0,
+	status5 int not null default 0,
+	status6 int not null default 0,
+	status7 int not null default 0,
+	status8 int not null default 0,
+	status9 int not null default 0,
+	CONSTRAINT rgs_hashid PRIMARY KEY (hashid)
+);
+ALTER TABLE resourceGroupStatus ADD FOREIGN KEY (hashid) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
 -- Table: 资源条目
 drop table IF EXISTS resourceItem CASCADE;
 CREATE TABLE resourceItem
 (
 	hashid char(40) NOT NULL,  -- 哈希值(通过时间、文件名、路径名、资源id等混合得出)
 	name char(1000) NOT NULL,  -- 文件名
+	ritype int not null default 0,  -- 资源条目类型：1为file，2为text，之后增加就继续
 	lasttime bigint,  -- 最后更新日期
 	version int not null default 1,  -- 版本，每改一次加一
 	rg_hashid char(40) not null default '0000000000000000000000000000000000000000', -- 资源条目的原始聚集ID
@@ -113,9 +134,11 @@ CREATE TABLE resourceItem
 	powerlevel int default 1,
 	users_id int NOT NULL default 1, -- 最后操作用户
 	expand int not null default 0, -- 扩展，默认没有扩展表，有扩展表则写明编号
+	metadata json not null default '{}',
 	CONSTRAINT ri_hashid PRIMARY KEY (hashid)
 );
 CREATE INDEX riname ON resourceItem USING btree (name COLLATE pg_catalog."zh_CN.utf8");
+CREATE INDEX ritype ON resourceItem USING btree (ritype);
 CREATE INDEX riunitid ON resourceItem USING btree (units_id);
 CREATE INDEX ri_rg_hashid ON resourceItem USING btree (rg_hashid);
 CREATE INDEX ri_rg_derivative ON resourceItem USING btree (derivative);
@@ -128,6 +151,26 @@ ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPD
 ALTER TABLE resourceItem ADD FOREIGN KEY (derivative) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 ALTER TABLE resourceItem ADD UNIQUE (hashid);
   
+  
+  -- 资源条目状态
+drop table IF EXISTS resourceItemStatus  CASCADE;
+create table resourceItemStatus
+(
+	hashid char(40) not null,
+	status1 int not null default 0,
+	status2 int not null default 0,
+	status3 int not null default 0,
+	status4 int not null default 0,
+	status5 int not null default 0,
+	status6 int not null default 0,
+	status7 int not null default 0,
+	status8 int not null default 0,
+	status9 int not null default 0,
+	CONSTRAINT ris_hashid PRIMARY KEY (hashid)
+);
+ALTER TABLE resourceItemStatus ADD FOREIGN KEY (hashid) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+  
+  
 -- Table: 资源文件 从资源条目继承
 drop table if exists resourceFile cascade;
 create table resourceFile (
@@ -137,7 +180,6 @@ create table resourceFile (
 	fpath char(2000) NOT NULL, -- 文件存放位置相对路径完整名字
 	fsite int NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方，由服务器配置文件制定序号
 	fsize bigint NOT NULL DEFAULT 0,  -- 文件字节数
-	metadata json, -- 元数据
 	CONSTRAINT rf_hashid PRIMARY KEY (hashid)
 ) INHERITS (resourceItem);
 CREATE INDEX rfsite ON resourceFile USING btree (fsite);
@@ -152,7 +194,6 @@ CREATE INDEX rf_rg_id ON resourceFile USING btree (rg_hashid);
 drop table IF EXISTS resourceText cascade;
 create table resourceText (
 	conent text,
-	metadata json, -- 元数据
 	CONSTRAINT rtf_hashid PRIMARY KEY (hashid)
 ) INHERITS (resourceItem);
 CREATE INDEX rtfhashid ON resourceText USING btree (hashid);
