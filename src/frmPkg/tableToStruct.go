@@ -43,10 +43,12 @@ type ResourceGroupTable struct {
 	PowerLevel uint8
 	UsersId uint32
 	Expand uint16
+	MetaData string 
 }
 type ResourceItemTable struct {
 	HashId string
 	Name string
+	RiType uint8
 	LastTime int64
 	Version uint16
 	RgHashId string
@@ -55,6 +57,7 @@ type ResourceItemTable struct {
 	PowerLevel uint32
 	UsersId uint32
 	Expand uint16
+	MetaData string
 }
 type ResourceFileTable struct {
 	ResourceItemTable
@@ -64,16 +67,25 @@ type ResourceFileTable struct {
 	Fpath string
 	Fsite uint16
 	Fsize uint64
-	MetaData string
 } 
 type ResourceTextTable struct {
 	ResourceItemTable
 	Conent string
-	MetaData string
 }
 type ResourceRelationTable struct {
 	QuoteSide string
 	BeQuote string
 	RrType uint8
+}
+type ResourceStatusTable struct {
+	HashId string
+	Status1 uint8
+	Status2 uint8
+	Status4 uint8
+	Status5 uint8
+	Status6 uint8
+	Status7 uint8
+	Status8 uint8
+	Status9 uint8
 }
 //数据表对应结构体结束
