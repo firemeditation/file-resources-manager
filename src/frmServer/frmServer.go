@@ -17,6 +17,7 @@ var serverConfig  *goconfig.ConfigFile
 var userLoginStatus UserIsLogin
 var dbConn *sql.DB
 var logInfo *log.Logger
+var errLog *log.Logger
 
 func init() {
 	serverConfig = GetConfig("server")
@@ -71,6 +72,10 @@ func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8) {
 
 func prepareLog() {
 	logFile, _ := serverConfig.GetString("server","log")
-	logw, _ := os.OpenFile(logFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0664)
+	logw, _ := os.OpenFile(logFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0660)
 	logInfo = log.New(logw, "frm_server : ", log.Ldate | log.Ltime)
+	
+	errFile, _ := serverConfig.GetString("server","err")
+	errw, _ := os.OpenFile(errFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0660)
+	errLog = log.New(errw, "frm_server : ", log.Ldate | log.Ltime)
 }

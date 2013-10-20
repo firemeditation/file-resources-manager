@@ -5,18 +5,18 @@ import (
 	. "frmPkg"
 )
 
-func doNewResource (rgt *ResourceGroupTable) {
+func doNewResource (rgt *ResourceGroupTable) (new_hash string, rerr error) {
 	conn := connectServer()
 	err := sendTheFirstRequest (1, 2, conn)
 	if err != nil {
-		fmt.Print("发送状态错误：", err)
+		rerr = fmt.Errorf("发送状态错误：%s", err)
 		return
 	}
 	
 	//发送自己的SID
 	err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
 	if err != nil {
-		fmt.Print("发送SID错误：", err)
+		rerr = fmt.Errorf("发送SID错误：%s", err)
 		return
 	}
 	
@@ -24,14 +24,14 @@ func doNewResource (rgt *ResourceGroupTable) {
 	ckl, _ := ReadSocketBytes(conn, 1)
 	
 	if BytesToUint8(ckl) == 3 {
-		fmt.Print("服务器端身份验证失败，可能是连接超时，请重新登录。按任意键继续。")
-		var tep string
-		fmt.Scanln(&tep)
+		rerr = fmt.Errorf("服务器端身份验证失败，可能是连接超时，请重新登录。")
+		//var tep string
+		//fmt.Scanln(&tep)
 		return
 	}
 	
 	if BytesToUint8(ckl) == 2 {
-		fmt.Print("服务器端禁止添加条目，可能是没有权限，按任意键继续。")
+		rerr = fmt.Errorf("服务器端禁止添加条目，可能是没有权限。")
 		var tep string
 		fmt.Scanln(&tep)
 		return
@@ -46,12 +46,14 @@ func doNewResource (rgt *ResourceGroupTable) {
 	
 	ckl, _ = ReadSocketBytes(conn, 1)
 	if BytesToUint8(ckl) != 1 {
-		fmt.Print("添加资源出错，请重试，按任意键继续。")
-		var tep string
-		fmt.Scanln(&tep)
+		rerr = fmt.Errorf("添加资源出错，请重试。")
+		//var tep string
+		//fmt.Scanln(&tep)
 		return
 	}
 	newhash_b,_ := ReadSocketBytes(conn, 40)
-	fmt.Println("添加成功，新资源的HashID为：",string(newhash_b))
+	
+	new_hash = string(newhash_b)
+	return
 	// end
 }

@@ -36,7 +36,7 @@ func processAddNewResource(conn *net.TCPConn) {
 	
 	n_rgt, err := dbConn.Prepare("insert into resourceGroup (hashid, name, rt_id, info, btime, units_id, users_id) values ($1, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
-		logInfo.Println("数据库错误：", err)
+		errLog.Println("数据库错误：", err)
 		return
 	}
 	sha1string := fmt.Sprint(time.Now(), rgt.Name, theUser.Name)
@@ -46,7 +46,18 @@ func processAddNewResource(conn *net.TCPConn) {
 	rgt.UsersId = theUser.Id
 	_, err = n_rgt.Exec(rgt.HashId, rgt.Name, rgt.RtId, rgt.Info, rgt.Btime, rgt.UnitsId, rgt.UsersId)
 	if err != nil {
-		logInfo.Println("数据库错误：", err)
+		errLog.Println("数据库错误：", err)
+		return
+	}
+	
+	n_rgstatus, err := dbConn.Prepare("insert into resourceGroupStatus (hashid) values ($1)")
+	if err != nil {
+		errLog.Println("数据库错误：", err)
+		return
+	}
+	_, err = n_rgstatus.Exec(rgt.HashId)
+	if err != nil {
+		errLog.Println("数据库错误：", err)
 		return
 	}
 	

@@ -46,5 +46,10 @@ func newResource () {
 	fmt.Scanln(&rgt.Info)
 	// end
 	
-	doNewResource(&rgt)
+	new_hash,err := doNewResource(&rgt)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("添加成功，新资源的HashID为：",new_hash)
 }
