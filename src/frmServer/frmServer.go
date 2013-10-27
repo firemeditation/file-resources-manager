@@ -11,7 +11,10 @@ import (
 	"runtime"
 	"log"
 	"database/sql"
+	"strconv"
 )
+
+const StorageSequenceNum = 999  //存储内序列目录的最大值
 
 var serverConfig  *goconfig.ConfigFile  //配置文件
 var userLoginStatus UserIsLogin  //登录用户表
@@ -53,6 +56,7 @@ func main() {
 	}
 }
 
+// doAccept 进行客户端连接
 func doAccept (conn *net.TCPConn) {
 	defer conn.Close()
 	_, vtype := getFirstRequest(conn)
@@ -64,6 +68,7 @@ func doAccept (conn *net.TCPConn) {
 	}
 }
 
+// getFirstRequest 获取客户端最初的操作请求：版本号，操作代码
 func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8) {
 	ver_b , _ := ReadSocketBytes(conn, 1)
 	ver = BytesToUint8(ver_b)
@@ -72,6 +77,7 @@ func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8) {
 	return ver , vtype
 }
 
+// propareLog 准备日志文件
 func prepareLog() {
 	logFile, _ := serverConfig.GetString("server","log")
 	logw, _ := os.OpenFile(logFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0660)
@@ -82,6 +88,7 @@ func prepareLog() {
 	errLog = log.New(errw, "frm_server : ", log.Ldate | log.Ltime)
 }
 
+// prepareStorage 准备存储
 func prepareStorage() {
 	theS, _ := serverConfig.GetOptions("storage")
 	for _, oneS := range theS {
@@ -100,5 +107,13 @@ func prepareStorage() {
 			fmt.Fprintln(os.Stderr, "存储位置需要为一个路径：", oneStorage)
 			os.Exit(1)
 		}
+		
+		//开始准备存储内序列目录
+		for n := 0; n <= StorageSequenceNum; n++ {
+			dir.Chdir()
+			dirName := strconv.Itoa(n)
+			os.Mkdir(dirName, 0600)
+		}
+		//准备完毕
 	}
 }
