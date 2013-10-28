@@ -1,5 +1,8 @@
 frmPkg/ga.go
 
+	// DirMustEnd 判断目录名，如果不是“/”结尾就加上“/”
+	func DirMustEnd(dir string) string
+
     // GetConfig 为获取配置文件信息，接收"server"、"client"，未来支持"web"
 	func GetConfig(sorc string) *goconfig.ConfigFile
 	

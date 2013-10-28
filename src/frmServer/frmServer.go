@@ -96,13 +96,11 @@ func prepareStorage() {
 		storage = append(storage,oneSt)
 	}
 	for _, oneStorage := range storage {
-		dir , err := os.Open(oneStorage)
-		defer dir.Close()
+		dirinfo , err := os.Stat(oneStorage)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "存储位置无法打开：", oneStorage)
 			os.Exit(1)
 		}
-		dirinfo, _ := dir.Stat()
 		if dirinfo.IsDir() == false {
 			fmt.Fprintln(os.Stderr, "存储位置需要为一个路径：", oneStorage)
 			os.Exit(1)
@@ -110,8 +108,8 @@ func prepareStorage() {
 		
 		//开始准备存储内序列目录
 		for n := 0; n <= StorageSequenceNum; n++ {
-			dir.Chdir()
 			dirName := strconv.Itoa(n)
+			dirName = DirMustEnd(oneStorage) + dirName
 			os.Mkdir(dirName, 0600)
 		}
 		//准备完毕

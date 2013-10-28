@@ -10,9 +10,20 @@ import (
 	"io"
 	"net"
 	"bufio"
+	"regexp"
 )
 
 const bytelen = 1024
+
+
+// DirMustEnd 判断目录名，如果不是“/”结尾就加上“/”
+func DirMustEnd(dir string) string {
+	matched , _ := regexp.MatchString("/$", dir)
+	if matched == false {
+		dir = dir + "/"
+	}
+	return dir
+}
 
 // GetConfig 为获取配置文件信息
 func GetConfig(sorc string) *goconfig.ConfigFile {
