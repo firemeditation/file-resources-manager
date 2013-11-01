@@ -19,7 +19,8 @@ const StorageSequenceNum = 999  //存储内序列目录的最大值
 var serverConfig  *goconfig.ConfigFile  //配置文件
 var userLoginStatus *UserIsLogin  //登录用户表
 var dbConn *sql.DB   //数据库连接
-var storage []string  //存储盘位置
+var storageArray []StorageInfo  //存储盘位置
+var storageChan = make(chan StorageInfo,5)
 var logInfo *log.Logger  //日志
 var errLog *log.Logger  //错误日志
 
@@ -45,6 +46,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "出错了，错误是：", err)
 		os.Exit(1)
 	}
+	/*
+	for i := 0; i < 10; i++ {
+		aa := <- storageChan
+		path := aa.Path + aa.SmallPath
+		fmt.Println(path)
+	}
+	*/
 	for {
 		Connecter, err := listens.AcceptTCP()
 
@@ -93,10 +101,12 @@ func prepareStorage() {
 	theS, _ := serverConfig.GetOptions("storage")
 	for _, oneS := range theS {
 		oneSt, _ := serverConfig.GetString("storage",oneS)
-		storage = append(storage,oneSt)
+		oneSt = DirMustEnd(oneSt)
+		oneInfo := StorageInfo{Name: oneS, Path: oneSt, CanUse: true}
+		storageArray = append(storageArray,oneInfo)
 	}
-	for _, oneStorage := range storage {
-		dirinfo , err := os.Stat(oneStorage)
+	for _, oneStorage := range storageArray {
+		dirinfo , err := os.Stat(oneStorage.Path)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "存储位置无法打开：", oneStorage)
 			os.Exit(1)
@@ -109,9 +119,10 @@ func prepareStorage() {
 		//开始准备存储内序列目录
 		for n := 0; n <= StorageSequenceNum; n++ {
 			dirName := strconv.Itoa(n)
-			dirName = DirMustEnd(oneStorage) + dirName
+			dirName = oneStorage.Path + dirName
 			os.Mkdir(dirName, 0600)
 		}
 		//准备完毕
+		go StorageChanSequence()
 	}
 }
