@@ -17,7 +17,7 @@ import (
 const StorageSequenceNum = 999  //存储内序列目录的最大值
 
 var serverConfig  *goconfig.ConfigFile  //配置文件
-var userLoginStatus UserIsLogin  //登录用户表
+var userLoginStatus *UserIsLogin  //登录用户表
 var dbConn *sql.DB   //数据库连接
 var storage []string  //存储盘位置
 var logInfo *log.Logger  //日志

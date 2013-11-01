@@ -6,6 +6,7 @@ package frmPkg
 import (
 	"time"
 	"fmt"
+	"sync"
 )
 
 
@@ -82,19 +83,24 @@ func (ili *IsLoginInfo) UpdateLastTime () time.Time {
 
 
 // UserIsLogin 是一个map，记录所有已经登录的人员信息
-type UserIsLogin map[string]*IsLoginInfo
+type UserIsLogin struct{
+	lock *sync.RWMutex
+	islogin map[string]*IsLoginInfo
+}
 
 // NewUserIsLogin 初始化UserIsLogin的map
-func NewUserIsLogin () UserIsLogin {
-	return UserIsLogin{}
+func NewUserIsLogin () *UserIsLogin {
+	return &UserIsLogin{lock: new(sync.RWMutex),islogin: make(map[string]*IsLoginInfo)}
 }
 
 // Add 增加一条用户信息，返回响应的IsLoginInfo，如果ckcode重复，则返回错误
-func (uil UserIsLogin) Add (ckcode string, id uint32, name string, groupid uint16, unitid uint16, unitname string, lastTime time.Time) (ili *IsLoginInfo, err error) {
-	_, found := uil[ckcode]
+func (uil *UserIsLogin) Add (ckcode string, id uint32, name string, groupid uint16, unitid uint16, unitname string, lastTime time.Time) (ili *IsLoginInfo, err error) {
+	uil.lock.Lock()
+	defer uil.lock.Unlock()
+	_, found := uil.islogin[ckcode]
 	if  found == false {
-		uil[ckcode] = NewIsLoginInfo(id, name, groupid, unitid, unitname, lastTime)
-		return uil[ckcode], err
+		uil.islogin[ckcode] = NewIsLoginInfo(id, name, groupid, unitid, unitname, lastTime)
+		return uil.islogin[ckcode], err
 	}else{
 		err = fmt.Errorf("键值 %x 已经存在，不能新建", ckcode)
 		return ili, err
@@ -102,8 +108,10 @@ func (uil UserIsLogin) Add (ckcode string, id uint32, name string, groupid uint1
 }
 
 // Get 获得ckode的用户登录信息，如果err不为nil则为找不到
-func (uil UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error) {
-	if ili , found := uil[ckcode] ; found == true {
+func (uil *UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error) {
+	uil.lock.RLock()
+	defer uil.lock.RUnlock()
+	if ili , found := uil.islogin[ckcode] ; found == true {
 		return ili, nil
 	}else{
 		err = fmt.Errorf("键值 %x 不存在", ckcode)
@@ -112,8 +120,10 @@ func (uil UserIsLogin) Get (ckcode string) (ili *IsLoginInfo, err error) {
 }
 
 // Del 删除一条用户信息，通常是在其过期之后
-func (uil UserIsLogin) Del (ckcode string) {
-	delete(uil, ckcode)
+func (uil *UserIsLogin) Del (ckcode string) {
+	uil.lock.Lock()
+	defer uil.lock.Unlock()
+	delete(uil.islogin, ckcode)
 }
 
 
