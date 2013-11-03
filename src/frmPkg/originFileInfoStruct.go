@@ -13,3 +13,9 @@ type OriginFileInfoStruct struct {
 	Mode os.FileMode  //文件权限
 	ModeTime time.Time  //文件修改日期
 }
+
+
+type OriginFileInfoFullStruct struct {
+	FullDir string  //完整客户端本地路径
+	OriginFileInfoStruct
+}

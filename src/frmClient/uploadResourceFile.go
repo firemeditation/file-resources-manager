@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	. "frmPkg"
 )
 
 
@@ -20,10 +21,10 @@ func uploadResourceFile(resourceGroup string) {
 	addtopath := "./"
 	var originpath string
 	for {
-		fmt.Print("选择上传类型：1.重新上传或完全覆盖\t2.追加资源(同位置同名将自动覆盖)\n")
+		fmt.Print("选择上传类型：1.普通上传\t2定点追加\t(同位置同名将自动覆盖)\n")
 		var otype string
 		fmt.Scanln(&otype)
-		fmt.Print("请输入本地上传文件所在路径：")
+		fmt.Print("请输入本地上传文件所在路径：\n")
 		fmt.Scanln(&originpath)
 		if otype == "1" {
 			uploadtype = 1
@@ -35,5 +36,7 @@ func uploadResourceFile(resourceGroup string) {
 			break
 		}
 	}
+	originpath = DirMustEnd(originpath)
+	addtopath = DirMustEnd(addtopath)
 	doUploadResourceFile(uploadtype,originpath,addtopath)
 }

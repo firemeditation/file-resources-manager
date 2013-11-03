@@ -7,6 +7,7 @@ import (
 	. "frmPkg"
 	"github.com/msbranco/goconfig"
 	"os"
+	"runtime"
 )
 
 var clientConfig  *goconfig.ConfigFile
@@ -18,6 +19,7 @@ func init() {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	Login()
 	mainLoop()
 }
