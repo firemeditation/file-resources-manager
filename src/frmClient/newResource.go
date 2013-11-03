@@ -52,4 +52,16 @@ func newResource () {
 		return
 	}
 	fmt.Println("添加成功，新资源的HashID为：",new_hash)
+	fmt.Print("是否现在上传文件资源？\t1.现在上传\t\t2.不上传\n")
+	var otype string
+	fmt.Scanln(&otype)
+	switch otype {
+		case "0":
+			return
+		case "1":
+			uploadResourceFile(new_hash)
+			return
+		default:
+			return
+	}
 }
