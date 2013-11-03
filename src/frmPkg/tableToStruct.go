@@ -65,7 +65,7 @@ type ResourceFileTable struct {
 	ExtName string
 	Opath string
 	Fpath string
-	Fsite uint16
+	Fsite string
 	Fsize uint64
 } 
 type ResourceTextTable struct {

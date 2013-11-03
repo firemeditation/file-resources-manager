@@ -178,7 +178,7 @@ create table resourceFile (
 	extname char(50) NOT NULL DEFAULT '', -- 文件扩展名
 	opath char(2000) NOT NULL, -- 文件的原始相对路径
 	fpath char(2000) NOT NULL, -- 文件存放位置相对路径完整名字
-	fsite int NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方，由服务器配置文件制定序号
+	fsite char(2000) NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方
 	fsize bigint NOT NULL DEFAULT 0,  -- 文件字节数
 	CONSTRAINT rf_hashid PRIMARY KEY (hashid)
 ) INHERITS (resourceItem);
