@@ -1,0 +1,22 @@
+锁与多线程实现
+
+全局维护一个资源锁，锁的结构如下：
+
+type GlobalResourceLockStruct struct {
+	ProcessId string  // 进程编号，一个hashid
+	ResourceType string  //资源类型
+	User string  // 所属用户的登录hashid
+	UseType string // 使用类型，是下载、删除、上传还是什么之类的。
+	Lock uint8  // 加锁类型：1读，2写
+	Time uint64  // 锁更新时间
+}
+
+type GlobalResourceLock struct {
+	lock *sync.RWMutex
+	map[string]*GlobalResourceLock  // 这里的[string]为资源的hashid
+
+
+	多线程主要是为了进行资源内文件的批量上传下载而设置的。具体流程如下：
+	1. 客户端请求对一个资源进行操作，服务器端生成锁，并返回随机的进程号。客户端用同一个连接（标记为A）与服务器端周期性发送确认信息，服务器端将周期性更新锁里面的Time。
+	2. 客户端启用新连接（可以同时多个），发送用户hashid、资源hashid和进程编号确认有没有资格执行，然后执行。
+	3. 当客户端的A连接关闭或没有接到新的锁更新请求超过一定时间（比如10秒没有更新锁时间），那么服务器端自动删除这个锁。
