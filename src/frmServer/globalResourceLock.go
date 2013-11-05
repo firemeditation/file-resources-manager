@@ -33,14 +33,14 @@ func NewGlobalResourceLock() *GlobalResourceLock {
 	return &GlobalResourceLock{new(sync.RWMutex),make(map[string]*GlobalResourceLockStruct),timeout}
 }
 
-// Add 添加一个锁
+// Lock 添加一个锁
 // 1. 查看资源是否已经有锁
 // 2. 如果有锁则看是读锁还是写锁，如果是写锁，则看是否已经超时，如果不超时则退回，如果超时则修改添加
 // 3. 如果是读锁，而自己也是读锁，则把自己加到读锁序列
 // 4. 如果是读锁，而自己是写锁，则遍历读锁看是否全部超时，如果全部超时就删除读锁新建写锁
 // 5. 如果资源没有锁，则添加锁
 // 6. 最终返回进程hashid
-func (grl *GlobalResourceLock) Add (userid string, resourceid string, locktype uint8) (processid string, err error){
+func (grl *GlobalResourceLock) Lock (userid string, resourceid string, locktype uint8) (processid string, err error){
 	grl.lock.Lock()
 	defer grl.lock.Unlock()
 	processid = grl.getProcessid(userid, resourceid)
@@ -94,8 +94,22 @@ func (grl *GlobalResourceLock) Add (userid string, resourceid string, locktype u
 			}
 		}
 	}
-	// 2 end
 	return
+}
+
+// Unlock 解锁
+func (grl *GlobalResourceLock) Unlock (userid , resourceid , processid string) (err error) {
+	
+}
+
+// Uptime 更新时间
+func (grl *GlobalResourceLock) Uptime (userid , resourceid , processid string) (err error) {
+	
+}
+
+// GlobalResourceLockClearup 定时清理函数，用go异步执行
+func GlobalResourceLockClearup() {
+	
 }
 
 // getProcessid 获取进程id
