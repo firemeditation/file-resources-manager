@@ -19,7 +19,6 @@ type GlobalResourceLockStruct struct {
 	ReadProcess map[string]*GlobalResourceLockUser  //string为进程hashid
 	WriteProcess string //写锁的进程hashid
 	WriteUser *GlobalResourceLockUser
-	ResourceType string  //资源类型
 	LockType uint8  // 加锁类型：1读，2写
 }
 
@@ -41,7 +40,7 @@ func NewGlobalResourceLock() *GlobalResourceLock {
 // 4. 如果是读锁，而自己是写锁，则遍历读锁看是否全部超时，如果全部超时就删除读锁新建写锁
 // 5. 如果资源没有锁，则添加锁
 // 6. 最终返回进程hashid
-func (grl *GlobalResourceLock) Add (userid string, resourceid string, locktype uint8, resourcetype string) (processid string, err error){
+func (grl *GlobalResourceLock) Add (userid string, resourceid string, locktype uint8) (processid string, err error){
 	grl.lock.Lock()
 	defer grl.lock.Unlock()
 	processid = grl.getProcessid(userid, resourceid)
