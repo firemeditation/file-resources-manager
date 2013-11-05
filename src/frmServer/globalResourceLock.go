@@ -97,19 +97,74 @@ func (grl *GlobalResourceLock) Lock (userid string, resourceid string, locktype 
 	return
 }
 
+// TryLock 尝试加锁10次，每次停顿1秒钟，如果10次都不成功则返回错误
+func (grl *GlobalResourceLock) TryLock (userid string, resourceid string, locktype uint8) (processid string, err error){
+	err = fmt.Errorf("无法加锁：%s", resourceid)
+	for i := 0; i < 10; i++ {
+		processid, err = grl.Lock(userid, resourceid, locktype)
+		if err == nil {
+			break
+		}else{
+			time.Sleep(time.Second)
+		}
+	}
+	return
+}
+
 // Unlock 解锁
-func (grl *GlobalResourceLock) Unlock (userid , resourceid , processid string) (err error) {
-	
+func (grl *GlobalResourceLock) Unlock (resourceid , processid string) (err error) {
+	grl.lock.Lock()
+	defer grl.lock.Unlock()
+	one_grls , found := grl.grls[resourceid]
+	if found == true {
+		if one_grls.LockType == 1 {
+			delete(grl.grls, resourceid)
+		}else{
+			_, found := grl.grls[resourceid].ReadProcess[processid]
+			if found == true {
+				delete(grl.grls[resourceid].ReadProcess, processid)
+				if len(grl.grls[resourceid].ReadProcess) == 0 {
+					delete(grl.grls, resourceid)
+				}
+			}else{
+				err = fmt.Errorf("键找不到：%s", processid)
+			}
+		}
+	}else{
+		err = fmt.Errorf("键找不到：%s", resourceid)
+	}
+	return 
 }
 
 // Uptime 更新时间
-func (grl *GlobalResourceLock) Uptime (userid , resourceid , processid string) (err error) {
-	
+func (grl *GlobalResourceLock) Uptime (resourceid , processid string) (err error) {
+	one_grls , found := grl.grls[resourceid]
+	if found == true {
+		if one_grls.LockType == 1 {
+			if one_grls.WriteUser.Time + grl.timeout >= time.Now().Unix() {
+				grl.grls[resourceid].WriteUser.Time = time.Now().Unix()
+			}
+		}else{
+			one_grlu, found := grl.grls[resourceid].ReadProcess[processid]
+			if found == true {
+				if one_grlu.Time + grl.timeout >= time.Now().Unix() {
+					grl.grls[resourceid].ReadProcess[processid].Time = time.Now().Unix()
+				}
+			}else{
+				err = fmt.Errorf("键找不到：%s", processid)
+			}
+		}
+	}else{
+		err = fmt.Errorf("键找不到：%s", resourceid)
+	}
+	return 
 }
 
-// GlobalResourceLockClearup 定时清理函数，用go异步执行
+// GlobalResourceLockClearup 定时清理函数，用go异步执行，每30秒清理一次
 func GlobalResourceLockClearup() {
-	
+	for {
+		time.Sleep(30 * time.Second)
+	}
 }
 
 // getProcessid 获取进程id
