@@ -17,7 +17,7 @@ func uploadResourceFile(resourceGroup string) {
 	}
 	// end
 	
-	uploadtype := 1
+	//uploadtype := 1
 	addtopath := "./"
 	var originpath string
 	for {
@@ -27,10 +27,10 @@ func uploadResourceFile(resourceGroup string) {
 		fmt.Print("请输入本地上传文件所在路径：\n")
 		fmt.Scanln(&originpath)
 		if otype == "1" {
-			uploadtype = 1
+			//uploadtype = 1
 			break
 		}else if otype == "2"{
-			uploadtype = 2
+			//uploadtype = 2
 			fmt.Print("请输入要追加的位置（用“./”代表在源文件路径根部追加）：")
 			fmt.Scanln(&addtopath)
 			break
@@ -38,5 +38,5 @@ func uploadResourceFile(resourceGroup string) {
 	}
 	originpath = DirMustEnd(originpath)
 	addtopath = DirMustEnd(addtopath)
-	doUploadResourceFile(uploadtype,originpath,addtopath)
+	doUploadResourceFile(resourceGroup, originpath,addtopath)
 }
