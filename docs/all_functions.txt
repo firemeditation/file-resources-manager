@@ -19,6 +19,9 @@ frmPkg/ga.go
 	// GetSha1 生成SHA1值
 	func GetSha1(data string) string
 	
+	// SendSocketFile 发送一个文件
+	func SendSocketFile (conn net.Conn, fileSize uint64, fileName string) (err error)
+
 	// ReadSocketToFile 从soket读出文件，用带缓冲的方式写入文件里
     func ReadSocketToFile(conn net.Conn, len uint64, file *os.File) (err error)
 

@@ -87,6 +87,43 @@ func GetSha1(data string) string {
     return fmt.Sprintf("%x",t.Sum(nil));
 }
 
+// SendSocketFile 发送一个文件
+func SendSocketFile (conn net.Conn, fileSize uint64, fileName string) (err error) {
+	outfile, err := os.Open(fileName)
+	if err != nil {
+		err = fmt.Errorf("文件无法打开：%s",fileName)
+		return
+	}
+	defer outfile.Close()
+	
+	//发送文件自身
+	if fileSize <= bytelen {
+		filebyte := make([]byte, fileSize)
+		outfile.Read(filebyte)
+		conn.Write(filebyte)
+	} else {
+		read := bufio.NewReader(outfile)
+		for {
+			tempdata := []byte{}
+			if fileSize > bytelen {
+				tempdata = make([]byte, bytelen)
+				fileSize = fileSize - bytelen
+			} else {
+				tempdata = make([]byte, fileSize)
+				fileSize = 0
+			}
+
+			read.Read(tempdata)
+			conn.Write(tempdata)
+
+			if fileSize == 0 {
+				break
+			}
+		}
+	}
+	return
+}
+
 // ReadSocketToFile 从soket读出文件，用带缓冲的方式写入文件里
 func ReadSocketToFile(conn net.Conn, len uint64, file *os.File) (err error) {
 	write := bufio.NewWriter(file)

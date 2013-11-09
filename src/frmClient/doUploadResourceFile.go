@@ -112,7 +112,78 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 		uploadDone <- 1
 	}()
 	for oneFile := range fileInfo {
-		//TODO
-		fmt.Println(oneFile.FullDir) 
+		conn := connectServer()
+		err := sendTheFirstRequest (1, 4, conn)
+		if err != nil {
+			errA = append(errA, "发送状态错误")
+			break
+		}
+		err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
+		if err != nil {
+			errA = append(errA, "发送SID错误")
+			break
+		}
+		err = SendSocketBytes(conn, []byte(resourceid), 40)
+		if err != nil {
+			errA = append(errA, "发送资源ID错误")
+			break
+		}
+		err = SendSocketBytes(conn, []byte(processid), 40)
+		if err != nil {
+			errA = append(errA, "发送进程ID错误")
+			break
+		}
+		cklb, _ := ReadSocketBytes(conn, 1)
+		ckl := BytesToUint8(cklb)
+		if ckl == 2 {
+			errS := fmt.Sprintf("服务器不允许上传文件：%s", oneFile.FullDir)
+			errA = append(errA, errS)
+			break
+		}
+		
+		ofis_byte := StructGobBytes(oneFile.OriginFileInfoStruct)
+		// 发送文件信息的结构体长度
+		ofis_len := len(ofis_byte)
+		ofis_len_b := Uint64ToBytes(uint64(ofis_len))
+		err = SendSocketBytes(conn, ofis_len_b, 8)
+		if err != nil {
+			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
+			errA = append(errA, errS)
+			break
+		}
+		// 发送文件信息的结构体
+		err = SendSocketBytes(conn, ofis_byte, uint64(ofis_len))
+		if err != nil {
+			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
+			errA = append(errA, errS)
+			break
+		}
+		// 发送文件数据长度
+		file_len := oneFile.Size
+		file_len_byte := Uint64ToBytes(uint64(file_len))
+		err = SendSocketBytes(conn, file_len_byte, 8)
+		if err != nil {
+			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
+			errA = append(errA, errS)
+			break
+		}
+		err = SendSocketFile (conn, uint64(file_len), oneFile.FullDir)
+		if err != nil {
+			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
+			errA = append(errA, errS)
+			break
+		}
+		// 接收服务器确认
+		ckqrb, _ := ReadSocketBytes(conn, 1)
+		ckqr := BytesToUint8(ckqrb)
+		if ckqr != 1 {
+			geterr_len_b , _ := ReadSocketBytes(conn, 8)
+			geterr_len := BytesToUint64(geterr_len_b)
+			geterr_b, _ := ReadSocketBytes(conn, geterr_len)
+			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, string(geterr_b))
+			errA = append(errA, errS)
+			break
+		}
+		fmt.Println("上传完成：",oneFile.FullDir) 
 	}
 }

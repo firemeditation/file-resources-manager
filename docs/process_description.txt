@@ -58,7 +58,7 @@
 
 上传资源（实际上传）：
     0. C建立连接 -->
-    1. C{1byte[version](版本号) | 1byte[4](3为上传序列) | 40byte[sha1](身份验证标识) | 40byte[sha1](资源的Hashid) | 40byte[sha1](进程id)} -->
+    1. C{1byte[version](版本号) | 1byte[4](4为上传序列) | 40byte[sha1](身份验证标识) | 40byte[sha1](资源的Hashid) | 40byte[sha1](进程id)} -->
 	3. S{1byte[状态](1表示可上传，2没有权限上传也会是不存在并下一步关闭连接)} -->
 	5. C{8byte[len](文件信息长度) | nbyte[gob编码的OriginFileInfoStruct] | 8byte[len](数据长度) | nbyte[数据]} -->
 	7. S{1byte[1](1为成功，2为不成功) | 8byte[错误长度](如果成功则没有) | nbyte[错误体]} -->
