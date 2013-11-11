@@ -23,6 +23,7 @@ var storageArray []StorageInfo  //存储盘位置
 var storageChan = make(chan StorageInfo,5)
 var logInfo *log.Logger  //日志
 var errLog *log.Logger  //错误日志
+var globalLock *GlobalResourceLock  //全局资源锁
 
 func init() {
 	serverConfig = GetConfig("server")  //初始化配置文件
@@ -31,6 +32,7 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	dbConn = connDB()  //初始化数据库连接
 	prepareLog()  //准备日志文件
+	globalLock = NewGlobalResourceLock()  //启动全局资源锁
 }
 
 func main() {
@@ -73,6 +75,10 @@ func doAccept (conn *net.TCPConn) {
 			processLogin(conn)
 		case 2 :
 			processAddNewResource(conn)
+		case 3 :
+			processUploadResource(conn)
+		case 4 :
+			processUploadProcess(conn)
 	}
 }
 
