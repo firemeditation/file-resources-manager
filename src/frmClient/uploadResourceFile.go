@@ -38,5 +38,6 @@ func uploadResourceFile(resourceGroup string) {
 	}
 	originpath = DirMustEnd(originpath)
 	addtopath = DirMustEnd(addtopath)
-	doUploadResourceFile(resourceGroup, originpath,addtopath)
+	_, err := doUploadResourceFile(resourceGroup, originpath,addtopath)
+	fmt.Println(err)
 }

@@ -15,7 +15,7 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 		err = fmt.Errorf("找不到文件或目录：%s", ckdir)
 		return
 	}
-	
+	fmt.Println("请求加锁")
 	// 开始请求加锁
 	conn := connectServer()
 	err = sendTheFirstRequest (1, 3, conn)
@@ -23,18 +23,27 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 		err = fmt.Errorf("发送状态错误：%s", err)
 		return
 	}
+	fmt.Println("请求加锁2")
 	//发送自己的SID
 	err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
 	if err != nil {
 		err = fmt.Errorf("发送SID错误：%s", err)
 		return
 	}
+	//发送1
+	err = SendSocketBytes(conn, Uint8ToBytes(1), 1)
+	if err != nil {
+		err = fmt.Errorf("发送请求状态出错：%s", err)
+		return
+	}
+	fmt.Println("请求加锁3")
 	// 发送请求资源hashid
 	err = SendSocketBytes(conn, []byte(resourceid), 40)
 	if err != nil {
 		err = fmt.Errorf("发送资源hashid错误：%s", err)
 		return
 	}
+	fmt.Println("请求加锁4")
 	// 查看服务器是否允许加锁
 	cklb, _ := ReadSocketBytes(conn, 1)
 	ckl := BytesToUint8(cklb)
@@ -42,8 +51,11 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 		err = fmt.Errorf("不允许加锁：%s", resourceid)
 		return
 	}
+	fmt.Println("请求加锁5")
 	processid_b , _ := ReadSocketBytes(conn,40)
 	processid := string(processid_b)  //获取进程ID
+	
+	fmt.Println("加锁成功：",processid)
 	
 	// 遍历要找到的目录并存入一个channel
 	fileInfo := make(chan OriginFileInfoFullStruct, UploadGoMax)
@@ -60,6 +72,7 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 	
 	for i := 0; i < UploadGoMax; i++ {
 		//wg.Add(1)
+		fmt.Println("进程",i)
 		go sendFiles(uploadDone,resourceid, processid, fileInfo, errA)
 	}
 	
@@ -75,10 +88,17 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 			break
 		}
 		SendSocketBytes(conn, Uint8ToBytes(1), 1)  //发送心跳包
+		fmt.Println("发送心跳")
+		ckh_b, _ := ReadSocketBytes(conn, 1)
+		fmt.Println("接收回执")
+		if BytesToUint8(ckh_b) != 1 {
+			break
+		}
 		time.Sleep(1 * time.Second)
 	}
 	//wg.Wait()
-	SendSocketBytes(conn, Uint8ToBytes(1), 2)  //发送关闭
+	SendSocketBytes(conn, Uint8ToBytes(2), 1)  //发送关闭
+	ReadSocketBytes(conn, 1)
 	return
 }
 
@@ -111,6 +131,7 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 	defer func() {
 		uploadDone <- 1
 	}()
+	return
 	for oneFile := range fileInfo {
 		conn := connectServer()
 		err := sendTheFirstRequest (1, 4, conn)
