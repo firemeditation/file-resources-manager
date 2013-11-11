@@ -81,8 +81,9 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 		select {
 			case <-uploadDone :
 				doneNum++
+				fmt.Println("进程结束")
 			default:
-				break
+				time.Sleep(1 * time.Second)
 		}
 		if doneNum == UploadGoMax {
 			break
@@ -94,7 +95,6 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 		if BytesToUint8(ckh_b) != 1 {
 			break
 		}
-		time.Sleep(1 * time.Second)
 	}
 	//wg.Wait()
 	SendSocketBytes(conn, Uint8ToBytes(2), 1)  //发送关闭

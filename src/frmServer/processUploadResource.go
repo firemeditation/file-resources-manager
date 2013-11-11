@@ -75,6 +75,7 @@ func processUploadResource(conn *net.TCPConn) {
 		fmt.Println("读到心跳")
 		theH := BytesToUint8(theH_b)
 		if theH == 1 {
+			globalLock.Uptime(string(theBook_b), processid)
 			SendSocketBytes (conn , Uint8ToBytes(1), 1)
 			fmt.Println("发送回执")
 		}else{
