@@ -47,7 +47,7 @@ func processUploadResource(conn *net.TCPConn) {
 	}
 	fmt.Println("请求加锁4")
 	// end
-	processid, err := globalLock.TryLock(string(theSIDb), string(theBook_b), 2)  //尝试加写锁
+	processid, err := globalLock.TryLock(string(theSIDb), string(theBook_b), 1)  //尝试加写锁
 	if err != nil {
 		logInfo.Printf("上传错误：加锁失败：用户：%s，资源：%s", theUser.Name, string(theBook_b))
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)

@@ -19,7 +19,7 @@ type GlobalResourceLockStruct struct {
 	ReadProcess map[string]*GlobalResourceLockUser  //string为进程hashid
 	WriteProcess string //写锁的进程hashid
 	WriteUser *GlobalResourceLockUser
-	LockType uint8  // 加锁类型：1读，2写
+	LockType uint8  // 加锁类型：1写，2读
 }
 
 type GlobalResourceLock struct {
@@ -158,6 +158,43 @@ func (grl *GlobalResourceLock) Uptime (resourceid , processid string) (err error
 		err = fmt.Errorf("键找不到：%s", resourceid)
 	}
 	return 
+}
+
+// CheckLock 检查锁状态是否正确
+func (grl *GlobalResourceLock) CheckLock (uid, rid, pid string, ltype uint8) (err error){
+	grl.lock.RLock()
+	defer grl.lock.RUnlock()
+	
+	fmt.Println("检查：", uid, rid, pid)
+	
+	one_grls , found := grl.grls[rid]
+	if found == false {
+		err = fmt.Errorf("锁不存在：%s", rid)
+		return
+	}
+	if one_grls.LockType != ltype {
+		err = fmt.Errorf("锁类型不符：%s", rid)
+		return
+	}
+	if ltype == 1 {
+		fmt.Println("二检：", one_grls.WriteProcess, one_grls.WriteUser.UserId)
+		if one_grls.WriteProcess != pid || one_grls.WriteUser.UserId != uid {
+			err = fmt.Errorf("用户或进程号不符1：%s", rid)
+			return
+		}
+	} else {
+		one_user, found := one_grls.ReadProcess[pid]
+		if found == false {
+			err = fmt.Errorf("用户或进程号不符2：%s", rid)
+			return
+		}else{
+			if one_user.UserId != uid {
+				err = fmt.Errorf("用户或进程号不符3：%s", rid)
+				return
+			}
+		}
+	}
+	return
 }
 
 // GlobalResourceLockClearup 定时清理函数，用go异步执行，每30秒清理一次

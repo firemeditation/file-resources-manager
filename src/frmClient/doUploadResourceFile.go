@@ -131,7 +131,7 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 	defer func() {
 		uploadDone <- 1
 	}()
-	return
+	fmt.Println("发送", myLogin.SID, resourceid, processid)
 	for oneFile := range fileInfo {
 		conn := connectServer()
 		err := sendTheFirstRequest (1, 4, conn)
