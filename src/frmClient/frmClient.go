@@ -42,6 +42,8 @@ func mainLoop(){
 				os.Exit(0)
 			case "2":
 				newResource()
+			case "3":
+				mainUploadResource()
 			default :
 				continue
 		}

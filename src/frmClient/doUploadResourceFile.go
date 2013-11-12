@@ -83,7 +83,7 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 				doneNum++
 				fmt.Println("进程结束")
 			default:
-				time.Sleep(1 * time.Second)
+				time.Sleep(3 * time.Second)
 		}
 		if doneNum == UploadGoMax {
 			break
