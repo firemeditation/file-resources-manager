@@ -126,7 +126,7 @@ func prepareStorage() {
 		for n := 0; n <= StorageSequenceNum; n++ {
 			dirName := strconv.Itoa(n)
 			dirName = oneStorage.Path + dirName
-			os.Mkdir(dirName, 0600)
+			os.Mkdir(dirName, 0700)
 		}
 		//准备完毕
 		go StorageChanSequence()

@@ -46,7 +46,10 @@ func processUploadProcess(conn *net.TCPConn) {
 	fileHashName = GetSha1(fileHashName)
 	fileFullStoragePath := storage.Path + storage.SmallPath + fileHashName
 	
-	infile, _ := os.OpenFile(fileFullStoragePath, os.O_WRONLY|os.O_CREATE, os.FileMode(0600))
+	infile, err := os.OpenFile(fileFullStoragePath, os.O_WRONLY|os.O_CREATE, os.FileMode(0600))
+	if err != nil {
+		fmt.Println("文件建立错误", err)
+	}
 	err = ReadSocketToFile(conn, file_len, infile)
 	if err != nil {
 		logInfo.Printf("文件上传错误：%s", err)
