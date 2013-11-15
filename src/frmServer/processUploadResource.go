@@ -78,6 +78,8 @@ func processUploadResource(conn *net.TCPConn) {
 			globalLock.Uptime(string(theBook_b), processid)
 			SendSocketBytes (conn , Uint8ToBytes(1), 1)
 			fmt.Println("发送回执")
+			// 更新用户的最后操作时间
+			theUser.UpdateLastTime()
 		}else{
 			fmt.Println("客户端关闭")
 			break
