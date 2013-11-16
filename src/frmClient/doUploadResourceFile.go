@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-const UploadGoMax = 4  //同时上传的最大进程数
+const UploadGoMax = 5  //同时上传的最大进程数
 
 func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA []string, err error) {
 	ckdir, err := os.Stat(originpath)
