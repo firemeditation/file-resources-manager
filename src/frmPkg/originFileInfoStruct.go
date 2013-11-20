@@ -19,3 +19,9 @@ type OriginFileInfoFullStruct struct {
 	FullDir string  //完整客户端本地路径
 	OriginFileInfoStruct
 }
+
+// ServersFileInfoStruct 服务器的文件信息结构体
+type ServersFileInfoStruct struct {
+	FileHash string  //文件hash值
+	OriginFileInfoStruct
+}

@@ -50,8 +50,7 @@
 上传资源（建立锁）：
     0. C建立连接 -->
     1. C{1byte[version](版本号) | 1byte[3](3为上传) | 40byte[sha1])(身份验证标识) | 1byte[1](1为请求上传资源) | 40byte[HashID](图书的HashID)} -->
-    2. S{1byte[状态](1标识可以上传，2表示不能上传并下一步关闭连接) | 40byte[processid](如果可以上传则发送进程id
-)} -->
+    2. S{1byte[状态](1标识可以上传，2表示不能上传并下一步关闭连接) | 40byte[processid](如果可以上传则发送进程id)} -->
     3. C{1byte[状态](1表示心跳包/每秒一次，2表示已经传完可以关闭连接释放锁)} -->
     4. S{1byte[状态](1表示接收到心跳包，2表示锁释放执行)} -->
     5. S关闭连接
@@ -63,3 +62,20 @@
 	5. C{8byte[len](文件信息长度) | nbyte[gob编码的OriginFileInfoStruct] | 8byte[len](数据长度) | nbyte[数据]} -->
 	7. S{1byte[1](1为成功，2为不成功) | 8byte[错误长度](如果成功则没有) | nbyte[错误体]} -->
 	8. S关闭连接
+
+
+资源维护（建立锁）：
+	0. C建立连接 -->
+    1. C{1byte[version](版本号) | 1byte[5](5为获取图书内文件) | 40byte[sha1])(身份验证标识) | 1byte[1](1为不加锁，2为加写锁，3为加读锁) | 1byte[1](1为获取图书列表，2为只加锁) | 40byte[HashID](图书的HashID)} --> 
+    2. S{1byte[状态](1标识可以获取，2表示不能)}
+    3. {40byte[count](图书内文件的数量) | 40byte[len](文件信息结构体大小) | nbyte[[]ServersFileInfoStruct](结构体切片的gob编码) | 40byte[processid](如果是要下载则发送进程id)} -->
+    4. C{1byte[状态](1表示心跳包/每秒一次，2表示已经传完可以关闭连接释放锁)} -->
+    5. S{1byte[状态](1表示接收到心跳包，2表示锁释放执行)} -->
+    6. S关闭连接（如果只是获取文件列表不加锁则没有4、5，如果不获取文件列表则没有3）
+
+下载资源（实际下载）：
+	0. C建立连接 -->
+    1. C{1byte[version](版本号) | 1byte[4](4为上传序列) | 40byte[sha1](身份验证标识) | 40byte[sha1](资源的Hashid) | 40byte[sha1](进程id) | 40byte[sha1](文件的hashid)} -->
+    2. S{1byte[状态](1这就传，2不能下载关闭连接)}  -->
+    3. S{8byte[len](文件信息长度) | nbyte[gob编码的OriginFileInfoStruct]] | 8byte[len](数据长度) | nbyte[数据]} -->
+    4. S关闭连接
