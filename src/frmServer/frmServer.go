@@ -7,36 +7,13 @@ import (
 	"net"
 	"os"
 	. "frmPkg"
-	"github.com/msbranco/goconfig"
-	"runtime"
 	"log"
-	"database/sql"
-	"strconv"
+	"frmServer/s1"
+	. "frmServer/public"
 )
 
-const StorageSequenceNum = 999  //存储内序列目录的最大值
-
-var serverConfig  *goconfig.ConfigFile  //配置文件
-var userLoginStatus *UserIsLogin  //登录用户表
-var dbConn *sql.DB   //数据库连接
-var storageArray []StorageInfo  //存储盘位置
-var storageChan = make(chan StorageInfo,5)
-var logInfo *log.Logger  //日志
-var errLog *log.Logger  //错误日志
-var globalLock *GlobalResourceLock  //全局资源锁
-
-func init() {
-	serverConfig = GetConfig("server")  //初始化配置文件
-	prepareStorage()  //准备存储
-	userLoginStatus = NewUserIsLogin()  //初始化用户登录表
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	dbConn = connDB()  //初始化数据库连接
-	prepareLog()  //准备日志文件
-	globalLock = NewGlobalResourceLock()  //启动全局资源锁
-}
-
 func main() {
-	service, _ := serverConfig.GetString("server","port")
+	service, _ := ServerConfig.GetString("server","port")
 	service = ":" + service
 	IPAdrr, err := net.ResolveTCPAddr("tcp", service)
 	if err != nil {
@@ -72,13 +49,13 @@ func doAccept (conn *net.TCPConn) {
 	_, vtype := getFirstRequest(conn)
 	switch vtype {
 		case 1 :
-			processLogin(conn)
+			s1.ProcessLogin(conn)
 		case 2 :
-			processAddNewResource(conn)
+			s1.ProcessAddNewResource(conn)
 		case 3 :
-			processUploadResource(conn)
+			s1.ProcessUploadResource(conn)
 		case 4 :
-			processUploadProcess(conn)
+			s1.ProcessUploadProcess(conn)
 	}
 }
 
@@ -91,44 +68,3 @@ func getFirstRequest(conn *net.TCPConn) (ver, vtype uint8) {
 	return ver , vtype
 }
 
-// propareLog 准备日志文件
-func prepareLog() {
-	logFile, _ := serverConfig.GetString("server","log")
-	logw, _ := os.OpenFile(logFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0660)
-	logInfo = log.New(logw, "frm_server : ", log.Ldate | log.Ltime)
-	
-	errFile, _ := serverConfig.GetString("server","err")
-	errw, _ := os.OpenFile(errFile, os.O_WRONLY | os.O_APPEND | os.O_CREATE , 0660)
-	errLog = log.New(errw, "frm_server : ", log.Ldate | log.Ltime)
-}
-
-// prepareStorage 准备存储
-func prepareStorage() {
-	theS, _ := serverConfig.GetOptions("storage")
-	for _, oneS := range theS {
-		oneSt, _ := serverConfig.GetString("storage",oneS)
-		oneSt = DirMustEnd(oneSt)
-		oneInfo := StorageInfo{Name: oneS, Path: oneSt, CanUse: true}
-		storageArray = append(storageArray,oneInfo)
-	}
-	for _, oneStorage := range storageArray {
-		dirinfo , err := os.Stat(oneStorage.Path)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "存储位置无法打开：", oneStorage)
-			os.Exit(1)
-		}
-		if dirinfo.IsDir() == false {
-			fmt.Fprintln(os.Stderr, "存储位置需要为一个路径：", oneStorage)
-			os.Exit(1)
-		}
-		
-		//开始准备存储内序列目录
-		for n := 0; n <= StorageSequenceNum; n++ {
-			dirName := strconv.Itoa(n)
-			dirName = oneStorage.Path + dirName
-			os.Mkdir(dirName, 0700)
-		}
-		//准备完毕
-		go StorageChanSequence()
-	}
-}

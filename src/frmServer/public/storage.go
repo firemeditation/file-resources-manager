@@ -1,4 +1,4 @@
-package main
+package public
 
 import (
 	"math/rand"
@@ -18,13 +18,13 @@ type StorageInfo struct {
 
 func StorageChanSequence(){
 	for {
-		for _, ones := range storageArray {
+		for _, ones := range StorageArray {
 			if ones.CanUse == false {
 				continue
 			}else{
 				spr := rand.New(rand.NewSource(time.Now().UnixNano()))
 				ones.SmallPath = strconv.Itoa(spr.Intn(StorageSequenceNum)) + "/"
-				storageChan <- ones
+				StorageChan <- ones
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package main
+package s1
 
 import (
 	"net"
@@ -6,9 +6,10 @@ import (
 	"time"
 	"fmt"
 	"strings"
+	. "frmServer/public"
 )
 
-func processLogin(conn *net.TCPConn) {
+func ProcessLogin(conn *net.TCPConn) {
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	sha1 := GetSha1(fmt.Sprintln(time.Now()))
 	SendSocketBytes (conn , []byte(sha1), 40)  //发送SHA1
@@ -19,9 +20,9 @@ func processLogin(conn *net.TCPConn) {
 	name := string(name_b)
 	
 	// 禁止nobody登录
-	nobody, _ := serverConfig.GetString("user","nobody")
+	nobody, _ := ServerConfig.GetString("user","nobody")
 	if name == nobody {
-		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
+		LogInfo.Printf("登录错误：用户不存在：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
@@ -31,9 +32,9 @@ func processLogin(conn *net.TCPConn) {
 	
 	// 开始检查用户名和密码，并将需要返回的东西全部返回
 	var cku UsersTable
-	err := dbConn.QueryRow("select id, passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&cku.Id, &cku.Passwd, &cku.UnitsId, &cku.GroupsId, &cku.PowerLevel)
+	err := DbConn.QueryRow("select id, passwd,  units_id, groups_id, powerlevel from users where name = $1", name).Scan(&cku.Id, &cku.Passwd, &cku.UnitsId, &cku.GroupsId, &cku.PowerLevel)
 	if err != nil {
-		logInfo.Printf("登录错误：用户不存在：用户：%s", name)
+		LogInfo.Printf("登录错误：用户不存在：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
@@ -42,31 +43,31 @@ func processLogin(conn *net.TCPConn) {
 	ck_passwd = GetSha1(ck_passwd)
 	
 	if passwd != ck_passwd {
-		logInfo.Printf("登录错误：密码错误：用户：%s", name)
+		LogInfo.Printf("登录错误：密码错误：用户：%s", name)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
-	logInfo.Printf("登录成功：用户：%s", name)
+	LogInfo.Printf("登录成功：用户：%s", name)
 	// 用户名和密码检查完毕
 	
 	//开始合并权限
 	var ckuu UnitsTable  //获取所在Unit的名称和权限
-	dbConn.QueryRow("select name, powerlevel from units where id = $1", cku.UnitsId).Scan(&ckuu.Name, &ckuu.PowerLevel)
+	DbConn.QueryRow("select name, powerlevel from units where id = $1", cku.UnitsId).Scan(&ckuu.Name, &ckuu.PowerLevel)
 	
 	var ckug GroupsTable  //获取所在Group的权限
-	dbConn.QueryRow("select powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.PowerLevel)
+	DbConn.QueryRow("select powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.PowerLevel)
 	
 	var cku_p, ckuu_p, ckug_p UserPower
 	JsonToStruct(cku.PowerLevel, &cku_p)
 	JsonToStruct(ckuu.PowerLevel, &ckuu_p)
 	JsonToStruct(ckug.PowerLevel, &ckug_p)
-	allpower := mergePower(cku_p, ckuu_p, ckug_p)
+	allpower := MergePower(cku_p, ckuu_p, ckug_p)
 	
 	ckuu.Name = strings.Trim(ckuu.Name, " ")
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	thisU, _ := userLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, cku.UnitsId, ckuu.Name, time.Now())
+	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, cku.UnitsId, ckuu.Name, time.Now())
 	thisU.UPower = allpower
 	
 	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, cku.UnitsId, ckuu.Name, sha1)
@@ -82,7 +83,7 @@ func processLogin(conn *net.TCPConn) {
 	
 	//开始发送所有的资源类型
 	var resourceType []ResourceTypeTable
-	rts, _ := dbConn.Query("select * from resourcetype")
+	rts, _ := DbConn.Query("select * from resourcetype")
 	for rts.Next(){
 		var onert ResourceTypeTable
 		rts.Scan(&onert.Id, &onert.Name, &onert.PowerLevel, &onert.Expend, &onert.Info)

@@ -1,4 +1,4 @@
-package main
+package s1
 
 
 import (
@@ -8,13 +8,14 @@ import (
 	"time"
 	"os"
 	"strings"
+	. "frmServer/public"
 )
 
 
-func processUploadProcess(conn *net.TCPConn) {
+func ProcessUploadProcess(conn *net.TCPConn) {
 	allid_b, err := ReadSocketBytes(conn, 120) //接收三个ID
 	if err != nil {
-		logInfo.Printf("接收错误")
+		LogInfo.Printf("接收错误")
 		return
 	}
 	uid := string(allid_b[:40]) //用户ID
@@ -25,15 +26,15 @@ func processUploadProcess(conn *net.TCPConn) {
 	//fmt.Println(process_id)
 	
 	//检查是否可以上传
-	err = globalLock.CheckLock(uid, resource_id, process_id, 1)
+	err = GlobalLock.CheckLock(uid, resource_id, process_id, 1)
 	if err != nil {
-		logInfo.Printf("检查锁出错：%s", err)
+		LogInfo.Printf("检查锁出错：%s", err)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	
-	theUser, _ := ckLogedUser (uid)
+	theUser, _ := CkLogedUser (uid)
 	
 	file_info_len_b, _ := ReadSocketBytes(conn,8)
 	file_info_len := BytesToUint64(file_info_len_b)
@@ -44,7 +45,7 @@ func processUploadProcess(conn *net.TCPConn) {
 	file_len_b, _ := ReadSocketBytes(conn,8)
 	file_len := BytesToUint64(file_len_b)  //获得了文件的大小
 	
-	storage := <-storageChan
+	storage := <-StorageChan
 	fileHashName := uid + resource_id + process_id + file_info.RelativeDir + file_info.FileName + time.Now().String()
 	fileHashName = GetSha1(fileHashName)
 	fileFullStoragePath := storage.Path + storage.SmallPath + fileHashName
@@ -55,7 +56,7 @@ func processUploadProcess(conn *net.TCPConn) {
 	}
 	err = ReadSocketToFile(conn, file_len, infile)
 	if err != nil {
-		logInfo.Printf("文件上传错误：%s", err)
+		LogInfo.Printf("文件上传错误：%s", err)
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		the_e_b := []byte(fmt.Sprintf("文件上传错误：%s",err))
 		the_e_b_len := len(the_e_b)
@@ -68,11 +69,11 @@ func processUploadProcess(conn *net.TCPConn) {
 	// 根据原始位置，原始文件名，所属聚集来判断之前是否上传过这个文件
 	var old_hashid, old_path, old_site string
 	old_version := 0
-	err = dbConn.QueryRow("select hashid, version, fpath, fsite from resourceFile where opath = $1 and fname = $2 and rg_hashid = $3", file_info.RelativeDir, file_info.FileName, resource_id).Scan(&old_hashid, &old_version, &old_path, &old_site)
+	err = DbConn.QueryRow("select hashid, version, fpath, fsite from resourceFile where opath = $1 and fname = $2 and rg_hashid = $3", file_info.RelativeDir, file_info.FileName, resource_id).Scan(&old_hashid, &old_version, &old_path, &old_site)
 	if err == nil {
-		n_rgt, err := dbConn.Prepare("delete from resourceFile where hashid = $1")
+		n_rgt, err := DbConn.Prepare("delete from resourceFile where hashid = $1")
 		if err != nil {
-			logInfo.Printf("数据库错误：%s", err)
+			LogInfo.Printf("数据库错误：%s", err)
 		}
 		_, err = n_rgt.Exec(old_hashid)
 		old_site = strings.Trim(old_site, " ")
@@ -85,7 +86,7 @@ func processUploadProcess(conn *net.TCPConn) {
 	old_version++
 	fileInsertInfo := ResourceFileTable{ResourceItemTable:ResourceItemTable{HashId:fileHashName, Name:file_info.FileName, RiType:1, LastTime:time.Now().Unix(), Version: uint16(old_version), RgHashId: resource_id, UnitsId: theUser.UnitId, UsersId: theUser.Id}, Fname: file_info.FileName, Opath: file_info.RelativeDir, Fpath: fileSmallStoragePath, Fsite: storage.Path, Fsize: file_info.Size}
 	
-	insert_file , err := dbConn.Prepare("insert into resourceFile (hashid, name, ritype, lasttime, version, rg_hashid, units_id, users_id, fname, opath, fpath, fsite, fsize) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)")
+	insert_file , err := DbConn.Prepare("insert into resourceFile (hashid, name, ritype, lasttime, version, rg_hashid, units_id, users_id, fname, opath, fpath, fsite, fsize) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)")
 	if err != nil {
 		fmt.Println("数据库错误1")
 	}
@@ -94,18 +95,18 @@ func processUploadProcess(conn *net.TCPConn) {
 		fmt.Println("数据库错误2")
 	}
 	
-	n_rgstatus, err := dbConn.Prepare("insert into resourceFileStatus (hashid) values ($1)")
+	n_rgstatus, err := DbConn.Prepare("insert into resourceFileStatus (hashid) values ($1)")
 	if err != nil {
-		errLog.Println("数据库错误：", err)
+		ErrLog.Println("数据库错误：", err)
 		fmt.Println("数据库错误3")
 	}
 	_, err = n_rgstatus.Exec(fileInsertInfo.HashId)
 	if err != nil {
-		errLog.Println("数据库错误：", err)
+		ErrLog.Println("数据库错误：", err)
 		fmt.Println("数据库错误4")
 	}
 	
-	logInfo.Printf("文件上传成功：%s%s", file_info.RelativeDir, file_info.FileName)
+	LogInfo.Printf("文件上传成功：%s%s", file_info.RelativeDir, file_info.FileName)
 	fmt.Printf("文件上传成功：%s%s，位置：%s", file_info.RelativeDir, file_info.FileName, fileFullStoragePath )
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	return

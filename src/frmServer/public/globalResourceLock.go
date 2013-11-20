@@ -1,6 +1,6 @@
 // 全局资源锁，兼顾多线程功能
 
-package main
+package public
 
 import (
 	"sync"
@@ -29,7 +29,7 @@ type GlobalResourceLock struct {
 }
 
 func NewGlobalResourceLock() *GlobalResourceLock {
-	timeout , _ := serverConfig.GetInt64("lock","timeout")
+	timeout , _ := ServerConfig.GetInt64("lock","timeout")
 	return &GlobalResourceLock{new(sync.RWMutex),make(map[string]*GlobalResourceLockStruct),timeout}
 }
 

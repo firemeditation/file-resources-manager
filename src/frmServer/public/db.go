@@ -1,4 +1,4 @@
-package main
+package public
 
 import(
 	_ "github.com/lib/pq"
@@ -8,11 +8,11 @@ import(
 )
 	
 func connDB () *sql.DB {
-	db_server, _ := serverConfig.GetString("db","server")
-	db_port, _ := serverConfig.GetString("db","port")
-	db_user, _ := serverConfig.GetString("db","user")
-	db_passwd, _ := serverConfig.GetString("db","passwd")
-	db_dbname, _ := serverConfig.GetString("db","dbname")
+	db_server, _ := ServerConfig.GetString("db","server")
+	db_port, _ := ServerConfig.GetString("db","port")
+	db_user, _ := ServerConfig.GetString("db","user")
+	db_passwd, _ := ServerConfig.GetString("db","passwd")
+	db_dbname, _ := ServerConfig.GetString("db","dbname")
 	connection_string := fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable", db_dbname, db_user, db_passwd, db_server, db_port)
 	db, err := sql.Open("postgres", connection_string)
 	if err != nil {
