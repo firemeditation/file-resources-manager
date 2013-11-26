@@ -12,7 +12,17 @@ import (
 	. "frmServer/public"
 )
 
-func main() {
+func main(){
+	StartSystem()
+	go startServer()
+	go startWeb()
+}
+
+func startWeb(){
+	return
+}
+
+func startServer() {
 	service, _ := ServerConfig.GetString("server","port")
 	service = ":" + service
 	IPAdrr, err := net.ResolveTCPAddr("tcp", service)
@@ -25,13 +35,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "出错了，错误是：", err)
 		os.Exit(1)
 	}
-	/*
-	for i := 0; i < 10; i++ {
-		aa := <- storageChan
-		path := aa.Path + aa.SmallPath
-		fmt.Println(path)
-	}
-	*/
 	for {
 		Connecter, err := listens.AcceptTCP()
 
