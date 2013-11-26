@@ -53,7 +53,7 @@ func doAccept (conn *net.TCPConn) {
 		case 2 :
 			s1.ProcessAddNewResource(conn)
 		case 3 :
-			s1.ProcessUploadResource(conn)
+			s1.GeneralLock(conn)
 		case 4 :
 			s1.ProcessUploadProcess(conn)
 	}

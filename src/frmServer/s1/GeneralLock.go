@@ -9,10 +9,11 @@ import (
 )
 
 
-func ProcessUploadResource(conn *net.TCPConn) {
+func GeneralLock(conn *net.TCPConn) {
 	theSIDb, _ := ReadSocketBytes(conn, 40) //用户ID
 	fmt.Println("请求加锁-1")
-	ReadSocketBytes(conn,1)  //用户请求（在这里忽略）
+	locktype_b, _ := ReadSocketBytes(conn,1)  //用户请求
+	locktype := BytesToUint8(locktype_b)  //读锁还是写锁
 	fmt.Println("请求加锁-2")
 	theBook_b , _ := ReadSocketBytes(conn,40)  //图书ID
 	fmt.Println("请求加锁")
@@ -48,7 +49,7 @@ func ProcessUploadResource(conn *net.TCPConn) {
 	}
 	fmt.Println("请求加锁4")
 	// end
-	processid, err := GlobalLock.TryLock(string(theSIDb), string(theBook_b), 1)  //尝试加写锁
+	processid, err := GlobalLock.TryLock(string(theSIDb), string(theBook_b), locktype)  //尝试加写锁
 	if err != nil {
 		LogInfo.Printf("上传错误：加锁失败：用户：%s，资源：%s", theUser.Name, string(theBook_b))
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
