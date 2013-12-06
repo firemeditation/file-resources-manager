@@ -42,6 +42,14 @@ var checkClientStatus = function(){
 // 每30秒执行一次checkClientStatus函数
 window.setInterval(checkClientStatus,30000);
 
+
+// 维持登录状态心跳
+var updateLive = function(){
+	$.get("updateLive")
+}
+// 每10分钟执行一次updateLive函数
+window.setInterval(updateLive,600000);
+
 $(document).ready(function(){
 	
 	//检查端口cookie
