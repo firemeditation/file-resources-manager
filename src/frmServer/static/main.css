@@ -1,0 +1,242 @@
+body{
+	overflow-y:scroll;
+}
+a:link{
+	color: #444444;
+	text-decoration: underline;
+}
+a:visited{
+	color: #444444;
+	text-decoration: underline;
+}
+a:hover{
+	color: #000000;
+	text-decoration: underline;
+}
+#head-top {
+	position:fixed;
+	width:100%;
+	background-color:#fff;
+	height:55px;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.9;
+	opacity:0.9;
+	z-index:9998;
+	border-bottom: dashed 1px #888888;
+	top:0px;
+}
+#top-status-area{
+	position: absolute;
+	border-bottom: solid 1px #888888;
+	border-left: solid 1px #888888;
+	border-right:0px;
+	border-top:0px;
+	margin:5px 5px 0px 0px;
+	padding:0px 10px 5px 10px;
+	top:0px;
+	right:0px;
+	line-height:19px;
+	text-align:right;
+}
+#top-kongzhi {
+	position: absolute;
+	top:0px;
+	left:0px;
+	height:50px;
+	padding-left:5px;
+}
+#top-kongzhi .kongzhi-1{
+	float:left;
+	border-bottom: solid 1px #888888;
+	border-right: solid 1px #888888;
+	border-left:0px;
+	border-top:0px;
+	height:34px;
+	width:34px;
+	line-height:17px;
+	text-align:center;
+	font-size:14px;
+	font-weight:bold;
+	margin:5px 10px 0px 0px;
+	padding:5px;
+	cursor:pointer;
+}
+#top-kongzhi .sousuo{
+	float:left;
+	margin:5px 10px 0px 20px;
+	padding:5px;
+	height:34px;
+	border-bottom: solid 1px #888888;
+	border-right: solid 1px #888888;
+}
+#top-kongzhi .soutext{
+	border-left:0px;
+	border-top:0px;
+	border-right:0px;
+	border-bottom:0px;
+	padding:5px;
+	height:20px;
+	width:400px;
+	font-size:20px;
+}
+#top-kongzhi .soubutton {
+	border:0px;
+	background-color:#fff;
+	font-size:20px;
+	padding:6px;
+	cursor:pointer;
+	font-weight:bold;
+}
+#top-kongzhi .show_hide_userinfo {
+	float:left;
+	margin:5px 10px 0px 0px;
+	padding:5px;
+	height:34px;
+	border-bottom: solid 1px #888888;
+	border-right: solid 1px #888888;
+	line-height:17px;
+	display:none;
+}
+#top-status-area .local_client_port {
+	color:red;
+}
+#top-status-area .client_status {
+	color:red;
+	cursor:pointer;
+}
+#bottom-foot{
+	position:fixed;
+	background-color:#fff;
+	height:25px;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.9;
+	opacity:0.9;
+	z-index:9998;
+	padding-left:10px;
+	padding-right:10px;
+	line-height:25px;
+	border-top: dashed 1px #888888;
+	border-left: dashed 1px #888888;
+	bottom:0px;
+	right:0px;
+}
+#main-box{
+	width:1000px;
+	left:50%;
+	margin-left:-500px;
+	position: absolute;
+	padding-bottom:30px;
+	padding-top:65px;
+}
+.text-box-title {
+	font-size: 30px;
+	padding:10px;
+	font-family:"Î¢ÈíÑÅºÚ","ºÚÌå","SimHei";
+	color:#333333;
+	letter-spacing:2px;
+}
+.big-text-box-title{
+	font-size: 40px;
+	padding:20px;
+	font-family:"WenQuanYi Micro Hei Mono","ÎÄÈªæäµÈ¿íÎ¢Ã×ºÚ","Î¢ÈíÑÅºÚ","ºÚÌå","SimHei";
+	color:#333333;
+	letter-spacing:2px;
+	text-align:center;
+	font-weight:bold;
+}
+.text-box-content {
+	font-size:14px;
+	line-height:200%;
+	text-indent:2em;
+	letter-spacing:1px;
+}
+#help-box{
+	padding: 0 70px 0 70px
+}
+#help-box .text-box-content p{
+	margin-bottom:15px;
+	margin-top:15px;
+}
+#resource-list{
+	display: none;
+}
+#resource-list .resource-small-status{
+	text-align: right;
+	padding:10px;
+	margin-bottom:20px;
+}
+#resource-list #resource-main-list .one-resource-main{
+	border-bottom: solid 1px #888888;
+	padding:5px;
+	margin-bottom:20px;
+}
+#resource-list #resource-main-list .one-resource-total-info{
+	height:30px;
+}
+#resource-list #resource-main-list .the-resource-name{
+	font-size:20px;
+	font-weight:bold;
+	color:#333333;
+	float:left;
+	line-height:30px;
+	cursor:pointer;
+}
+#resource-list #resource-main-list .the-resource-edits{
+	float:right;
+}
+#resource-list #resource-main-list .resource-edits-1{
+	border-right: solid 1px #888888;
+	border-top: solid 1px #888888;
+	float:right;
+	color:#333333;
+	font-size:15px;
+	height:28px;
+	margin-left:10px;
+	line-height:28px;
+	width:28px;
+	text-align:center;
+	cursor:pointer;
+}
+#resource-list #resource-main-list .resource-all-info{
+	padding:5px;
+	border-top: dashed 1px #888888;
+	display:none;
+	width:100%;
+	font-size:14px;
+	line-height:200%;
+}
+#resource-list #resource-main-list .resource-all-file{
+	padding:5px;
+	border-top: dashed 1px #888888;
+	display:none;
+	width:100%;
+	height: 400px;
+	overflow-y:auto;
+}
+#resource-list .file-list li {
+	padding:5px;
+	line-height: 200%;
+}
+#resource-list .file-list .file-list-type {
+	margin:5px;
+	border: solid 1px green;
+	color:green;
+	padding:2px 5px 2px 5px;
+}
+#resource-list .file-list .file-list-name {
+	padding:5px 10px 5px 5px;
+	cursor:pointer;
+}
+#resource-list .file-list .file-list-opt {
+	border-right: solid 1px #888888;
+	border-top: solid 1px #888888;
+	color:#333333;
+	margin-right:5px;
+	text-align:center;
+	cursor:pointer;
+	padding:2px 4px 2px 4px;
+}
+#resource-list .resource-all-file .now-dir{
+	padding: 10px 0px 10px 0px;
+	cursor:pointer;
+}

@@ -10,16 +10,23 @@ import (
 	"log"
 	"frmServer/s1"
 	. "frmServer/public"
+	"frmServer/web"
+	"sync"
 )
 
 func main(){
 	StartSystem()
+	
+	var wg sync.WaitGroup 
+	
+	wg.Add(1)
 	go startServer()
 	go startWeb()
+	wg.Wait()
 }
 
 func startWeb(){
-	return
+	web.StartWeb()
 }
 
 func startServer() {

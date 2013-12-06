@@ -8,6 +8,7 @@ export GOPATH="$OLDGOPATH":"$CURDIR"
 
 go install frmServer
 cp -r src/frmServer/*.cfg bin/
+cp -r src/frmServer/static bin/
 
 go install frmClient
 cp -r src/frmClient/*.cfg bin/

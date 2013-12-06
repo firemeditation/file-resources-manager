@@ -1,0 +1,88 @@
+/*
+ * 忆黛蒙逝·易行时(YiDaiMengShi - Facilitation Along)
+ * ============================================================================
+ * 版权所有 (C) 2007-2010 忆黛蒙逝·建造源(YiDaiMengShi System)，并保留所有权利。
+ * 网站地址: http://www.ydmsh.net
+ * ============================================================================
+ * Version: 0.2.0.1/20100220(330)
+*/
+
+/* 来自http://www.phpv.net/html/1672.html这篇文章的讲解之后拼凑出来的 */
+
+html {
+	color: #000;
+	background: #FFF;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, button, textarea, p, blockquote, th, td {
+	margin: 0;
+	padding: 0;
+}
+body,td,th {
+	font-family: "宋体", "SimSun", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+fieldset, img {
+	border: 0;
+}
+abbr, acronym {
+	border: 0;
+	font-variant: normal;
+}
+/*
+:focus {
+	outline: 0;
+}
+*/
+address, caption, cite, code, dfn, em, strong, th, var, optgroup {
+	font-style: inherit;
+	font-weight: inherit;
+}
+strong{
+	font-weight:bold;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+abbr, acronym {
+	border: 0;
+	font-variant: normal;
+}
+input, button, textarea, select, optgroup, option {
+	font-family: inherit;
+	font-size: inherit;
+	font-style: inherit;
+	font-weight: inherit;
+}
+/*@purpose To enable resizing for IE */
+/*@branch For IE6-Win, IE7-Win */
+input, button, textarea, select {
+	font-size: 100%;
+}
+ol, ul {
+	list-style: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+caption, th {
+	text-align: left;
+}
+sup, sub {
+	font-size: 100%;
+	vertical-align: baseline;
+}
+ns {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+	content: '';
+	content: none;
+}

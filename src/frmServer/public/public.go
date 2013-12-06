@@ -9,6 +9,7 @@ import (
 	"log"
 	"database/sql"
 	"strconv"
+	"path/filepath"
 )
 
 const StorageSequenceNum = 999  //存储内序列目录的最大值
@@ -22,7 +23,10 @@ var LogInfo *log.Logger  //日志
 var ErrLog *log.Logger  //错误日志
 var GlobalLock *GlobalResourceLock  //全局资源锁
 
+var GlobalRelativePath string //全局相对路径
+
 func StartSystem() {
+	GlobalRelativePath = DirMustEnd(filepath.Dir(os.Args[0]))
 	ServerConfig = GetConfig("server")  //初始化配置文件
 	prepareStorage()  //准备存储
 	UserLoginStatus = NewUserIsLogin()  //初始化用户登录表
