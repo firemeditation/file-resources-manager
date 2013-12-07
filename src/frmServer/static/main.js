@@ -50,7 +50,22 @@ var updateLive = function(){
 // 每10分钟执行一次updateLive函数
 window.setInterval(updateLive,600000);
 
+
+//载入后直接获取用户信息
+var onloadGetUserinfo = function(){
+	$.get("webInterface?type=get-basic-user-info",function(data){
+		//alert(data);
+		var json = $.parseJSON(data);
+		if(json.err){
+			$("#top-kongzhi .show_hide_userinfo .user-info-self").text("错误：" + json.err)
+		}else{
+			$("#top-kongzhi .show_hide_userinfo .user-info-self").html("用户名：" + json.Name + "&nbsp;&nbsp;所属机构：" + json.UnitName + "&nbsp;&nbsp;所属组：" + json.GroupName)
+		}
+	});
+};
+
 $(document).ready(function(){
+	onloadGetUserinfo();
 	
 	//检查端口cookie
 	var local_client_port_cookie = $.cookie('local_client_port');

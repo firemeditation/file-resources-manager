@@ -35,6 +35,10 @@ func (p *MyMux) ServeHTTP (w http.ResponseWriter, r *http.Request){
 		updateLive(w,r)
 		return
 	}
+	if r.URL.Path == "/webInterface" {
+		webInterface(w,r)
+		return
+	}
 	http.NotFound(w,r)
 	return
 }

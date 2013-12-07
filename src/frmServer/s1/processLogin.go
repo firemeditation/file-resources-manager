@@ -55,7 +55,7 @@ func ProcessLogin(conn *net.TCPConn) {
 	DbConn.QueryRow("select name, powerlevel from units where id = $1", cku.UnitsId).Scan(&ckuu.Name, &ckuu.PowerLevel)
 	
 	var ckug GroupsTable  //获取所在Group的权限
-	DbConn.QueryRow("select powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.PowerLevel)
+	DbConn.QueryRow("select name, powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.Name , &ckug.PowerLevel)
 	
 	var cku_p, ckuu_p, ckug_p UserPower
 	JsonToStruct(cku.PowerLevel, &cku_p)
@@ -64,13 +64,14 @@ func ProcessLogin(conn *net.TCPConn) {
 	allpower := MergePower(cku_p, ckuu_p, ckug_p)
 	
 	ckuu.Name = strings.Trim(ckuu.Name, " ")
+	ckug.Name = strings.Trim(ckug.Name, " ")
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, cku.UnitsId, ckuu.Name, time.Now())
+	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
 	thisU.UPower = allpower
 	
-	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, cku.UnitsId, ckuu.Name, sha1)
+	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, sha1)
 	nameSelfLogin.UPower = allpower
 	
 	gob_b := StructGobBytes(nameSelfLogin)  //将结构体转为gob，进而转成bytes

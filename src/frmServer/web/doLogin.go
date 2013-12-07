@@ -53,7 +53,7 @@ func processLogin(w http.ResponseWriter, r *http.Request){
 	DbConn.QueryRow("select name, powerlevel from units where id = $1", cku.UnitsId).Scan(&ckuu.Name, &ckuu.PowerLevel)
 	
 	var ckug GroupsTable  //获取所在Group的权限
-	DbConn.QueryRow("select powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.PowerLevel)
+	DbConn.QueryRow("select name, powerlevel from groups where id = $1", cku.GroupsId).Scan(&ckug.Name , &ckug.PowerLevel)
 	
 	var cku_p, ckuu_p, ckug_p UserPower
 	JsonToStruct(cku.PowerLevel, &cku_p)
@@ -63,9 +63,11 @@ func processLogin(w http.ResponseWriter, r *http.Request){
 	
 	ckuu.Name = strings.Trim(ckuu.Name, " ")
 	
+	ckug.Name = strings.Trim(ckug.Name, " ")
+	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 := GetSha1(check + username)
-	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, username, cku.GroupsId, cku.UnitsId, ckuu.Name, time.Now())
+	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, username, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
 	thisU.UPower = allpower
 	
 	//开始设置Cookie
