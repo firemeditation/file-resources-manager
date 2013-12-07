@@ -127,6 +127,19 @@ func (uil *UserIsLogin) Del (ckcode string) {
 	delete(uil.islogin, ckcode)
 }
 
+// Clean 清理已经过期的条目，实际清理的过期时间是设置的两倍
+func (uil *UserIsLogin) Clean (timeout int64){
+	uil.lock.Lock()
+	defer uil.lock.Unlock()
+	timeout = timeout * 2
+	for key, value := range uil.islogin {
+		ck := value.NotTimeOut(timeout)
+		if ck == false {
+			delete(uil.islogin, key)
+		}
+	}
+}
+
 
 type SelfLoginInfo struct {
 	IsLoginInfoBasic

@@ -197,10 +197,25 @@ func (grl *GlobalResourceLock) CheckLock (uid, rid, pid string, ltype uint8) (er
 	return
 }
 
-// GlobalResourceLockClearup 定时清理函数，用go异步执行，每30秒清理一次
-func GlobalResourceLockClearup() {
-	for {
-		time.Sleep(30 * time.Second)
+// Clean 清理已经过期的条目，实际清理的过期时间是设置的两倍
+func (grl *GlobalResourceLock) Clean (){
+	grl.lock.Lock()
+	defer grl.lock.Unlock()
+	timeout := grl.timeout * 2
+	for key, value := range grl.grls {
+		if value.LockType == 1 {
+			//对写锁的处理
+			if value.WriteUser.Time + timeout >= time.Now().Unix() {
+				delete(grl.grls, key)
+			}
+		}else{
+			//对读锁的处理
+			for hashid, reader := range value.ReadProcess {
+				if reader.Time + timeout >= time.Now().Unix() {
+					delete(value.ReadProcess, hashid)
+				}
+			}
+		}
 	}
 }
 

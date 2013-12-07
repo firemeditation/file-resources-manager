@@ -10,6 +10,7 @@ import (
 	"database/sql"
 	"strconv"
 	"path/filepath"
+	"time"
 )
 
 const StorageSequenceNum = 999  //存储内序列目录的最大值
@@ -34,6 +35,17 @@ func StartSystem() {
 	DbConn = connDB()  //初始化数据库连接
 	prepareLog()  //准备日志文件
 	GlobalLock = NewGlobalResourceLock()  //启动全局资源锁
+	go regularClean()
+}
+
+// regularClean 定时清理
+func regularClean() {
+	for {
+		time.Sleep(1 * time.Hour)
+		GlobalLock.Clean()
+		timeout_time, _ := ServerConfig.GetInt64("user","timeout")
+		UserLoginStatus.Clean(timeout_time)
+	}
 }
 
 
