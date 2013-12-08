@@ -29,7 +29,7 @@ var doSearch = function(){
 
 // checkClientStatus 检查客户端状态
 var checkClientStatus = function(){
-	$.getJSON("http://127.0.0.1/frm/index.php?checkClient=yes&callback=?",function(r){
+	$.getJSON("http://127.0.0.1:"+local_client_port+"/checkLink?callback=?",function(r){
 		if(r['client'] == 'yes'){
 			$("#top-status-area .client_status").text("连接正常");
 		}else{
