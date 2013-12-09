@@ -1,5 +1,7 @@
 var local_client_port = 9876;
 
+var login_user;  //登录的用户信息
+
 // 隐藏一切需要隐藏的
 var hideAll = function(){
 	$("#main-box #help-box").hide();
@@ -56,6 +58,8 @@ var onloadGetUserinfo = function(){
 	$.get("webInterface?type=get-basic-user-info",function(data){
 		//alert(data);
 		var json = $.parseJSON(data);
+		login_user = json;
+		//alert(login_user.UPower.resource.origin);
 		if(json.err){
 			$("#top-kongzhi .show_hide_userinfo .user-info-self").text("错误：" + json.err)
 		}else{
