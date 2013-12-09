@@ -67,7 +67,7 @@ func processLogin(w http.ResponseWriter, r *http.Request){
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 := GetSha1(check + username)
-	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, username, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
+	thisU, _ := UserLoginStatus.Add(sha1, sha1, cku.Id, username, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
 	thisU.UPower = allpower
 	
 	//开始设置Cookie

@@ -68,10 +68,10 @@ func ProcessLogin(conn *net.TCPConn) {
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
-	thisU, _ := UserLoginStatus.Add(sha1, cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
+	thisU, _ := UserLoginStatus.Add(sha1, sha1, cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, time.Now())
 	thisU.UPower = allpower
 	
-	nameSelfLogin := NewSelfLoginInfo(cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, sha1)
+	nameSelfLogin := NewSelfLoginInfo(sha1, cku.Id, name, cku.GroupsId, ckug.Name, cku.UnitsId, ckuu.Name, sha1)
 	nameSelfLogin.UPower = allpower
 	
 	gob_b := StructGobBytes(nameSelfLogin)  //将结构体转为gob，进而转成bytes
