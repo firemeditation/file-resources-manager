@@ -150,21 +150,6 @@ ALTER TABLE resourceItem ADD FOREIGN KEY (users_id) REFERENCES users (id) ON UPD
 ALTER TABLE resourceItem ADD FOREIGN KEY (units_id) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
 ALTER TABLE resourceItem ADD FOREIGN KEY (derivative) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 ALTER TABLE resourceItem ADD UNIQUE (hashid);
-
-drop table IF EXISTS resourceItemStatus  CASCADE;
-create table resourceItemStatus (
-	hashid char(40) not null,
- 	status1 int not null default 0,
- 	status2 int not null default 0,
- 	status3 int not null default 0,
- 	status4 int not null default 0,
- 	status5 int not null default 0,
- 	status6 int not null default 0,
- 	status7 int not null default 0,
- 	status8 int not null default 0,
- 	status9 int not null default 0,
- 	CONSTRAINT rfs_hashid PRIMARY KEY (hashid)
- );
   
 -- Table: 资源文件 从资源条目继承
 drop table if exists resourceFile cascade;
@@ -176,7 +161,7 @@ create table resourceFile (
 	fsite char(2000) NOT NULL,  -- 文件位置，主要是在需要多块硬盘的地方
 	fsize bigint NOT NULL DEFAULT 0,  -- 文件字节数
 	CONSTRAINT rf_hashid PRIMARY KEY (hashid)
-) INHERITS (resourceItem, resourceItemStatus);
+) INHERITS (resourceItem);
 CREATE INDEX rfsite ON resourceFile USING btree (fsite);
 CREATE INDEX rfextname ON resourceFile USING btree (extname);
 CREATE INDEX rthashid ON resourceFile USING btree (hashid);
@@ -185,55 +170,53 @@ CREATE INDEX rfunitid ON resourceFile USING btree (units_id);
 CREATE INDEX rf_rg_id ON resourceFile USING btree (rg_hashid);
 
   -- 文件的资源条目状态
--- drop table IF EXISTS resourceFileStatus  CASCADE;
--- create table resourceFileStatus
--- (
--- 	hashid char(40) not null,
--- 	status1 int not null default 0,
--- 	status2 int not null default 0,
--- 	status3 int not null default 0,
--- 	status4 int not null default 0,
--- 	status5 int not null default 0,
--- 	status6 int not null default 0,
--- 	status7 int not null default 0,
--- 	status8 int not null default 0,
--- 	status9 int not null default 0,
--- 	CONSTRAINT rfs_hashid PRIMARY KEY (hashid)
--- );
--- ALTER TABLE resourceFileStatus ADD FOREIGN KEY (hashid) REFERENCES resourceFile (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+drop table IF EXISTS resourceFileStatus  CASCADE;
+create table resourceFileStatus
+(
+	hashid char(40) not null,
+	status1 int not null default 0,
+	status2 int not null default 0,
+	status3 int not null default 0,
+	status4 int not null default 0,
+	status5 int not null default 0,
+	status6 int not null default 0,
+	status7 int not null default 0,
+	status8 int not null default 0,
+	status9 int not null default 0,
+	CONSTRAINT rfs_hashid PRIMARY KEY (hashid)
+);
+ALTER TABLE resourceFileStatus ADD FOREIGN KEY (hashid) REFERENCES resourceFile (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
   
 
 
 -- Table: 资源文本 从资源条目继承
 drop table IF EXISTS resourceText cascade;
 create table resourceText (
-	c_type char(20),  -- 资源条目的类型，比如“menu”之类的
 	conent text,
 	CONSTRAINT rtf_hashid PRIMARY KEY (hashid)
-) INHERITS (resourceItem, resourceItemStatus);
+) INHERITS (resourceItem);
 CREATE INDEX rtfhashid ON resourceText USING btree (hashid);
-CREATE INDEX rtctype ON resourceText USING btree (c_type);
 CREATE INDEX rtfname ON resourceText USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 CREATE INDEX rtfunitid ON resourceText USING btree (units_id);
 CREATE INDEX rft_rg_id ON resourceText USING btree (rg_hashid);
 
   -- 文本的资源条目状态
--- drop table IF EXISTS resourceTextStatus  CASCADE;
--- create table resourceTextStatus
--- (
--- 	hashid char(40) not null,
--- 	status1 int not null default 0,
--- 	status2 int not null default 0,
--- 	status3 int not null default 0,
--- 	status4 int not null default 0,
--- 	status5 int not null default 0,
--- 	status6 int not null default 0,
--- 	status7 int not null default 0,
--- 	status8 int not null default 0,
--- 	status9 int not null default 0,
--- 	CONSTRAINT rts_hashid PRIMARY KEY (hashid)
--- );
--- ALTER TABLE resourceTextStatus  ADD FOREIGN KEY (hashid) REFERENCES resourceText (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+drop table IF EXISTS resourceTextStatus  CASCADE;
+create table resourceTextStatus
+(
+	hashid char(40) not null,
+	status1 int not null default 0,
+	status2 int not null default 0,
+	status3 int not null default 0,
+	status4 int not null default 0,
+	status5 int not null default 0,
+	status6 int not null default 0,
+	status7 int not null default 0,
+	status8 int not null default 0,
+	status9 int not null default 0,
+	CONSTRAINT rts_hashid PRIMARY KEY (hashid)
+);
+ALTER TABLE resourceTextStatus  ADD FOREIGN KEY (hashid) REFERENCES resourceText (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
   
 
 
