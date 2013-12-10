@@ -76,8 +76,8 @@ func ProcessUploadProcess(conn *net.TCPConn) {
 			LogInfo.Printf("数据库错误：%s", err)
 		}
 		_, err = n_rgt.Exec(old_hashid)
-		old_site = strings.Trim(old_site, " ")
-		old_path = strings.Trim(old_path, " ")
+		old_site = strings.TrimSpace(old_site)
+		old_path = strings.TrimSpace(old_path)
 		old_file := old_site + old_path
 		fmt.Println("旧文件名：",old_file)
 		err = os.Remove(old_file)

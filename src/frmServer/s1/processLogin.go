@@ -63,8 +63,8 @@ func ProcessLogin(conn *net.TCPConn) {
 	JsonToStruct(ckug.PowerLevel, &ckug_p)
 	allpower := MergePower(cku_p, ckuu_p, ckug_p)
 	
-	ckuu.Name = strings.Trim(ckuu.Name, " ")
-	ckug.Name = strings.Trim(ckug.Name, " ")
+	ckuu.Name = strings.TrimSpace(ckuu.Name)
+	ckug.Name = strings.TrimSpace(ckug.Name)
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 = GetSha1(sha1 + name)
@@ -88,7 +88,7 @@ func ProcessLogin(conn *net.TCPConn) {
 	for rts.Next(){
 		var onert ResourceTypeTable
 		rts.Scan(&onert.Id, &onert.Name, &onert.PowerLevel, &onert.Expend, &onert.Info)
-		onert.Name = strings.Trim(onert.Name, " ")
+		onert.Name = strings.TrimSpace(onert.Name)
 		resourceType = append(resourceType, onert)
 	}
 	rt_b := StructGobBytes(resourceType)

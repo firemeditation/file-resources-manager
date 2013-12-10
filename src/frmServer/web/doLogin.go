@@ -61,9 +61,9 @@ func processLogin(w http.ResponseWriter, r *http.Request){
 	JsonToStruct(ckug.PowerLevel, &ckug_p)
 	allpower := MergePower(cku_p, ckuu_p, ckug_p)
 	
-	ckuu.Name = strings.Trim(ckuu.Name, " ")
+	ckuu.Name = strings.TrimSpace(ckuu.Name)
 	
-	ckug.Name = strings.Trim(ckug.Name, " ")
+	ckug.Name = strings.TrimSpace(ckug.Name)
 	
 	//开始生成SelfLoginInfo和UserIsLogin
 	sha1 := GetSha1(check + username)
