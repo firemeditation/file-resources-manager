@@ -6,6 +6,7 @@ var login_user;  //登录的用户信息
 var hideAll = function(){
 	$("#main-box #help-box").hide();
 	$("#main-box #resource-list").hide();
+	$("#main-box #resource-add-box").hide();
 };
 
 // doSearch 执行搜索框的搜索业务
@@ -110,6 +111,16 @@ $(document).ready(function(){
 		hideAll();
 		$("#main-box #help-box").fadeIn();
 	});
+	
+	//begin 点击新建资源
+	$("#top-kongzhi .xinjian").click(function(){
+		hideAll();
+		$("#main-box #resource-add-box-true").load("static/iAddEditResource.htm")
+		$.getScript("static/iAddEditResource.js")
+		$("#main-box #resource-add-box").fadeIn();
+	});
+	//end 点击新建资源
+	
 	
 	//begin 图书列表的点击动作
 	var closeOneBookAll = function(theone,type){

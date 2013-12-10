@@ -131,14 +131,14 @@ a:hover{
 .text-box-title {
 	font-size: 30px;
 	padding:10px;
-	font-family:"Î¢ÈíÑÅºÚ","ºÚÌå","SimHei";
+	font-family:"å¾®è½¯é›…é»‘","é»‘ä½“","SimHei";
 	color:#333333;
 	letter-spacing:2px;
 }
 .big-text-box-title{
 	font-size: 40px;
 	padding:20px;
-	font-family:"WenQuanYi Micro Hei Mono","ÎÄÈªæäµÈ¿íÎ¢Ã×ºÚ","Î¢ÈíÑÅºÚ","ºÚÌå","SimHei";
+	font-family:"WenQuanYi Micro Hei Mono","æ–‡æ³‰é©¿ç­‰å®½å¾®ç±³é»‘","å¾®è½¯é›…é»‘","é»‘ä½“","SimHei";
 	color:#333333;
 	letter-spacing:2px;
 	text-align:center;
@@ -239,4 +239,8 @@ a:hover{
 #resource-list .resource-all-file .now-dir{
 	padding: 10px 0px 10px 0px;
 	cursor:pointer;
+}
+#resource-add-box {
+	padding: 0 70px 0 70px;
+	display: none;
 }
