@@ -29,22 +29,14 @@ func main() {
 func startClient(){
 	thePort, _ := clientConfig.GetString("client","port")
 	
-	go startServ(thePort)
-	
 	clearScreen()
 	fmt.Println("File Resources Mananger")
 	fmt.Println("-------------------------------")
 	fmt.Println("图书数字资源管理系统客户端已经启动")
 	fmt.Println("运行端口为：", thePort, "请将Web界面的端口号与之对应")
+	fmt.Println("退出程序请按Ctrl+C或其它")
 	
-	for {
-		fmt.Print("退出客户端请按数字0并回车：")
-		var otype string
-		fmt.Scanln(&otype)
-		if otype == "0" {
-			os.Exit(0)
-		}
-	}
+	startServ(thePort)
 }
 
 func startServ(thePort string){
