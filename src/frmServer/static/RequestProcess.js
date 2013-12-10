@@ -1,10 +1,10 @@
-/* cc_RequestProcess
+/* RequestProcess
  * CODEC的输入处理函数
  * 作为jQuery Plugin，需要配合jQuery使用
  * 为File Resource Manager做了部分修改
  */
 
-jQuery.cc_RequestProcess = {
+jQuery.RequestProcess = {
 	Text: function($theID,$cannull,$min,$max){
 		var $SID = $theID + ' .input_wrong_suggest';
 		var $IID = $theID + ' input';
