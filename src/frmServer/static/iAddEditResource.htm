@@ -1,14 +1,24 @@
+<style type="text/css">
+#iAddEditResource {
+	padding-left:70px;
+	padding-right:70px;
+	border-left: solid 1px #888888;
+	border-right: solid 1px #888888;
+}
+</style>
+
 <form id='iAddEditResource' name='iAddEditResource' method='post' action='dd'>
-    <div class='title'>资源类型</div>
-    <div class="resoucetype"><select name="resourcetype"></select></div>
-    <div class='title'>书名</div>
-    <div class='bookname'><input name='bookname' type='text' value=''> <span class='input_wrong_suggest'></span></div>
-    <div class='title'>作者</div>
-    <div class='author'><input name='author' type='text' value=''> <span class='input_wrong_suggest'></span></div>
-    <div class='title'>编辑</div>
-    <div class='editor'><input name='editor' type='text' value=''> <span class='input_wrong_suggest'></span></div>
-    <div class='title'>ISBN</div>
-    <div class='isbn'><input name='isbn' type='text' value=''> <span class='input_wrong_suggest'></span></div>
-    <div class='title'>简介</div><br>
-    <div class='info'><textarea name='info'></textarea><br> <span class='input_wrong_suggest'></span></div>
+    <div class='input_name'>资源类型</div>
+    <div class="resoucetype"><select name="resourcetype" class="input_text"></select></div>
+    <div class='input_name'>书名</div>
+    <div class='bookname'><input name='bookname' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+    <div class='input_name'>作者</div>
+    <div class='author'><input name='author' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+    <div class='input_name'>编辑</div>
+    <div class='editor'><input name='editor' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+    <div class='input_name'>ISBN</div>
+    <div class='isbn'><input name='isbn' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+    <div class='input_name'>简介</div><br>
+    <div class='info'><textarea name='info' class="input_textarea"></textarea><br> <span class='input_wrong_suggest'></span></div>
+    <div class="submit input_name" align="right"><input type='button' class="input_submit" name="submit" value="提交"></div>
 </form>
