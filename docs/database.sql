@@ -192,10 +192,12 @@ ALTER TABLE resourceFileStatus ADD FOREIGN KEY (hashid) REFERENCES resourceFile 
 -- Table: 资源文本 从资源条目继承
 drop table IF EXISTS resourceText cascade;
 create table resourceText (
+	c_type char(20),  -- 资源条目的类型，比如“menu”之类的
 	conent text,
 	CONSTRAINT rtf_hashid PRIMARY KEY (hashid)
 ) INHERITS (resourceItem);
 CREATE INDEX rtfhashid ON resourceText USING btree (hashid);
+CREATE INDEX rtctype ON resourceText USING btree (c_type);
 CREATE INDEX rtfname ON resourceText USING btree (name COLLATE pg_catalog."zh_CN.utf8");
 CREATE INDEX rtfunitid ON resourceText USING btree (units_id);
 CREATE INDEX rft_rg_id ON resourceText USING btree (rg_hashid);
