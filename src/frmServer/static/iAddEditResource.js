@@ -28,7 +28,14 @@ $.get("webInterface?type=get-resource-type",function(data){
         //alert($jsonjson.isbn)
         $.post("webInterface?type=add-one-resource", {bookname: $bookname, bookinfo: $bookinfo, booktype : $booktype, json : $json})
         .fail(function(){alert("错误")})
-        .done(function(data){alert(data)});
+        .done(function(data){
+			$json = $.parseJSON(data)
+			if($json.err){
+				alert($json.err)
+			}else{
+				alert($json.hashid)
+			}
+		});
     };
     $("#iAddEditResource .submit input").click(function(){
 		iAddEditResource_add()
