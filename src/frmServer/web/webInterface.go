@@ -36,6 +36,8 @@ func webInterface(w http.ResponseWriter, r *http.Request){
 			iGetBasicUserInfo(theUser, w, r)
 		case "get-resource-type":
 			iGetResourceType(theUser, w, r)
+		case "add-one-resource":
+			iAddOneResource(theUser, w, r)
 		default:
 			fmt.Fprint(w,"{\"err\":\"请求的接口不存在\"}")
 	}

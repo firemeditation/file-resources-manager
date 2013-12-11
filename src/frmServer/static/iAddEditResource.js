@@ -18,5 +18,18 @@ $.get("webInterface?type=get-resource-type",function(data){
         ckArray[2] = $.RequestProcess.Text('#iAddEditResource .editor',1,1,1000);
         ckArray[3] = $.RequestProcess.Text('#iAddEditResource .isbn',1,1,1000);
         ckArray[4] = $.RequestProcess.Textarea('#iAddEditResource .info',1,1,99999);
-        if($.RequestProcess.ckAllOne(ckArray)==0){ alert("输入错误") ;}
+        if($.RequestProcess.ckAllOne(ckArray)==0){ return }
+        var $bookname = $("#iAddEditResource .bookname input").val();
+        var $bookinfo = $("#iAddEditResource .info textarea").val();
+        var $booktype = $("#iAddEditResource .resoucetype select").val();
+        //alert($bookname + $bookinfo + $booktype)
+        var $json = '{"author":"' + $("#iAddEditResource .author input").val() + '", "editor":"'+$("#iAddEditResource .editor input").val()+'", "isbn":"'+$("#iAddEditResource .isbn input").val()+'"}'
+		//var $jsonjson = $.parseJSON($json)
+        //alert($jsonjson.isbn)
+        $.post("webInterface?type=add-one-resource", {bookname: $bookname, bookinfo: $bookinfo, booktype : $booktype, json : $json})
+        .fail(function(){alert("错误")})
+        .done(function(data){alert(data)});
     };
+    $("#iAddEditResource .submit input").click(function(){
+		iAddEditResource_add()
+	});
