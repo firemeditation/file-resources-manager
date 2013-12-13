@@ -1,0 +1,30 @@
+<style type="text/css">
+#iAddEditResourceUpload {
+	position: absolute;
+	width: 700px;
+	height: 300px;
+	top:50%;
+	left:50%;
+	margin-left: -350px;
+	margin-top: -150px;
+	box-shadow: 5px 5px 5px #aaaaaa;
+	border: solid 1px #888888;
+	background-color: #ffffff;
+	z-index:101;
+}
+#iAddEditResourceUploadForm{
+	padding-left:70px;
+	padding-right:70px;
+	padding-top:20px;
+}
+</style>
+<div id="iAddEditResourceUpload">
+	<div class="text-box-title">～现在上传～</div>
+	<form id='iAddEditResourceUploadForm' name='iAddEditResourceUploadForm' method='post' action='dd'>
+    <div class='input_name'>本地路径</div>
+    <div class="localpath"><input name="localpath" class="input_text" value=""></input></div>
+    <div class='input_name'>存储相对路径</div>
+    <div class='relativepath'><input name='relativepath' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+     <div class="submit input_name" align="right"><input type='button' class="input_submit" name="submit" value="上传">&nbsp;&nbsp;<input type='button' class="input_submit" name="close" value="取消"></div>
+</form>
+</div>

@@ -19,13 +19,15 @@ $.get("webInterface?type=get-resource-type",function(data){
         ckArray[3] = $.RequestProcess.Text('#iAddEditResource .isbn',1,1,1000);
         ckArray[4] = $.RequestProcess.Textarea('#iAddEditResource .info',1,1,99999);
         if($.RequestProcess.ckAllOne(ckArray)==0){ return }
-        var $bookname = $("#iAddEditResource .bookname input").val();
-        var $bookinfo = $("#iAddEditResource .info textarea").val();
-        var $booktype = $("#iAddEditResource .resoucetype select").val();
+        var $bookname = inputSafe.CleanAll($("#iAddEditResource .bookname input").val());
+        var $bookinfo = inputSafe.Clean($("#iAddEditResource .info textarea").val());
+        var $booktype = inputSafe.Clean($("#iAddEditResource .resoucetype select").val());
         //alert($bookname + $bookinfo + $booktype)
-        var $json = '{"author":"' + $("#iAddEditResource .author input").val() + '", "editor":"'+$("#iAddEditResource .editor input").val()+'", "isbn":"'+$("#iAddEditResource .isbn input").val()+'"}'
+        var $json = '{"author":"' + inputSafe.CleanAll($("#iAddEditResource .author input").val()) + '", "editor":"'+inputSafe.CleanAll($("#iAddEditResource .editor input").val())+'", "isbn":"'+inputSafe.CleanAll($("#iAddEditResource .isbn input").val())+'"}'
 		//var $jsonjson = $.parseJSON($json)
         //alert($jsonjson.isbn)
+        //alert($bookname)
+        //alert($bookinfo)
         $.post("webInterface?type=add-one-resource", {bookname: $bookname, bookinfo: $bookinfo, booktype : $booktype, json : $json})
         .fail(function(){alert("错误")})
         .done(function(data){
@@ -33,6 +35,9 @@ $.get("webInterface?type=get-resource-type",function(data){
 			if($json.err){
 				alert($json.err)
 			}else{
+				$("#allwhite").show();
+				$("#allwhite").load("static/iAddEditResourceUpload.htm");
+				$.getScript("static/iAddEditResourceUpload.js")
 				alert($json.hashid)
 			}
 		});
