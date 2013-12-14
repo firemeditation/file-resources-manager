@@ -34,8 +34,10 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	backupRecord = append(backupRecord,brstring)
 	
 	_ , err := doUploadResourceFile(user, hashid, localpath, relative)
-	brstring = time.Now().String() +  "：后台上传出错，图书hashid：" + hashid + "：错误" + err
-	backupRecord = append(backupRecord,brstring)
+	if err != nil {
+		brstring = time.Now().String() +  "：后台上传出错，图书hashid：" + hashid + "：错误：" + fmt.Sprint(err)
+		backupRecord = append(backupRecord,brstring)
+	}
 	
 	brstring = time.Now().String() +  "：后台上传完成，图书hashid：" + hashid
 	backupRecord = append(backupRecord,brstring)

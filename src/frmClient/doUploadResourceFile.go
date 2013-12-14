@@ -12,7 +12,9 @@ const UploadGoMax = 5  //同时上传的最大进程数
 func doUploadResourceFile(userid, resourceid string, originpath, addtopath string) (errA []string, err error) {
 	ckdir, err := os.Stat(originpath)
 	if err != nil {
-		err = fmt.Errorf("找不到文件或目录：%s", ckdir)
+		err = fmt.Errorf("找不到文件或目录：%s", originpath)
+		bk := time.Now().String() + "：" + fmt.Sprint(err)
+		backupRecord = append(backupRecord, bk)
 		return
 	}
 	fmt.Println("请求加锁")

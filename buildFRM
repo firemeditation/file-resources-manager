@@ -9,9 +9,12 @@ export GOPATH="$OLDGOPATH":"$CURDIR"
 go install frmServer
 cp -r src/frmServer/*.cfg bin/
 #cp -r src/frmServer/static bin/
+CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go install frmServer
 
 go install frmClient
 cp -r src/frmClient/*.cfg bin/
+#CGO_ENABLED=0 GOOS=windows GOARCH=386 go install frmClient
+#CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go install frmClient
 
 
 export GOPATH="$OLDGOPATH"
