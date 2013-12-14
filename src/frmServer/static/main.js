@@ -106,9 +106,16 @@ $(document).ready(function(){
 		$("#allwhite").show();
 		$("#showBackupRecord").show();
 		$("#showBackupRecord .inside-box").html("");
-		$.getJSON("http://127.0.0.1:"+local_client_port+"/getBackupRecord?callback=?",function(r){
+		$.getJSON("http://127.0.0.1:"+local_client_port+"/getBackupRecord?userid="+login_user.HashId+"&callback=?",function(r){
+			if(r["err"]){
+				$("#showBackupRecord .inside-box").prepend(r["err"])
+				return
+			}
 			$.each(r, function(key,value){
-				$("#showBackupRecord .inside-box").prepend("<p>" + value + "</p>")
+				var theTime = key * 1000;
+				var timedate = new Date(theTime);
+				var theTime = timedate.formatDate("yyyy年MM月dd日 hh:mm:ss");
+				$("#showBackupRecord .inside-box").prepend("<p>" + theTime + "：" + value + "</p>")
 			})
 		})
 	})

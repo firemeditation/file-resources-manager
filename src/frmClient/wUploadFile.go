@@ -31,18 +31,18 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, theSend)
 	
 	brstring := "后台上传中：" + bookname
-	backupRecord.Add(user, brstring)
-	backupNum = backupNum + 1
-	defer func(){
-		backupNum = backupNum - 1
-	}()
+	backupRecord.AddRecord(user, brstring)
+	//backupNum = backupNum + 1
+	//defer func(){
+	//	backupNum = backupNum - 1
+	//}()
 	
 	_ , err := doUploadResourceFile(user, hashid, localpath, relative)
 	if err != nil {
 		brstring = "后台上传出错：" + bookname + "：错误：" + fmt.Sprint(err)
-		backupRecord.Add(user, brstring)
+		backupRecord.AddRecord(user, brstring)
 	}
 	
-	brstring = "后台上传完成，：" + bookname
-	backupRecord.Add(user, brstring)
+	brstring = "后台上传完成：" + bookname
+	backupRecord.AddRecord(user, brstring)
 }

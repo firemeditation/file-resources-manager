@@ -4,18 +4,21 @@ import (
 	"time"
 )
 
-type backupRecordType map[string]map[int64]string
+type backupRecordStuct struct{
+	Record map[string]map[int64]string
+	Num map[string]int
+ }
 
-func newBackupRecord() (brt backupRecordType) {
-	return brt
+func newBackupRecord() (brt *backupRecordStuct) {
+	return &backupRecordStuct{make(map[string]map[int64]string), make(map[string]int)}
 }
 
-func (brt backupRecordType) Add (userid, content string) {
+func (brt *backupRecordStuct) AddRecord (userid, content string) {
 	thetime := time.Now().Unix()
-	if _, found := brt[userid] ; found == true {
-		brt[userid][thetime] = content
+	if _, found := brt.Record[userid] ; found == true {
+		brt.Record[userid][thetime] = content
 	}else{
-		brt[userid] = map[int64]string{}
-		brt[userid][thetime] = content
+		brt.Record[userid] =make(map[int64]string)
+		brt.Record[userid][thetime] = content
 	}
 }

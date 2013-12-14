@@ -14,7 +14,8 @@ $("#iAddEditResourceUploadForm .submit input[name='submit']").click(function(){
     var $relativepath = inputSafe.CleanAll($("#iAddEditResourceUploadForm .relativepath input").val());
     var $hashid = inputSafe.CleanAll($("#allwhite").attr("hashid"));
     var $user = login_user.HashId;
-    $.getJSON("http://127.0.0.1:"+local_client_port+"/uploadFile?user="+$user+"&local="+$localpath+"&relative="+$relativepath+"&hashid="+$hashid+"&callback=?")
+    var $bookname = inputSafe.CleanAll($("#allwhite").attr("bookname"));
+    $.getJSON("http://127.0.0.1:"+local_client_port+"/uploadFile?user="+$user+"&bookname="+$bookname+"&local="+$localpath+"&relative="+$relativepath+"&hashid="+$hashid+"&callback=?")
 	$("#allwhite").hide().html("");
 	if( $("#allwhite").attr("opentype") == "aer" ){
 		hideAll();

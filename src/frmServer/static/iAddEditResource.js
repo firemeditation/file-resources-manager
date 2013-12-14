@@ -40,6 +40,7 @@ $.get("webInterface?type=get-resource-type",function(data){
 				$.getScript("static/iAddEditResourceUpload.js")
 				$("#allwhite").attr("hashid", $json.hashid)
 				$("#allwhite").attr("opentype", "aer")
+				$("#allwhite").attr("bookname", $bookname)
 			}
 		});
     };
