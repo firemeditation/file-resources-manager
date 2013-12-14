@@ -101,6 +101,23 @@ $(document).ready(function(){
 	});
 	//end 点击搜索动作
 	
+	//begin 点击客户端状态
+	$("#top-status-area .client_status").click(function(){
+		$("#allwhite").show();
+		$("#showBackupRecord").show();
+		$("#showBackupRecord .inside-box").html("");
+		$.getJSON("http://127.0.0.1:"+local_client_port+"/getBackupRecord?callback=?",function(r){
+			$.each(r, function(key,value){
+				$("#showBackupRecord .inside-box").prepend("<p>" + value + "</p>")
+			})
+		})
+	})
+	$("#showBackupRecord .close-box").click(function(){
+		$("#allwhite").hide();
+		$("#showBackupRecord").hide();
+	});
+	//end 点击客户端状态
+	
 	$("#top-kongzhi .userinfo").click(function(){
 		hideAll();
 	});
@@ -115,6 +132,7 @@ $(document).ready(function(){
 	
 	//begin 点击新建资源
 	$("#top-kongzhi .xinjian").click(function(){
+		if(login_user.UPower.resource.origin < 2){ return }
 		hideAll();
 		$("#main-box #resource-add-box-true").load("static/iAddEditResource.htm")
 		$.getScript("static/iAddEditResource.js")

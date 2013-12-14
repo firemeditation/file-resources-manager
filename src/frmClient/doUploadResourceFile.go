@@ -9,7 +9,7 @@ import (
 
 const UploadGoMax = 5  //同时上传的最大进程数
 
-func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA []string, err error) {
+func doUploadResourceFile(userid, resourceid string, originpath, addtopath string) (errA []string, err error) {
 	ckdir, err := os.Stat(originpath)
 	if err != nil {
 		err = fmt.Errorf("找不到文件或目录：%s", ckdir)
@@ -25,7 +25,8 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 	}
 	fmt.Println("请求加锁2")
 	//发送自己的SID
-	err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
+	//err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
+	err = SendSocketBytes(conn, []byte(userid), 40)
 	if err != nil {
 		err = fmt.Errorf("发送SID错误：%s", err)
 		return
@@ -73,7 +74,7 @@ func doUploadResourceFile(resourceid string, originpath, addtopath string) (errA
 	for i := 0; i < UploadGoMax; i++ {
 		//wg.Add(1)
 		fmt.Println("进程",i)
-		go sendFiles(uploadDone,resourceid, processid, fileInfo, errA)
+		go sendFiles(uploadDone, userid, resourceid, processid, fileInfo, errA)
 	}
 	
 	doneNum := 0
@@ -127,11 +128,10 @@ func readDir(fileInfo chan<- OriginFileInfoFullStruct, dir, relative string){
 }
 
 // sendFiles 发送文件
-func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan OriginFileInfoFullStruct, errA []string){
+func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileInfo <-chan OriginFileInfoFullStruct, errA []string){
 	defer func() {
 		uploadDone <- 1
 	}()
-	fmt.Println("发送", myLogin.SID, resourceid, processid)
 	for oneFile := range fileInfo {
 		conn := connectServer()
 		err := sendTheFirstRequest (1, 4, conn)
@@ -139,7 +139,8 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 			errA = append(errA, "发送状态错误")
 			break
 		}
-		err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
+		//err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
+		err = SendSocketBytes(conn, []byte(userid), 40)
 		if err != nil {
 			errA = append(errA, "发送SID错误")
 			break
@@ -159,6 +160,8 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 		if ckl == 2 {
 			errS := fmt.Sprintf("服务器不允许上传文件：%s", oneFile.FullDir)
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		
@@ -170,6 +173,8 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		// 发送文件信息的结构体
@@ -177,6 +182,8 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		// 发送文件数据长度
@@ -186,12 +193,16 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		err = SendSocketFile (conn, uint64(file_len), oneFile.FullDir)
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		// 接收服务器确认
@@ -203,6 +214,8 @@ func sendFiles(uploadDone chan int,resourceid, processid string, fileInfo <-chan
 			geterr_b, _ := ReadSocketBytes(conn, geterr_len)
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, string(geterr_b))
 			errA = append(errA, errS)
+			bk := time.Now().String() + "：" + errS
+			backupRecord = append(backupRecord, bk)
 			break
 		}
 		fmt.Println("上传完成：",oneFile.FullDir) 

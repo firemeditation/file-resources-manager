@@ -69,6 +69,44 @@ a:hover{
 	background-color:#ffffff;
 	display:none;
 }
+#showBackupRecord{
+	position: absolute;
+	width: 700px;
+	height: 400px;
+	top:50%;
+	left:50%;
+	margin-left: -350px;
+	margin-top: -200px;
+	box-shadow: 5px 5px 5px #aaaaaa;
+	border: solid 1px #888888;
+	background-color: #ffffff;
+	z-index:101;
+	display:none;
+} 
+#showBackupRecord .close-box {
+	border: solid 1px #888888;
+	position: absolute;
+	top:10px;
+	right:10px;
+	padding:5px;
+	cursor:pointer;
+}
+#showBackupRecord .inside-box{
+	margin-left:30px;
+	margin-right:30px;
+	margin-top:10px;
+	padding:5px;
+	height:300px;
+	background-color: #222;
+	overflow-y:auto;
+	line-height:200%;
+	letter-spacing:2px;
+	color: #fff;
+	text-indent:2em;
+}
+#showBackupRecord .inside-box p {
+	margin-bottom: 20px;
+}
 #head-top {
 	position:fixed;
 	width:100%;

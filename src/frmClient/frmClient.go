@@ -12,6 +12,8 @@ import (
 )
 
 var clientConfig  *goconfig.ConfigFile
+
+var backupRecord []string
 //var myLogin SelfLoginInfo
 //var resourceType []ResourceTypeTable
 
@@ -42,6 +44,8 @@ func startClient(){
 func startServ(thePort string){
 	
 	http.HandleFunc("/checkLink", wCheckLink)
+	http.HandleFunc("/uploadFile", wUploadFile)
+	http.HandleFunc("/getBackupRecord", wGetBackupRecord)
 	
 	theServ := "127.0.0.1:" + thePort
 	err := http.ListenAndServe(theServ, nil)

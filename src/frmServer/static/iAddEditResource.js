@@ -38,7 +38,8 @@ $.get("webInterface?type=get-resource-type",function(data){
 				$("#allwhite").show();
 				$("#allwhite").load("static/iAddEditResourceUpload.htm");
 				$.getScript("static/iAddEditResourceUpload.js")
-				alert($json.hashid)
+				$("#allwhite").attr("hashid", $json.hashid)
+				$("#allwhite").attr("opentype", "aer")
 			}
 		});
     };
