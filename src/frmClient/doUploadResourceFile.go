@@ -13,8 +13,8 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath strin
 	ckdir, err := os.Stat(originpath)
 	if err != nil {
 		err = fmt.Errorf("找不到文件或目录：%s", originpath)
-		bk := time.Now().String() + "：" + fmt.Sprint(err)
-		backupRecord = append(backupRecord, bk)
+		bk := fmt.Sprint(err)
+		backupRecord.Add(userid, bk)
 		return
 	}
 	fmt.Println("请求加锁")
@@ -162,8 +162,7 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 		if ckl == 2 {
 			errS := fmt.Sprintf("服务器不允许上传文件：%s", oneFile.FullDir)
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		
@@ -175,8 +174,7 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		// 发送文件信息的结构体
@@ -184,8 +182,7 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		// 发送文件数据长度
@@ -195,16 +192,14 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		err = SendSocketFile (conn, uint64(file_len), oneFile.FullDir)
 		if err != nil {
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, err)
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		// 接收服务器确认
@@ -216,8 +211,7 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 			geterr_b, _ := ReadSocketBytes(conn, geterr_len)
 			errS := fmt.Sprintf("上传文件出错：%s，错误：%s", oneFile.FullDir, string(geterr_b))
 			errA = append(errA, errS)
-			bk := time.Now().String() + "：" + errS
-			backupRecord = append(backupRecord, bk)
+			backupRecord.Add(userid, errS)
 			break
 		}
 		fmt.Println("上传完成：",oneFile.FullDir) 

@@ -15,7 +15,7 @@ func wCheckLink(w http.ResponseWriter, r *http.Request) {
 	}
 	callback := getCallback[0]
 	
-	theSend := callback + "({\"client\":\"yes\"})"
+	theSend := callback + "({\"client\":\"yes\", \"backupNum\":" + fmt.Sprint(backupNum) + "})"
 	
 	fmt.Fprintf(w, theSend)
 }

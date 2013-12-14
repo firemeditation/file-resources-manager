@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"fmt"
 	. "frmPkg"
-	"time"
 )
 
 func wUploadFile(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +20,7 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	relative := r.Form["relative"][0]
 	hashid := r.Form["hashid"][0]
 	user := r.Form["user"][0]
+	bookname := r.Form["bookname"][0]
 	
 	localpath = DirMustEnd(localpath)
 	if len(relative) != 0 {
@@ -30,15 +30,19 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	theSend := callback + "({\"client\":\"yes\"})"
 	fmt.Fprintf(w, theSend)
 	
-	brstring := time.Now().String() +  "：后台上传中，图书hashid：" + hashid
-	backupRecord = append(backupRecord,brstring)
+	brstring := "后台上传中：" + bookname
+	backupRecord.Add(user, brstring)
+	backupNum = backupNum + 1
+	defer func(){
+		backupNum = backupNum - 1
+	}()
 	
 	_ , err := doUploadResourceFile(user, hashid, localpath, relative)
 	if err != nil {
-		brstring = time.Now().String() +  "：后台上传出错，图书hashid：" + hashid + "：错误：" + fmt.Sprint(err)
-		backupRecord = append(backupRecord,brstring)
+		brstring = "后台上传出错：" + bookname + "：错误：" + fmt.Sprint(err)
+		backupRecord.Add(user, brstring)
 	}
 	
-	brstring = time.Now().String() +  "：后台上传完成，图书hashid：" + hashid
-	backupRecord = append(backupRecord,brstring)
+	brstring = "后台上传完成，：" + bookname
+	backupRecord.Add(user, brstring)
 }

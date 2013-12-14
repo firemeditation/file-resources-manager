@@ -13,7 +13,8 @@ import (
 
 var clientConfig  *goconfig.ConfigFile
 
-var backupRecord []string
+var backupRecord backupRecordType
+var backupNum int
 //var myLogin SelfLoginInfo
 //var resourceType []ResourceTypeTable
 
