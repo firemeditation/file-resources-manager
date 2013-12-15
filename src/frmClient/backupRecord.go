@@ -2,23 +2,49 @@ package main
 
 import (
 	"time"
+	"fmt"
 )
 
-type backupRecordStuct struct{
-	Record map[string]map[int64]string
+type backupRecordStruct struct{
+	Record map[string]map[string]map[string]string
 	Num map[string]int
  }
 
-func newBackupRecord() (brt *backupRecordStuct) {
-	return &backupRecordStuct{make(map[string]map[int64]string), make(map[string]int)}
+func newBackupRecordStuct () (brt *backupRecordStruct) {
+	return &backupRecordStruct{map[string]map[string]map[string]string{}, map[string]int{}}
 }
 
-func (brt *backupRecordStuct) AddRecord (userid, content string) {
-	thetime := time.Now().Unix()
-	if _, found := brt.Record[userid] ; found == true {
-		brt.Record[userid][thetime] = content
-	}else{
-		brt.Record[userid] =make(map[int64]string)
-		brt.Record[userid][thetime] = content
+func (brt *backupRecordStruct) AddRecord (userid, content string) {
+	thetime := fmt.Sprint(time.Now().Unix())
+	thenano := fmt.Sprint(time.Now().UnixNano())
+	if _, found := brt.Record[userid] ; found == false {
+		brt.Record[userid] =make(map[string]map[string]string)
 	}
+	if _, found := brt.Record[userid][thetime] ; found == false {
+		brt.Record[userid][thetime] = make(map[string]string)
+	}
+	brt.Record[userid][thetime][thenano] = content
+}
+
+func (brt *backupRecordStruct) AddNum (userid string) {
+	if _, found := brt.Num[userid]; found == false {
+		brt.Num[userid] = 1
+	}else{
+		brt.Num[userid]++
+	}
+}
+
+func (brt *backupRecordStruct) DoneNum (userid string) {
+	if _, found := brt.Num[userid]; found == true {
+		if brt.Num[userid] >= 1 {
+			brt.Num[userid]--
+		}
+	}
+}
+
+func (brt *backupRecordStruct) GetNum (userid string) (num int) {
+	if _, found := brt.Num[userid]; found == true {
+		return brt.Num[userid]
+	}
+	return 
 }

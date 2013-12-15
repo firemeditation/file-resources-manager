@@ -115,7 +115,9 @@ $(document).ready(function(){
 				var theTime = key * 1000;
 				var timedate = new Date(theTime);
 				var theTime = timedate.formatDate("yyyy年MM月dd日 hh:mm:ss");
-				$("#showBackupRecord .inside-box").prepend("<p>" + theTime + "：" + value + "</p>")
+				$.each(value, function(lkey, lval){
+					$("#showBackupRecord .inside-box").prepend("<p>" + theTime + "：" + lval + "</p>")
+				})
 			})
 		})
 	})

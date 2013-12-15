@@ -13,13 +13,13 @@ import (
 
 var clientConfig  *goconfig.ConfigFile
 
-var backupRecord *backupRecordStuct
+var backupRecord *backupRecordStruct
 //var myLogin SelfLoginInfo
 //var resourceType []ResourceTypeTable
 
 func init() {
 	clientConfig = GetConfig("client")
-	backupRecord = newBackupRecord()
+	backupRecord = newBackupRecordStuct()
 }
 
 func main() {

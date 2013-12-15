@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"fmt"
-	//. "frmPkg"
+	. "frmPkg"
 )
 
 func wGetBackupRecord(w http.ResponseWriter, r *http.Request) {
@@ -22,11 +22,7 @@ func wGetBackupRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	bak := "{"
-	for key, val := range selfBackup {
-		bak = bak + "\"" + fmt.Sprint(key) + "\" : \"" + val + "\","
-	}
-	bak = bak + "}"
+	bak := StructToJson(&selfBackup)
 	
 	theSend := callback + "(" + bak + ")"
 	
