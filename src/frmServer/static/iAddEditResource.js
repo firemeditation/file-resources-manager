@@ -23,7 +23,7 @@ $.get("webInterface?type=get-resource-type",function(data){
         var $bookinfo = inputSafe.Clean($("#iAddEditResource .info textarea").val());
         var $booktype = inputSafe.Clean($("#iAddEditResource .resoucetype select").val());
         //alert($bookname + $bookinfo + $booktype)
-        var $json = '{"author":"' + inputSafe.CleanAll($("#iAddEditResource .author input").val()) + '", "editor":"'+inputSafe.CleanAll($("#iAddEditResource .editor input").val())+'", "isbn":"'+inputSafe.CleanAll($("#iAddEditResource .isbn input").val())+'"}'
+        var $json = '{"Author":"' + inputSafe.CleanAll($("#iAddEditResource .author input").val()) + '", "Editor":"'+inputSafe.CleanAll($("#iAddEditResource .editor input").val())+'", "ISBN":"'+inputSafe.CleanAll($("#iAddEditResource .isbn input").val())+'"}'
 		//var $jsonjson = $.parseJSON($json)
         //alert($jsonjson.isbn)
         //alert($bookname)

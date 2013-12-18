@@ -132,6 +132,8 @@ $(document).ready(function(){
 	});
 	$("#top-kongzhi .chakan").click(function(){
 		hideAll();
+		$("#main-box #resource-list").load("static/iResourceList.htm")
+		$.getScript("static/iResourceList.js")
 		$("#main-box #resource-list").fadeIn();
 	});
 	$("#top-kongzhi .usehelp").click(function(){
@@ -148,40 +150,4 @@ $(document).ready(function(){
 		$("#main-box #resource-add-box").fadeIn();
 	});
 	//end 点击新建资源
-	
-	
-	//begin 图书列表的点击动作
-	var closeOneBookAll = function(theone,type){
-		if(type != "resource-all-info"){
-			theone.children(".resource-all-info").hide(100);
-			theone.children(".resource-all-info").attr('showit',"no");
-		}
-		if(type != "resource-all-file"){
-			theone.children(".resource-all-file").hide(100);
-			theone.children(".resource-all-file").attr('showit',"no");
-		}
-	}
-	$("#resource-main-list .the-resource-name").click(function(){
-		closeOneBookAll($(this).parent().parent(),"resource-all-info");
-		var theone = $(this).parent().parent().children(".resource-all-info");
-		if(theone.attr('showit') == "no"){
-			theone.show(100);
-			theone.attr('showit',"yes");
-		}else{
-			theone.hide(100);
-			theone.attr('showit',"no");
-		}
-	});
-	$("#resource-main-list .liulan").click(function(){
-		closeOneBookAll($(this).parent().parent().parent(),"resource-all-file");
-		var theone = $(this).parents(".one-resource-main").children(".resource-all-file");
-		if(theone.attr('showit') == "no"){
-			theone.show(100);
-			theone.attr('showit',"yes");
-		}else{
-			theone.hide(100);
-			theone.attr('showit',"no");
-		}
-	});
-	//end 图书列表的点击动作
 });
