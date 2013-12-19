@@ -12,10 +12,15 @@ import (
 	//"os"
 )
 
+type returnResourceListListStruct struct {
+	Table ResourceGroupTable
+	MD ResourceGroupTable_MD
+	RSR ResourceGroupTable_RSR
+}
+
 type returnResourceListStruct struct {
 	Count uint64
-	List []ResourceGroupTable
-	Meta []ResourceGroupTable_MetaData
+	List []returnResourceListListStruct
 }
 
 
@@ -47,20 +52,24 @@ func iResourceList(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 	
 	
 	
-	rrls := returnResourceListStruct{0, []ResourceGroupTable{}, []ResourceGroupTable_MetaData{}}
+	rrls := returnResourceListStruct{0, []returnResourceListListStruct{}}
 	
 	if model == 1 {
 		DbConn.QueryRow("select COUNT(*) FROM resourceGroup WHERE units_id = $1", theUser.GroupId).Scan(&rrls.Count)
 		if rrls.Count != 0 {
-			rrls_rows, _ := DbConn.Query("select hashid, name, rt_id, info, btime, users_id, metadata From resourceGroup WHERE units_id = $1 ORDER BY btime DESC LIMIT $2 OFFSET $3", theUser.GroupId, limit, from)
+			rrls_rows, _ := DbConn.Query("select hashid, name, rt_id, info, btime, users_id, metadata From resourceGroup WHERE units_id = $1 ORDER BY btime DESC LIMIT $2 OFFSET $3", theUser.UnitId, limit, from)
 			for rrls_rows.Next(){
-				var rgt ResourceGroupTable
-				rrls_rows.Scan(&rgt.HashId, &rgt.Name, &rgt.RtId, &rgt.Info, &rgt.Btime, &rgt.UsersId, &rgt.MetaData)
-				rgt.Name = strings.TrimSpace(rgt.Name)
-				var rgt_md ResourceGroupTable_MetaData
-				JsonToStruct(rgt.MetaData, &rgt_md)
+				var rgt returnResourceListListStruct
+				rrls_rows.Scan(&rgt.Table.HashId, &rgt.Table.Name, &rgt.Table.RtId, &rgt.Table.Info, &rgt.Table.Btime, &rgt.Table.UsersId, &rgt.Table.MetaData)
+				rgt.Table.Name = strings.TrimSpace(rgt.Table.Name)
+				JsonToStruct(rgt.Table.MetaData, &rgt.MD)
+				//获取分类以及所属机构以及用户的名称放入RSR
+				rgt.RSR.UnintsName = theUser.UnitName
+				DbConn.QueryRow("select name from users where id = $1", rgt.Table.UsersId).Scan(&rgt.RSR.UsersName)
+				rgt.RSR.UsersName = strings.TrimSpace(rgt.RSR.UsersName)
+				DbConn.QueryRow("select name from resourceType where id = $1", rgt.Table.RtId).Scan(&rgt.RSR.RtName)
+				rgt.RSR.RtName = strings.TrimSpace(rgt.RSR.RtName)
 				rrls.List = append(rrls.List, rgt)
-				rrls.Meta = append(rrls.Meta, rgt_md)
 			}
 		}
 	}else{
@@ -70,5 +79,5 @@ func iResourceList(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 	rrls_json := StructToJson(rrls)
 	
 	fmt.Fprint(w, rrls_json)
-	fmt.Println(rrls_json)
+	//fmt.Println(rrls_json)
 }

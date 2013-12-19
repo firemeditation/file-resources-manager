@@ -32,11 +32,6 @@ type ResourceTypeTable struct {
 	Expend uint16
 	Info string
 }
-type ResourceGroupTable_MetaData struct{
-	Author string
-	Editor string
-	ISBN string
-}
 type ResourceGroupTable struct {
 	HashId string
 	Name string
@@ -49,6 +44,18 @@ type ResourceGroupTable struct {
 	UsersId uint32
 	Expand uint16
 	MetaData string 
+}
+//MetaData
+type ResourceGroupTable_MD struct{
+	Author string
+	Editor string
+	ISBN string
+}
+//Related search results
+type ResourceGroupTable_RSR struct{
+	RtName string
+	UnintsName string
+	UsersName string
 }
 type ResourceItemTable struct {
 	HashId string
