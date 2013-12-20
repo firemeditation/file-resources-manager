@@ -55,7 +55,7 @@ func iResourceList(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 	rrls := returnResourceListStruct{0, []returnResourceListListStruct{}}
 	
 	if model == 1 {
-		DbConn.QueryRow("select COUNT(*) FROM resourceGroup WHERE units_id = $1", theUser.GroupId).Scan(&rrls.Count)
+		DbConn.QueryRow("select COUNT(*) FROM resourceGroup WHERE units_id = $1", theUser.UnitId).Scan(&rrls.Count)
 		if rrls.Count != 0 {
 			rrls_rows, _ := DbConn.Query("select hashid, name, rt_id, info, btime, users_id, metadata From resourceGroup WHERE units_id = $1 ORDER BY btime DESC LIMIT $2 OFFSET $3", theUser.UnitId, limit, from)
 			for rrls_rows.Next(){
