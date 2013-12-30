@@ -31,6 +31,14 @@ var doSearch = function(){
 	};
 };
 
+// begin 显示基本的查看资源的资源列表
+var showTheBasicResourceList = function(){
+	$("#main-box #resource-list").load("static/iResourceList.htm")
+		$.getScript("static/iResourceList.js")
+		$("#main-box #resource-list").fadeIn();
+}
+// end 显示基本的查看资源的资源列表
+
 // checkClientStatus 检查客户端状态
 var checkClientStatus = function(){
 	$.getJSON("http://127.0.0.1:"+local_client_port+"/checkLink?callback=?",function(r){
@@ -130,12 +138,14 @@ $(document).ready(function(){
 	$("#top-kongzhi .userinfo").click(function(){
 		hideAll();
 	});
+	
+	//begin 点击查看资源
 	$("#top-kongzhi .chakan").click(function(){
 		hideAll();
-		$("#main-box #resource-list").load("static/iResourceList.htm")
-		$.getScript("static/iResourceList.js")
-		$("#main-box #resource-list").fadeIn();
+		showTheBasicResourceList();
 	});
+	//end 点击查看资源
+	
 	$("#top-kongzhi .usehelp").click(function(){
 		hideAll();
 		$("#main-box #help-box").fadeIn();
@@ -145,8 +155,8 @@ $(document).ready(function(){
 	$("#top-kongzhi .xinjian").click(function(){
 		if(login_user.UPower.resource.origin < 2){ return }
 		hideAll();
-		$("#main-box #resource-add-box-true").load("static/iAddEditResource.htm")
-		$.getScript("static/iAddEditResource.js")
+		$("#main-box #resource-add-box-true").load("static/iAddResource.htm")
+		$.getScript("static/iAddResource.js")
 		$("#main-box #resource-add-box").fadeIn();
 	});
 	//end 点击新建资源

@@ -36,8 +36,8 @@ $.get("webInterface?type=get-resource-type",function(data){
 				alert($json.err)
 			}else{
 				$("#allwhite").show();
-				$("#allwhite").load("static/iAddEditResourceUpload.htm");
-				$.getScript("static/iAddEditResourceUpload.js")
+				$("#allwhite").load("static/iAddResourceUpload.htm");
+				$.getScript("static/iAddResourceUpload.js")
 				$("#allwhite").attr("hashid", $json.hashid)
 				$("#allwhite").attr("opentype", "aer")
 				$("#allwhite").attr("bookname", $bookname)
