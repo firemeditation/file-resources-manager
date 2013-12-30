@@ -72,6 +72,7 @@ var lastOtime = function(utime){
 	return theTime;
 };
 var getResourceListFromServer = function(){
+	$("#resource-main-list").html("")
 	$.get("webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit , function(data){
 		var json = $.parseJSON(data);
 		$("#resource-list .allListBookCount").text(json.Count);
