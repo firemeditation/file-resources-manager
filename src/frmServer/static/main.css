@@ -56,6 +56,33 @@ a:hover{
 	padding:5px 10px 5px 10px;
 	font-weight: bold;
 }
+#nowloadbox{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.9;
+	opacity:0.9;
+	z-index:200;
+	background-color:#ffffff;
+	display:none;
+}
+#nowloadbox #nowloading{
+	position: absolute;
+	border: solid 1px red;
+	width: 300px;
+	height: 50px;
+	font-size:14px;
+	line-height:50px;
+	text-align:center;
+	color:red;
+	top: 100px;
+	left:50%;
+	margin-left:-150px;
+	box-shadow: 3px 3px 3px #cccccc;
+}
 #allwhite{
 	position:fixed;
 	top:0;

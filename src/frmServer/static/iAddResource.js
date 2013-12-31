@@ -28,6 +28,7 @@ $.get("webInterface?type=get-resource-type",function(data){
         //alert($jsonjson.isbn)
         //alert($bookname)
         //alert($bookinfo)
+        $("#nowloadbox").fadeIn(200);
         $.post("webInterface?type=add-one-resource", {bookname: $bookname, bookinfo: $bookinfo, booktype : $booktype, json : $json})
         .fail(function(){alert("错误")})
         .done(function(data){
@@ -36,12 +37,15 @@ $.get("webInterface?type=get-resource-type",function(data){
 				alert($json.err)
 			}else{
 				$("#allwhite").show();
-				$("#allwhite").load("static/iAddResourceUpload.htm");
-				$.getScript("static/iAddResourceUpload.js")
-				$("#allwhite").attr("hashid", $json.hashid)
-				$("#allwhite").attr("opentype", "aer")
-				$("#allwhite").attr("bookname", $bookname)
-			}
+				$("#allwhite").load("static/iAddResourceUpload.htm", function(){
+					$.getScript("static/iAddResourceUpload.js").done(function(){
+						$("#allwhite").attr("hashid", $json.hashid);
+					$("#allwhite").attr("opentype", "aer");
+					$("#allwhite").attr("bookname", $bookname);
+						$("#nowloadbox").fadeOut(200);
+					});
+				});
+			};
 		});
     };
     $("#iAddEditResource .submit input").click(function(){

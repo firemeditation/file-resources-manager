@@ -72,6 +72,7 @@ var lastOtime = function(utime){
 	return theTime;
 };
 var getResourceListFromServer = function(){
+	$("#nowloadbox").fadeIn(200);
 	$("#resource-main-list").html("")
 	$.get("webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit , function(data){
 		var json = $.parseJSON(data);
@@ -124,6 +125,7 @@ var getResourceListFromServer = function(){
 			$("#resource-main-list").append(onebook);
 			i++;
 		});
+		$("#nowloadbox").fadeOut(200);
 	});
 };
 

@@ -33,9 +33,10 @@ var doSearch = function(){
 
 // begin 显示基本的查看资源的资源列表
 var showTheBasicResourceList = function(){
-	$("#main-box #resource-list").load("static/iResourceList.htm")
-		$.getScript("static/iResourceList.js")
-		$("#main-box #resource-list").fadeIn();
+	$("#main-box #resource-list").load("static/iResourceList.htm",function(){
+		$.getScript("static/iResourceList.js");
+	});
+	$("#main-box #resource-list").fadeIn();
 }
 // end 显示基本的查看资源的资源列表
 
@@ -80,7 +81,6 @@ var onloadGetUserinfo = function(){
 
 $(document).ready(function(){
 	onloadGetUserinfo();
-	
 	//检查端口cookie
 	var local_client_port_cookie = $.cookie('local_client_port');
 	if (local_client_port_cookie != undefined) {
@@ -154,10 +154,14 @@ $(document).ready(function(){
 	//begin 点击新建资源
 	$("#top-kongzhi .xinjian").click(function(){
 		if(login_user.UPower.resource.origin < 2){ return }
+		$("#nowloadbox").fadeIn(200);
 		hideAll();
-		$("#main-box #resource-add-box-true").load("static/iAddResource.htm")
-		$.getScript("static/iAddResource.js")
-		$("#main-box #resource-add-box").fadeIn();
+		$("#main-box #resource-add-box-true").load("static/iAddResource.htm", function(){
+			$.getScript("static/iAddResource.js").done(function(){
+				$("#main-box #resource-add-box").fadeIn();
+				$("#nowloadbox").fadeOut(200);
+			});
+		});
 	});
 	//end 点击新建资源
 });
