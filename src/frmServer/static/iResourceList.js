@@ -88,9 +88,15 @@ var getResourceListFromServer = function(){
 			$("#next-and-prev .next").show();
 		};
 		var i = 0;
+		
+		md_converter = new Markdown.Converter();
+		
 		$(json.List).each(function(){
 			//var li = $.parseJSON(this.MetaData);
 			var ptime = lastOtime(this.Table.Btime);
+			
+			var md_c = md_converter.makeHtml(this.Table.Info);
+			
 			var onebook = '<div class="one-resource-main" hashid="'+this.Table.HashId+'">\
 			<div class="one-resource-total-info">\
 				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
@@ -104,7 +110,8 @@ var getResourceListFromServer = function(){
 			</div>\
 			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;最后操作时间：'+ptime+'</p>\
 			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
-			<p>'+this.Table.Info+'</p></div>\
+			<p>简介：</p>\
+			<div class="markdown">'+md_c+'</div></div>\
 			<div class="resource-all-file" showit="no">\
 				<div class="now-dir">··/所在文件夹（如果上级没有则斜线后没内容）</div>\
 				<ul class="file-list">\

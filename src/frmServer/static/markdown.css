@@ -1,0 +1,80 @@
+.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 {
+    font-weight: bold;
+    margin: 0.75em 0;
+}
+.markdown h1 {
+    font-size: 2em;
+}
+.markdown h2 {
+    font-size: 1.8em;
+}
+.markdown h3 {
+    font-size: 1.6em;
+}
+.markdown h4 {
+    font-size: 1.4em;
+}
+.markdown h5 {
+    font-size: 1.2em;
+}
+.markdown h6 {
+    font-size: 1.0em;
+}
+.markdown blockquote {
+    padding-left: 10px;
+    border-left: 3px #cfd7ff solid;
+}
+.markdown ul{
+    margin-left: 2em;
+	list-style: disc;
+}
+.markdown ol {
+    margin-left: 2em;
+	list-style: decimal;
+}
+.markdown pre {
+    margin: 10px;
+    background-color: #e1e9ff;
+    padding: 10px;
+    color: #727272;
+    overflow: auto;
+}
+
+.markdown code {
+    font-size: 14px;
+    font-family: 'monospace','Monaco';
+}
+.markdown p {
+    margin: 0;
+    padding: 0;
+    text-indent:2em;
+}
+.markdown li{
+	margin:0;
+	padding:0;
+	margin-left:2em;
+}
+.markdown li p{
+	text-indent:0;
+}
+.markdown b {
+	font-weight:bold;
+}
+.markdown strong {
+	font-weight:bold;
+}
+.markdown em {
+	font-style: italic;
+}
+.markdown a:link{
+	color: #4d6af2;
+	text-decoration: none;
+}
+.markdown a:visited{
+	color: #4d6af2;
+	text-decoration: none;
+}
+.markdown a:hover{
+	color: #999999;
+	text-decoration: none;
+}
