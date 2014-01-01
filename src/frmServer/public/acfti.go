@@ -15,15 +15,17 @@ type acftiAid struct {
 //正式
 type AsyncCacheFullTextIndex struct {
 	lock *sync.RWMutex
-	waittime int64
+	modewait int64
+	wordwait int64
 	Add []acftiAid
 	Del []acftiAid
 	Up []acftiAid
+	KeyWord []string
 }
 
 //NewAsyncCachFullTextIndex 新建异步缓存全文索引
-func NewAsyncCachFullTextIndex (waittime int64) *AsyncCacheFullTextIndex {
-	return &AsyncCacheFullTextIndex{new(sync.RWMutex), waittime, []acftiAid{}, []acftiAid{}, []acftiAid{}}
+func NewAsyncCachFullTextIndex (modewait, wordwait int64) *AsyncCacheFullTextIndex {
+	return &AsyncCacheFullTextIndex{new(sync.RWMutex), modewait, wordwait, []acftiAid{}, []acftiAid{}, []acftiAid{}, []string{}}
 }
 
 // Insert 插入一条待处理数据
@@ -38,6 +40,13 @@ func (acf *AsyncCacheFullTextIndex) Insert(mode int, hashid, ctype string){
 		case 3:
 			acf.Up = append(acf.Up, acftiAid{hashid, ctype})
 	}
+}
+
+// InsertWord 插入个待处理关键词
+func  (acf *AsyncCacheFullTextIndex) InsertWord(word string){
+	acf.lock.Lock()
+	defer acf.lock.Unlock()
+	acf.KeyWord = append(acf.KeyWord, word)
 }
 
 // Search 执行搜索
