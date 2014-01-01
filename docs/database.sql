@@ -234,3 +234,14 @@ create index rr_rfhashid on resourceRelation using btree (be_quote);
 ALTER TABLE resourceRelation ADD FOREIGN KEY (quote_side) REFERENCES resourceGroup (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 ALTER TABLE resourceRelation ADD FOREIGN KEY (quote_side) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
 ALTER TABLE resourceRelation ADD FOREIGN KEY (be_quote) REFERENCES resourceItem (hashid) ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
+-- 异步缓存全文索引 Async Cache Full Text Index
+drop table if exists acfti cascade;
+create table acfti (
+	key_name char(100), --关键词
+	rg_index text, --资源聚集的所有hashid的索引，用逗号分割
+	rf_index text, --资源文件的所有hashid的索引，用逗号分割
+	rt_index text --资源文本的所有hashid的索引，用逗号分割
+);
+ALTER TABLE acfti ADD UNIQUE (key_name);
