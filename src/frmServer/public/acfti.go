@@ -5,6 +5,7 @@ package public
 import(
 	"sync"
 	"fmt"
+	"time"
 )
 
 // 辅助
@@ -113,3 +114,30 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 }
 
 // AsyncCache 异步缓存
+func (acf *AsyncCacheFullTextIndex) AsyncCache(){
+	for {
+		time.Sleep(time.Duration(acf.wait)*time.Second)
+		acf.lock.Lock()
+		defer acf.lock.Unlock()
+		acf.cacheAdd()
+		acf.cacheDel()
+		acf.cacheUp()
+		acf.cacheKeyWord()
+	}
+}
+
+func (acf *AsyncCacheFullTextIndex) cacheAdd(){
+	
+}
+
+func (acf *AsyncCacheFullTextIndex) cacheDel(){
+	
+}
+
+func (acf *AsyncCacheFullTextIndex) cacheUp(){
+	
+}
+
+func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
+	
+}
