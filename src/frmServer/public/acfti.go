@@ -10,7 +10,7 @@ import(
 
 // 辅助
 type acftiAid struct {
-	HashID string
+	HashId string
 	Type string  //可选择的：rg、rf、rt
 }
 
@@ -119,25 +119,44 @@ func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 		time.Sleep(time.Duration(acf.wait)*time.Second)
 		acf.lock.Lock()
 		defer acf.lock.Unlock()
-		acf.cacheAdd()
 		acf.cacheDel()
+		acf.cacheAdd()
 		acf.cacheUp()
 		acf.cacheKeyWord()
 	}
 }
 
+// 缓存新添加的
 func (acf *AsyncCacheFullTextIndex) cacheAdd(){
 	
 }
 
+// 缓存删除的，其实就是删除掉已经删除了的数据
 func (acf *AsyncCacheFullTextIndex) cacheDel(){
-	
+	del_pre , _ := DbConn.Prepare("delete from acfti where htype = $1 and hashid = $2")
+	for _, beDel := range acf.Del {
+		switch beDel.Type {
+			case "rg":
+				del_pre.Exec(1, beDel.HashId)
+			case "rf":
+				del_pre.Exec(2, beDel.HashId)
+			case "rt":
+				del_pre.Exec(3, beDel.HashId)
+		}
+	}
 }
 
+// 缓存得到更新的
 func (acf *AsyncCacheFullTextIndex) cacheUp(){
 	
 }
 
+// 缓存新的关键词
 func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 	
+}
+
+// 获取所有现有关键词
+func (acf *AsyncCacheFullTextIndex) getAllKeyWord() (allword []string) {
+	return
 }
