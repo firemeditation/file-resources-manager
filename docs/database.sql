@@ -241,10 +241,11 @@ drop table if exists acfti cascade;
 create table acfti (
 	key_word char(100), --关键词
 	uid int, -- 所在机构的id
-	rg_index text, --资源聚集的所有hashid的索引，用逗号分割
-	rf_index text, --资源文件的所有hashid的索引，用逗号分割
-	rt_index text --资源文本的所有hashid的索引，用逗号分割
+	hashid char(40), --是哪个HashId
+	htype int  --对应为1：rg、2：rf、3：rt
 );
-ALTER TABLE acfti ADD UNIQUE (key_word);
-CREATE INDEX acftikeywordindex ON acfti USING btree (uid);
+CREATE INDEX acftikeywordindex ON acfti USING btree (key_word);
+CREATE INDEX acftiuidindex ON acfti USING btree (uid);
+CREATE INDEX acftihashidindex ON acfti USING btree (hashid);
+CREATE INDEX acftihtypeindex ON acfti USING btree (htype);
 ALTER TABLE acfti ADD FOREIGN KEY (uid) REFERENCES units (id) ON UPDATE NO ACTION ON DELETE SET DEFAULT;
