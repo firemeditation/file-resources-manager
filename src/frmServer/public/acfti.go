@@ -6,12 +6,19 @@ import(
 	"sync"
 	"fmt"
 	"time"
+	"strings"
 )
 
 // 辅助
 type acftiAid struct {
 	HashId string
 	Type string  //可选择的：rg、rf、rt
+}
+
+// 一个搜索后结果
+type acftiOneSearch struct {
+	HashId string
+	UnitId uint16
 }
 
 //正式
@@ -128,7 +135,10 @@ func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 
 // 缓存新添加的
 func (acf *AsyncCacheFullTextIndex) cacheAdd(){
-	
+	if len(acf.Add) == 0 {
+		return
+	}
+	//allwords := acf.getAllKeyWord()
 }
 
 // 缓存删除的，其实就是删除掉已经删除了的数据
@@ -148,15 +158,49 @@ func (acf *AsyncCacheFullTextIndex) cacheDel(){
 
 // 缓存得到更新的
 func (acf *AsyncCacheFullTextIndex) cacheUp(){
-	
+	if len(acf.Up) == 0 {
+		return
+	}
+	//allwords := acf.getAllKeyWord()
 }
 
 // 缓存新的关键词
 func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
-	
+	if len(acf.KeyWord) == 0 {
+		return
+	}
 }
 
 // 获取所有现有关键词
 func (acf *AsyncCacheFullTextIndex) getAllKeyWord() (allword []string) {
+	allkey ,  _ := DbConn.Query("select key_word from acfti group by key_word")
+	for allkey.Next(){
+		var oneword string
+		allkey.Scan(&oneword)
+		oneword = strings.TrimSpace(oneword)
+		allword = append(allword, oneword)
+	}
+	return
+}
+
+// 从ResourceGroup（资源聚集）中搜索
+func (acf *AsyncCacheFullTextIndex) searchFromRg (keyword string) (searchre []acftiOneSearch){
+	sql := "select hashid, units_id from resourceGroup where name like '%"+keyword+"%' or info like '%"+keyword+"%' or metadata->>'Author' like '%"+keyword+"%' or metadata->>'Editor' like '%"+keyword+"%' or metadata->>'ISBN' like '%"+keyword+"%'"
+	search, _ := DbConn.Query(sql)
+	for search.Next() {
+		onesr := acftiOneSearch{}
+		search.Scan(&onesr.HashId, &onesr.UnitId)
+		searchre = append(searchre, onesr)
+	}
+	return
+}
+
+// 从ResourceFile（资源文件）中搜索，暂缓实现
+func (acf *AsyncCacheFullTextIndex) searchFromRf (keyword string) (searchre []acftiOneSearch){
+	return
+}
+
+// 从ResourceText（资源文本）中搜索，暂缓实现
+func (acf *AsyncCacheFullTextIndex) searchFromRt (keyword string) (searchre []acftiOneSearch){
 	return
 }
