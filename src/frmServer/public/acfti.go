@@ -25,7 +25,6 @@ type acftiOneSearch struct {
 type AsyncCacheFullTextIndex struct {
 	lock *sync.RWMutex
 	wait int64
-	Add []acftiAid
 	Del []acftiAid
 	Up []acftiAid
 	KeyWord []string
@@ -33,7 +32,7 @@ type AsyncCacheFullTextIndex struct {
 
 //NewAsyncCachFullTextIndex 新建异步缓存全文索引
 func NewAsyncCachFullTextIndex (modewait int64) *AsyncCacheFullTextIndex {
-	return &AsyncCacheFullTextIndex{new(sync.RWMutex), modewait , []acftiAid{}, []acftiAid{}, []acftiAid{}, []string{}}
+	return &AsyncCacheFullTextIndex{new(sync.RWMutex), modewait , []acftiAid{}, []acftiAid{}, []string{}}
 }
 
 // Insert 插入一条待处理数据
@@ -42,10 +41,9 @@ func (acf *AsyncCacheFullTextIndex) Insert(mode int, hashid, htype string){
 	defer acf.lock.Unlock()
 	switch mode {
 		case 1:
-			acf.Add = append(acf.Add, acftiAid{hashid, htype})
-		case 2:
 			acf.Del = append(acf.Del, acftiAid{hashid, htype})
-		case 3:
+		case 2:
+			hashid = "'"+hashid+"'"
 			acf.Up = append(acf.Up, acftiAid{hashid, htype})
 	}
 }
@@ -127,18 +125,9 @@ func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 		acf.lock.Lock()
 		defer acf.lock.Unlock()
 		acf.cacheDel()
-		acf.cacheAdd()
 		acf.cacheUp()
 		acf.cacheKeyWord()
 	}
-}
-
-// 缓存新添加的
-func (acf *AsyncCacheFullTextIndex) cacheAdd(){
-	if len(acf.Add) == 0 {
-		return
-	}
-	//allwords := acf.getAllKeyWord()
 }
 
 // 缓存删除的，其实就是删除掉已经删除了的数据
@@ -161,13 +150,44 @@ func (acf *AsyncCacheFullTextIndex) cacheUp(){
 	if len(acf.Up) == 0 {
 		return
 	}
-	//allwords := acf.getAllKeyWord()
+	up_rg := []string{}
+	up_rf := []string{}
+	up_rt := []string{}
+	for _, oneA := range acf.Up {
+		switch oneA.Type {
+			case "rg":
+				up_rg = append(up_rg, oneA.HashId)
+			case "rf":
+				up_rf = append(up_rf, oneA.HashId)
+			case "rt":
+				up_rt = append(up_rt, oneA.HashId)
+		}
+	}
+	upstring := strings.Join(up_rg, ", ")
+	allwords := acf.getAllKeyWord()
+	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
+	for _, oneWord := range allwords {
+		searchRg := acf.searchFromRg(oneWord, upstring)
+		for _, oneS := range searchRg {
+			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
+		}
+	}
 }
 
 // 缓存新的关键词
 func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 	if len(acf.KeyWord) == 0 {
 		return
+	}
+	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
+	for _, oneWord := range acf.KeyWord {
+		searchRg := acf.searchFromRg(oneWord,"0")
+		if len(searchRg) == 0 {
+			continue
+		}
+		for _, oneS := range searchRg {
+			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
+		}
 	}
 }
 
@@ -184,8 +204,13 @@ func (acf *AsyncCacheFullTextIndex) getAllKeyWord() (allword []string) {
 }
 
 // 从ResourceGroup（资源聚集）中搜索
-func (acf *AsyncCacheFullTextIndex) searchFromRg (keyword string) (searchre []acftiOneSearch){
-	sql := "select hashid, units_id from resourceGroup where name like '%"+keyword+"%' or info like '%"+keyword+"%' or metadata->>'Author' like '%"+keyword+"%' or metadata->>'Editor' like '%"+keyword+"%' or metadata->>'ISBN' like '%"+keyword+"%'"
+func (acf *AsyncCacheFullTextIndex) searchFromRg (keyword string, hashstring string) (searchre []acftiOneSearch){
+	var sql string
+	if hashstring == "0"{
+		sql = "select hashid, units_id from resourceGroup where name like '%"+keyword+"%' or info like '%"+keyword+"%' or metadata->>'Author' like '%"+keyword+"%' or metadata->>'Editor' like '%"+keyword+"%' or metadata->>'ISBN' like '%"+keyword+"%'"
+	}else{
+		sql = "select hashid, units_id from resourceGroup where (name like '%"+keyword+"%' or info like '%"+keyword+"%' or metadata->>'Author' like '%"+keyword+"%' or metadata->>'Editor' like '%"+keyword+"%' or metadata->>'ISBN' like '%"+keyword+"%') and hashid in ( "+hashstring+" )"
+	}
 	search, _ := DbConn.Query(sql)
 	for search.Next() {
 		onesr := acftiOneSearch{}
