@@ -197,21 +197,26 @@ func (acf *AsyncCacheFullTextIndex) cacheUp(){
 	up_rg := []string{}
 	up_rf := []string{}
 	up_rt := []string{}
+	del_pre, _ := DbConn.Prepare("delete from acfti where htype = $1 and hashid = $2")
 	for _, oneA := range acf.Up {
 		switch oneA.Type {
 			case "rg":
 				up_rg = append(up_rg, oneA.HashId)
+				del_pre.Exec(1, oneA.HashId)
 			case "rf":
 				up_rf = append(up_rf, oneA.HashId)
+				del_pre.Exec(2, oneA.HashId)
 			case "rt":
 				up_rt = append(up_rt, oneA.HashId)
+				del_pre.Exec(3, oneA.HashId)
 		}
 	}
-	upstring := strings.Join(up_rg, ", ")
+	
+	upstring_rg := strings.Join(up_rg, ", ")
 	allwords := acf.getAllKeyWord()
 	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
 	for _, oneWord := range allwords {
-		searchRg := acf.searchFromRg(oneWord, upstring)
+		searchRg := acf.searchFromRg(oneWord, upstring_rg)
 		for _, oneS := range searchRg {
 			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
 		}
