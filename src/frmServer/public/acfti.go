@@ -186,6 +186,7 @@ func (acf *AsyncCacheFullTextIndex) cacheDel(){
 				del_pre.Exec(3, beDel.HashId)
 		}
 	}
+	acf.Del = []acftiAid{}
 }
 
 // 缓存得到更新的
@@ -215,6 +216,7 @@ func (acf *AsyncCacheFullTextIndex) cacheUp(){
 			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
 		}
 	}
+	acf.Up = []acftiAid{}
 }
 
 // 缓存新的关键词
@@ -232,6 +234,7 @@ func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
 		}
 	}
+	acf.KeyWord = []string{}
 }
 
 // 获取所有现有关键词
