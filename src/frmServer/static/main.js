@@ -1,5 +1,8 @@
 var local_client_port = 9876;
 
+var search_word = ""; //正在搜索的关键词
+var search_type = "rg";  //搜索类型，可选rg、rf、rt
+
 var login_user;  //登录的用户信息
 
 // 隐藏一切需要隐藏的
@@ -9,6 +12,15 @@ var hideAll = function(){
 	$("#main-box #resource-add-box").hide();
 	$("html, body").animate({scrollTop:0}, 'slow')
 };
+
+// begin 显示基本的查看资源的资源列表
+var showTheBasicResourceList = function(){
+	$("#main-box #resource-list").load("static/iResourceList.htm",function(){
+		$.getScript("static/iResourceList.js");
+	});
+	$("#main-box #resource-list").fadeIn();
+}
+// end 显示基本的查看资源的资源列表
 
 // doSearch 执行搜索框的搜索业务
 var doSearch = function(){
@@ -28,17 +40,11 @@ var doSearch = function(){
 		};
 	}else{
 		//执行其他搜索
+		search_word = search_text;
+		hideAll();
+		showTheBasicResourceList();
 	};
 };
-
-// begin 显示基本的查看资源的资源列表
-var showTheBasicResourceList = function(){
-	$("#main-box #resource-list").load("static/iResourceList.htm",function(){
-		$.getScript("static/iResourceList.js");
-	});
-	$("#main-box #resource-list").fadeIn();
-}
-// end 显示基本的查看资源的资源列表
 
 // checkClientStatus 检查客户端状态
 var checkClientStatus = function(){
@@ -142,6 +148,8 @@ $(document).ready(function(){
 	//begin 点击查看资源
 	$("#top-kongzhi .chakan").click(function(){
 		hideAll();
+		search_word = "";
+		 $("#top-kongzhi .soutext").val("");
 		showTheBasicResourceList();
 	});
 	//end 点击查看资源

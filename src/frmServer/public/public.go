@@ -24,6 +24,8 @@ var LogInfo *log.Logger  //日志
 var ErrLog *log.Logger  //错误日志
 var GlobalLock *GlobalResourceLock  //全局资源锁
 
+var SearchCache *AsyncCacheFullTextIndex //搜索缓存
+
 var GlobalRelativePath string //全局相对路径
 
 func StartSystem() {
@@ -35,7 +37,9 @@ func StartSystem() {
 	DbConn = connDB()  //初始化数据库连接
 	prepareLog()  //准备日志文件
 	GlobalLock = NewGlobalResourceLock()  //启动全局资源锁
+	SearchCache = NewAsyncCachFullTextIndex(100)
 	go regularClean()
+	go SearchCache.AsyncCache()
 }
 
 // regularClean 定时清理

@@ -74,7 +74,15 @@ var lastOtime = function(utime){
 var getResourceListFromServer = function(){
 	$("#nowloadbox").fadeIn(200);
 	$("#resource-main-list").html("")
-	$.get("webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit , function(data){
+	var server_word = "";
+	if(search_word === ""){
+		server_word = "webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit
+		$("#resource-list .allListBookCountTishi").text("本社共有图书")
+	}else{
+		server_word = "webInterface?type=resource-list&key_word="+search_word+"&search_type="+search_type+"&from="+iResourceList_from+"&limit="+iResourceList_limit
+		$("#resource-list .allListBookCountTishi").text("共找到图书")
+	}
+	$.get(server_word , function(data){
 		var json = $.parseJSON(data);
 		$("#resource-list .allListBookCount").text(json.Count);
 		iResourceList_count = json.Count;
@@ -88,6 +96,10 @@ var getResourceListFromServer = function(){
 		}else{
 			$("#next-and-prev .next").show();
 		};
+		if($("#resource-list .allListBookCount").text() == '0'){
+			$("#next-and-prev .next").hide();
+			$("#next-and-prev .prev").hide();
+		}
 		var i = 0;
 		
 		md_converter = new Markdown.Converter();
