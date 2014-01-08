@@ -22,6 +22,12 @@ var showTheBasicResourceList = function(){
 }
 // end 显示基本的查看资源的资源列表
 
+// 清除搜索带来的影响
+var searchClean = function(){
+	search_word = "";
+	$("#top-kongzhi .soutext").val("");
+}
+
 // doSearch 执行搜索框的搜索业务
 var doSearch = function(){
 	var search_change_port_reg = new RegExp("^client.port:([0-9]+)$");
@@ -145,28 +151,30 @@ $(document).ready(function(){
 	//end 点击客户端状态
 	
 	$("#top-kongzhi .userinfo").click(function(){
+		$("#top-kongzhi .soutext").val("");
 		hideAll();
 	});
 	
 	//begin 点击查看资源
 	$("#top-kongzhi .chakan").click(function(){
 		hideAll();
-		search_word = "";
-		 $("#top-kongzhi .soutext").val("");
+		searchClean();
 		showTheBasicResourceList();
 	});
 	//end 点击查看资源
 	
 	$("#top-kongzhi .usehelp").click(function(){
 		hideAll();
+		$("#top-kongzhi .soutext").val("");
 		$("#main-box #help-box").fadeIn();
 	});
 	
 	//begin 点击新建资源
 	$("#top-kongzhi .xinjian").click(function(){
 		if(login_user.UPower.resource.origin < 2){ return }
-		$("#nowloadbox").fadeIn(200);
 		hideAll();
+		$("#nowloadbox").fadeIn(200);
+		searchClean();
 		$("#main-box #resource-add-box-true").load("static/iAddResource.htm", function(){
 			$.getScript("static/iAddResource.js").done(function(){
 				$("#main-box #resource-add-box").fadeIn();

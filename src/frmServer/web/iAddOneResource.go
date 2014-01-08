@@ -45,6 +45,7 @@ func iAddOneResource(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Reques
 		fmt.Fprint(w,"{\"err\":\"数据库错误，无法添加\"}")
 		return
 	}
+	SearchCache.Insert("up", rgt.HashId, "rg")
 	
 	n_rgstatus, err := DbConn.Prepare("insert into resourceGroupStatus (hashid) values ($1)")
 	

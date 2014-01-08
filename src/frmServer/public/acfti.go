@@ -36,11 +36,11 @@ func NewAsyncCachFullTextIndex (modewait int64) *AsyncCacheFullTextIndex {
 }
 
 // Insert 插入一条待处理数据
-func (acf *AsyncCacheFullTextIndex) Insert(mode int, hashid, htype string){
+func (acf *AsyncCacheFullTextIndex) Insert(mode, hashid, htype string){
 	acf.lock.Lock()
 	defer acf.lock.Unlock()
 	switch mode {
-		case 1:
+		case "del":
 			candel := true
 			for _, one := range acf.Del {
 				if one.HashId == hashid && one.Type == htype {
@@ -51,7 +51,7 @@ func (acf *AsyncCacheFullTextIndex) Insert(mode int, hashid, htype string){
 			if candel == true {
 				acf.Del = append(acf.Del, acftiAid{hashid, htype})
 			}
-		case 2:
+		case "up":
 			canup := true
 			for _, one := range acf.Up {
 				if one.HashId == hashid && one.Type == htype {
@@ -85,7 +85,6 @@ func  (acf *AsyncCacheFullTextIndex) InsertWord(word string){
 // SearchString 返回一个逗号分割的字符串
 func (acf *AsyncCacheFullTextIndex) SearchString (key_word, htype string, uid uint16) (hashids string, key_count uint64){
 	hashid, key_count := acf.Search(key_word, htype, uid)
-	fmt.Println("SearchString获取完毕")
 	newhash := make([]string, 0, len(hashid))
 	for _, one := range hashid {
 		one = "'" + one + "'"
@@ -116,13 +115,10 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 	sql1_hashid := "select hashid, uid " + sql1
 	
 	DbConn.QueryRow(sql1_count, key_word).Scan(&key_count)
-	fmt.Println("关键词", key_word)
 	if key_count == 0 {
 		// 如果关键词索引里没有的处理方法
 		// 加入异步缓存的KeyWord列表，然后做简单的标题搜索
-		fmt.Println("没有关键词")
 		acf.InsertWord(key_word)
-		fmt.Println("插入InsertWord")
 		sql2 := "select hashid from "
 		switch htype {
 			case "rg":
@@ -136,7 +132,6 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 		if uid != 0 {
 			sql2 += fmt.Sprintf(" and units_id = %v",uid)
 		}
-		fmt.Println("sql2是",sql2)
 		key_index2 ,  _ := DbConn.Query(sql2)
 		for key_index2.Next(){
 			var one_hashid string
@@ -234,7 +229,15 @@ func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 		return
 	}
 	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
+	sql_del, _ := DbConn.Prepare("delete from acfti where key_word = $1")
 	for _, oneWord := range acf.KeyWord {
+		sql_del.Exec(oneWord)  //为了以防万一重复了，删除所有的这个关键词的项目
+		
+		sql_p.Exec(oneWord, 1, "0000000000000000000000000000000000000000", 1)  //写入站位的全零项目
+		sql_p.Exec(oneWord, 1, "0000000000000000000000000000000000000000", 2)  //写入站位的全零项目
+		sql_p.Exec(oneWord, 1, "0000000000000000000000000000000000000000", 3)  //写入站位的全零项目
+		
+		// begin 处理ResourceGroup的搜索
 		searchRg := acf.searchFromRg(oneWord,"0")
 		if len(searchRg) == 0 {
 			continue
@@ -242,6 +245,10 @@ func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 		for _, oneS := range searchRg {
 			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
 		}
+		// end 处理ResourceGroup的搜索
+		
+		// 处理ResourceFile的搜索 TODO
+		// 处理ResourceText的搜索 TODO
 	}
 	acf.KeyWord = []string{}
 }
@@ -270,7 +277,9 @@ func (acf *AsyncCacheFullTextIndex) searchFromRg (keyword string, hashstring str
 	for search.Next() {
 		onesr := acftiOneSearch{}
 		search.Scan(&onesr.HashId, &onesr.UnitId)
-		searchre = append(searchre, onesr)
+		if onesr.UnitId != 1 {
+			searchre = append(searchre, onesr)
+		}
 	}
 	return
 }

@@ -2,6 +2,7 @@ $("#iAddEditResourceUploadForm .submit input[name='close']").click(function(){
 	$("#allwhite").hide().html("");
 	if( $("#allwhite").attr("opentype") == "aer" ){
 		hideAll();
+		searchClean();
 		showTheBasicResourceList();
 	}
 });
@@ -19,6 +20,7 @@ $("#iAddEditResourceUploadForm .submit input[name='submit']").click(function(){
 	$("#allwhite").hide().html("");
 	if( $("#allwhite").attr("opentype") == "aer" ){
 		hideAll();
+		searchClean();
 		showTheBasicResourceList();
 	}
 });

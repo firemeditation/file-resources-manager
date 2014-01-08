@@ -80,12 +80,9 @@ func iResourceList(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 			}
 		}
 	}else{
-		fmt.Println("开始搜索")
-		search_re, thecount := SearchCache.SearchString(key_word, search_type, theUser.UnitId)
-		fmt.Println("获得结果",search_re, thecount)
+		search_re, _ := SearchCache.SearchString(key_word, search_type, theUser.UnitId)
 		if len(strings.TrimSpace(search_re)) != 0 {
 			theSQL := fmt.Sprintf("select hashid, name, rt_id, info, btime, users_id, metadata From resourceGroup WHERE units_id = %v AND hashid IN ( %v ) ORDER BY btime DESC LIMIT %v OFFSET %v ", theUser.UnitId,search_re,limit,from)
-			fmt.Println("搜索的SQL 为", theSQL)
 			rrls_rows, _ := DbConn.Query(theSQL)
 			for rrls_rows.Next(){
 				var rgt returnResourceListListStruct
