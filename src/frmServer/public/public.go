@@ -37,15 +37,19 @@ func StartSystem() {
 	DbConn = connDB()  //初始化数据库连接
 	prepareLog()  //准备日志文件
 	GlobalLock = NewGlobalResourceLock()  //启动全局资源锁
-	SearchCache = NewAsyncCachFullTextIndex(100)
-	go regularClean()
-	go SearchCache.AsyncCache()
+	
+	go regularClean()  //启动定时清理
+	
+	search_time, _ := ServerConfig.GetInt64("run","search_time")
+	SearchCache = NewAsyncCachFullTextIndex(search_time)
+	go SearchCache.AsyncCache()  //启动异步缓存全文索引
 }
 
 // regularClean 定时清理
 func regularClean() {
 	for {
-		time.Sleep(1 * time.Hour)
+		clean_time ,_ := ServerConfig.GetInt64("run","clean_time")
+		time.Sleep(time.Duration(clean_time)*time.Second)
 		GlobalLock.Clean()
 		timeout_time, _ := ServerConfig.GetInt64("user","timeout")
 		UserLoginStatus.Clean(timeout_time)

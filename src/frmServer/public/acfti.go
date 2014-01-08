@@ -165,8 +165,6 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 	for {
 		time.Sleep(time.Duration(acf.wait)*time.Second)
-		acf.lock.Lock()
-		defer acf.lock.Unlock()
 		acf.cacheDel()
 		acf.cacheUp()
 		acf.cacheKeyWord()
@@ -175,6 +173,8 @@ func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 
 // 缓存删除的，其实就是删除掉已经删除了的数据
 func (acf *AsyncCacheFullTextIndex) cacheDel(){
+	acf.lock.Lock()
+	defer acf.lock.Unlock()
 	del_pre , _ := DbConn.Prepare("delete from acfti where htype = $1 and hashid = $2")
 	for _, beDel := range acf.Del {
 		switch beDel.Type {
@@ -191,6 +191,8 @@ func (acf *AsyncCacheFullTextIndex) cacheDel(){
 
 // 缓存得到更新的
 func (acf *AsyncCacheFullTextIndex) cacheUp(){
+	acf.lock.Lock()
+	defer acf.lock.Unlock()
 	if len(acf.Up) == 0 {
 		return
 	}
@@ -226,6 +228,8 @@ func (acf *AsyncCacheFullTextIndex) cacheUp(){
 
 // 缓存新的关键词
 func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
+	acf.lock.Lock()
+	defer acf.lock.Unlock()
 	if len(acf.KeyWord) == 0 {
 		return
 	}
