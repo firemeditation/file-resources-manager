@@ -25,6 +25,7 @@ $("#resource-main-list .the-resource-name").click(function(){
 	};
 });
 var resourceNameClick = function(self){
+	/*
 	closeOneBookAll($(self).parent().parent(),"resource-all-info");
 	var theone = $(self).parent().parent().children(".resource-all-info");
 	if(theone.attr('showit') == "no"){
@@ -36,7 +37,22 @@ var resourceNameClick = function(self){
 		theone.hide(100);
 		theone.attr('showit',"no");
 	};
+	*/
+	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
+	var hashid = $(self).parent().parent().attr("hashid");
+	var bookname = $(self).parent().parent().children(".one-resource-total-info").children(".the-resource-name").text();
+	$('#resource-one-full').attr("hashid",hashid);
+	$('#resource-one-full .uppon-info-show .resource-all-info').html(allinfo);
+	$('#resource-one-full .the-resource-name').text(bookname);
+	$("#allwhite").show();
+	$('#resource-one-full').show();
+	
 };
+
+var resourceCloseNow = function(self){
+	$("#allwhite").hide();
+	$('#resource-one-full').hide();
+}
 
 $("#resource-main-list .liulan").click(function(){
 	closeOneBookAll($(this).parent().parent().parent(),"resource-all-file");
@@ -113,13 +129,7 @@ var getResourceListFromServer = function(){
 			var onebook = '<div class="one-resource-main" hashid="'+this.Table.HashId+'">\
 			<div class="one-resource-total-info">\
 				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
-				<div class="the-resource-edits">\
-					<div class="shanchu resource-edits-1">删</div>\
-					<div class="shangchuan resource-edits-1">上</div>\
-					<div class="bianji resource-edits-1">编</div>\
-					<div class="liulan resource-edits-1" onclick=resourceLiulanClick(this)>浏</div>\
-					<div class="xiazai resource-edits-1">下</div>\
-				</div>\
+				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
 			</div>\
 			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;最后操作时间：'+ptime+'</p>\
 			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\

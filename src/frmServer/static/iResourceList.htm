@@ -14,13 +14,32 @@
 #next-and-prev .next{
 	float:right;
 }
-#resource-main-list .markdown{
+#resource-one-full .markdown{
 	border: dotted 1px #999;
 	background-color:#f5f5f5;
 	padding:10px;
 	margin:5px;
 }
 </style>
+<!-- begin 弹出的整个图书的信息 -->
+<div id="resource-one-full">
+	<div class="one-resource-total-info">
+		<div class="the-resource-name"></div>
+			<div class="the-resource-edits">
+			<div class="guanbi resource-edits-1" onclick=resourceCloseNow(this)>关</div>
+			<div class="shanchu resource-edits-1">删</div>
+			<div class="shangchuan resource-edits-1">上</div>
+			<div class="bianji resource-edits-1">编</div>
+			<div class="liulan resource-edits-1" onclick=resourceLiulanClick(this)>浏</div>
+			<div class="xiazai resource-edits-1">下</div>
+		</div>
+	</div>
+	<div class="uppon-info-show">
+		<div class="resource-all-info" showit="yes">
+		</div>
+	</div>
+</div>
+<!-- end 弹出的整个图书的信息 -->
 <div class="resource-small-status"><span class="allListBookCountTishi">共有图书</span>&nbsp;<span class="allListBookCount">0</span>&nbsp;本</div>
 <div id="resource-main-list">
 	

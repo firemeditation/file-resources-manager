@@ -243,9 +243,7 @@ a:hover{
 }
 #main-box{
 	width:1000px;
-	left:50%;
-	margin-left:-500px;
-	position: absolute;
+	margin:0 auto;
 	padding-bottom:30px;
 	padding-top:65px;
 }
@@ -278,6 +276,24 @@ a:hover{
 	margin-bottom:15px;
 	margin-top:15px;
 }
+#resource-one-full{
+	position: absolute;
+	width: 900px;
+	height:500px;
+	top:50%;
+	left:50%;
+	margin-top:-250px;
+	margin-left:-450px;
+	background-color:#fff;
+	border: solid 1px #888888;
+	box-shadow: 5px 5px 5px #aaaaaa;
+	z-index:101;
+	display:none;
+}
+#resource-one-full .uppon-info-show{
+	height: 440px;
+	overflow-y:auto;
+}
 #resource-list{
 	display: none;
 }
@@ -286,15 +302,21 @@ a:hover{
 	padding:10px;
 	margin-bottom:20px;
 }
-#resource-list #resource-main-list .one-resource-main{
+#resource-list #resource-main-list .one-resource-main {
 	border-bottom: solid 1px #888888;
 	padding:5px;
 	margin-bottom:20px;
 }
+#resource-one-full .one-resource-total-info{
+	padding:5px;
+	margin:5px;
+	border-bottom: dashed 1px #888888;
+	height:30px;
+}
 #resource-list #resource-main-list .one-resource-total-info{
 	height:30px;
 }
-#resource-list #resource-main-list .the-resource-name{
+#resource-list #resource-main-list .the-resource-name, #resource-one-full .the-resource-name{
 	font-size:20px;
 	font-weight:bold;
 	color:#333333;
@@ -302,12 +324,16 @@ a:hover{
 	line-height:30px;
 	cursor:pointer;
 }
-#resource-list #resource-main-list .the-resource-edits{
+#resource-list #resource-main-list .the-little-info{
+	float:right;
+	text-align:right;
+	line-height:15px;
+}
+#resource-one-full .the-resource-edits{
 	float:right;
 }
-#resource-list #resource-main-list .resource-edits-1{
+#resource-one-full .resource-edits-1{
 	border-right: solid 1px #888888;
-	border-top: solid 1px #888888;
 	float:right;
 	color:#333333;
 	font-size:15px;
@@ -318,15 +344,18 @@ a:hover{
 	text-align:center;
 	cursor:pointer;
 }
-#resource-list #resource-main-list .resource-all-info{
+#resource-one-full .resource-all-info{
 	padding:5px;
-	border-top: dashed 1px #888888;
-	display:none;
-	width:100%;
 	font-size:14px;
 	line-height:200%;
 }
+#resource-list #resource-main-list .resource-all-info{
+	display:none;
+}
 #resource-list #resource-main-list .resource-all-file{
+	display:none;
+}
+#resource-one-full .resource-all-file{
 	padding:5px;
 	border-top: dashed 1px #888888;
 	display:none;
