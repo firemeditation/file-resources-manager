@@ -97,7 +97,7 @@ a:hover{
 	display:none;
 }
 #showBackupRecord{
-	position: absolute;
+	position:fixed;
 	width: 700px;
 	height: 400px;
 	top:50%;
@@ -277,7 +277,7 @@ a:hover{
 	margin-top:15px;
 }
 #resource-one-full{
-	position: absolute;
+	position:fixed;
 	width: 900px;
 	height:500px;
 	top:50%;
