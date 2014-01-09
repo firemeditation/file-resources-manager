@@ -40,6 +40,8 @@ func webInterface(w http.ResponseWriter, r *http.Request){
 			iAddOneResource(theUser, w, r)
 		case "resource-list":
 			iResourceList(theUser, w, r)
+		case "resource-file":
+			iResourceFile(theUser, w, r)
 		default:
 			fmt.Fprint(w,"{\"err\":\"请求的接口不存在\"}")
 	}
