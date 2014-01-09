@@ -87,10 +87,10 @@ var showBigJsonLevel = function(json){
 
 var showChildList = function(self){
 	theUl = $(self).parent().children(".file-list-2")
-	$("#resource-one-full .resource-all-file .file-list-2").each(function(){
-		$(this).hide().attr("show","no");
-	});
 	if(theUl.attr("show") == "no"){
+		$("#resource-one-full .resource-all-file .file-list-2").each(function(){
+			$(this).hide().attr("show","no");
+		});
 		theUl.show();
 		theUl.attr("show","yes")
 	}else{
