@@ -2,6 +2,15 @@ var iResourceList_from = 0;
 var iResourceList_limit = 10;
 var iResourceList_count = 0;
 
+//修改弹出的每本书的详细信息的框的高度
+var changeFullResouceBoxHeight = function(){
+	var windowHeight = $(window).height();
+	var fullboxHeight = windowHeight - 150;
+	var upponHeight = fullboxHeight - 60;
+	$("#resource-one-full").height(fullboxHeight);
+	$("#resource-one-full .uppon-info-show").height(upponHeight);
+}
+
 //begin 图书列表的点击动作
 var closeOneBookAll = function(theone,type){
 	if(type != "resource-all-info"){
@@ -44,10 +53,13 @@ var resourceNameClick = function(self){
 	$('#resource-one-full').attr("hashid",hashid);
 	$('#resource-one-full .uppon-info-show .resource-all-info').html(allinfo);
 	$('#resource-one-full .the-resource-name').text(bookname);
+	changeFullResouceBoxHeight();
 	$("#allwhite").show();
 	$('#resource-one-full').show();
 	
 };
+
+$(window).resize(function(){ changeFullResouceBoxHeight(); });
 
 var resourceCloseNow = function(self){
 	$("#allwhite").hide();

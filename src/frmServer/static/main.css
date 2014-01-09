@@ -280,9 +280,8 @@ a:hover{
 	position:fixed;
 	width: 900px;
 	height:500px;
-	top:50%;
+	top:60px;
 	left:50%;
-	margin-top:-250px;
 	margin-left:-450px;
 	background-color:#fff;
 	border: solid 1px #888888;
