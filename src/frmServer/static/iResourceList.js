@@ -2,10 +2,12 @@ var iResourceList_from = 0;
 var iResourceList_limit = 10;
 var iResourceList_count = 0;
 
+var theBigJSON;
+
 //修改弹出的每本书的详细信息的框的高度
 var changeFullResouceBoxHeight = function(){
 	var windowHeight = $(window).height();
-	var fullboxHeight = windowHeight - 150;
+	var fullboxHeight = windowHeight - 120;
 	var upponHeight = fullboxHeight - 60;
 	$("#resource-one-full").height(fullboxHeight);
 	$("#resource-one-full .uppon-info-show").height(upponHeight);
@@ -34,19 +36,6 @@ $("#resource-main-list .the-resource-name").click(function(){
 	};
 });
 var resourceNameClick = function(self){
-	/*
-	closeOneBookAll($(self).parent().parent(),"resource-all-info");
-	var theone = $(self).parent().parent().children(".resource-all-info");
-	if(theone.attr('showit') == "no"){
-		$("#resource-main-list .resource-all-info").each(function(){$(this).hide(100); $(this).attr('showit','no')});
-		$("#resource-main-list .resource-all-file").each(function(){$(this).hide(100); $(this).attr('showit','no')});
-		theone.show(100);
-		theone.attr('showit',"yes");
-	}else{
-		theone.hide(100);
-		theone.attr('showit',"no");
-	};
-	*/
 	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
 	var hashid = $(self).parent().parent().attr("hashid");
 	var bookname = $(self).parent().parent().children(".one-resource-total-info").children(".the-resource-name").text();
@@ -78,18 +67,57 @@ $("#resource-main-list .liulan").click(function(){
 	};
 });
 
-var resourceLiulanClick = function(self){
-	closeOneBookAll($(self).parent().parent().parent(),"resource-all-file");
-	var theone = $(self).parents(".one-resource-main").children(".resource-all-file");
-	if(theone.attr('showit') == "no"){
-		$("#resource-main-list .resource-all-info").each(function(){$(this).hide(100); $(this).attr('showit','no')});
-		$("#resource-main-list .resource-all-file").each(function(){$(this).hide(100); $(this).attr('showit','no')});
-		theone.show(100);
-		theone.attr('showit',"yes");
+var showBigJsonLevel = function(json){
+	//$("#resource-one-full .resource-all-file .now-dir .true-now").text(path);
+	//$("#resource-one-full .resource-all-file .file-list").html("");
+	var onefile = ''
+	$.each(json, function(name, value){
+		if (value.IsDir == false){
+			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>';
+		}else{
+			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
+			onefile += '<ul class="file-list-2" show="no">'
+			onefile += showBigJsonLevel(json[value.Name].Files)
+			onefile += '</ul></li>'
+		}
+		//$("#resource-one-full .resource-all-file .file-list").append(onefile);
+	});
+	return onefile;
+};
+
+var showChildList = function(self){
+	theUl = $(self).parent().children(".file-list-2")
+	$("#resource-one-full .resource-all-file .file-list-2").each(function(){
+		$(this).hide().attr("show","no");
+	});
+	if(theUl.attr("show") == "no"){
+		theUl.show();
+		theUl.attr("show","yes")
 	}else{
-		theone.hide(100);
-		theone.attr('showit',"no");
+		theUl.hide();
+		theUl.attr("show","no")
+	}
+}
+
+var resourceLiulanClick = function(self){
+	var allinfo = $('#resource-one-full .resource-all-info')
+	var filelist = $('#resource-one-full .resource-all-file')
+	if(allinfo.attr("showit") == "yes"){
+		allinfo.hide().attr("showit","no");
+		filelist.show().attr("showit","yes");
+	}else{
+		filelist.hide().attr("showit","no");
+		allinfo.show().attr("showit","yes");
+		return;
 	};
+	hashid = $('#resource-one-full').attr("hashid");
+	$("#nowloadbox").fadeIn(200);
+	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
+		theBigJSON = $.parseJSON(data);
+		thelist = showBigJsonLevel(theBigJSON);
+		$("#resource-one-full .resource-all-file .file-list").html(thelist);
+		$("#nowloadbox").fadeOut(200);
+	});
 };
 //end 图书列表的点击动作
 

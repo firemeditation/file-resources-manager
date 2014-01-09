@@ -356,27 +356,27 @@ a:hover{
 }
 #resource-one-full .resource-all-file{
 	padding:5px;
-	border-top: dashed 1px #888888;
 	display:none;
-	width:100%;
-	height: 400px;
-	overflow-y:auto;
 }
-#resource-list .file-list li {
+#resource-one-full .file-list ul{
+	padding-left:30px;
+	display:none;
+}
+#resource-one-full .file-list li {
 	padding:5px;
 	line-height: 200%;
 }
-#resource-list .file-list .file-list-type {
+#resource-one-full .file-list .file-list-type {
 	margin:5px;
 	border: solid 1px green;
 	color:green;
 	padding:2px 5px 2px 5px;
 }
-#resource-list .file-list .file-list-name {
+#resource-one-full .file-list .file-list-name {
 	padding:5px 10px 5px 5px;
 	cursor:pointer;
 }
-#resource-list .file-list .file-list-opt {
+#resource-one-full .file-list .file-list-opt {
 	border-right: solid 1px #888888;
 	border-top: solid 1px #888888;
 	color:#333333;
@@ -385,7 +385,7 @@ a:hover{
 	cursor:pointer;
 	padding:2px 4px 2px 4px;
 }
-#resource-list .resource-all-file .now-dir{
+#resource-one-full .resource-all-file .now-dir{
 	padding: 10px 0px 10px 0px;
 	cursor:pointer;
 }

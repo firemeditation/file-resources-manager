@@ -38,6 +38,10 @@ func iResourceFile(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 	for all_file.Next(){
 		onefile := ResourceFileTable{}
 		all_file.Scan(&onefile.HashId, &onefile.PowerLevel, &onefile.Fname, &onefile.Opath)
+		
+		onefile.Fname = strings.TrimSpace(onefile.Fname)
+		onefile.Opath = strings.TrimSpace(onefile.Opath)
+		
 		pathA := strings.Split(onefile.Opath, "/")
 		pathA = pathA[:len(pathA)-1]
 		ResourceFileToTree(all_file_tree, pathA, onefile.Fname, onefile.HashId)
