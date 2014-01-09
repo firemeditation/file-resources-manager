@@ -53,6 +53,10 @@ $(window).resize(function(){ changeFullResouceBoxHeight(); });
 var resourceCloseNow = function(self){
 	$("#allwhite").hide();
 	$('#resource-one-full').hide();
+	var allinfo = $('#resource-one-full .resource-all-info')
+	var filelist = $('#resource-one-full .resource-all-file')
+	filelist.hide().attr("showit","no");
+	allinfo.show().attr("showit","yes");
 }
 
 $("#resource-main-list .liulan").click(function(){
