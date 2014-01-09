@@ -73,9 +73,9 @@ var showBigJsonLevel = function(json){
 	var onefile = ''
 	$.each(json, function(name, value){
 		if (value.IsDir == false){
-			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>';
 		}else{
-			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt">上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
 			onefile += '<ul class="file-list-2" show="no">'
 			onefile += showBigJsonLevel(json[value.Name].Files)
 			onefile += '</ul></li>'
