@@ -20,18 +20,41 @@
 	padding:10px;
 	margin:5px;
 }
+#resource-one-full .resource-delete-all{
+	display:none;
+}
+#resource-one-full .resource-delete-all .jinggao{
+	font-size: 16px;
+	text-align: center;
+	color:red;
+	line-height:200%;
+	padding:20px;
+}
+#resource-one-full .resource-delete-all .submit{
+	text-align: center;
+}
+#resource-one-full .resource-delete-all .submit div{
+	border: solid 1px #888888;
+	text-align:center;
+	padding:5px 10px 5px 10px;
+	margin:30px 100px 30px 100px;
+	cursor:pointer;
+	font-size:14px;
+}
 </style>
+
 <!-- begin 弹出的整个图书的信息 -->
 <div id="resource-one-full">
 	<div class="one-resource-total-info">
 		<div class="the-resource-name"></div>
 		<div class="the-resource-edits">
 			<div class="guanbi resource-edits-1" onclick=resourceCloseNow(this)>关</div>
-			<div class="shanchu resource-edits-1">删</div>
+			<div class="shanchu resource-edits-1" onclick=resourceDeleteAllClick()>删</div>
 			<div class="shangchuan resource-edits-1">上</div>
 			<div class="bianji resource-edits-1">编</div>
-			<div class="liulan resource-edits-1" onclick=resourceLiulanClick(this)>浏</div>
 			<div class="xiazai resource-edits-1">下</div>
+			<div class="liulan resource-edits-1" onclick=resourceLiulanClick()>浏</div>
+			<div class="liulan resource-edits-1" onclick=resourceXiangqingClick()>详</div>
 		</div>
 	</div>
 	<div class="uppon-info-show">
@@ -43,6 +66,13 @@
 				<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">F</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>
 				<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">T</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>
 			</ul>
+		</div>
+		<div class="resource-delete-all">
+			<div class="jinggao">以下操作不可逆且风险极大<br>请一定想清楚是否要执行</div>
+			<div class="submit">
+				<div class="drop">全部删除，包含条目本身</div>
+				<div class="deleteall">只清空文件，保留条目本身</div>
+			</div>
 		</div>
 	</div>
 </div>

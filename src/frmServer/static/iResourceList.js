@@ -132,17 +132,26 @@ var showChildList = function(self){
 	}
 }
 
-var resourceLiulanClick = function(self){
-	var allinfo = $('#resource-one-full .resource-all-info')
-	var filelist = $('#resource-one-full .resource-all-file')
-	if(allinfo.attr("showit") == "yes"){
-		allinfo.hide().attr("showit","no");
-		filelist.show().attr("showit","yes");
-	}else{
-		filelist.hide().attr("showit","no");
-		allinfo.show().attr("showit","yes");
-		return;
-	};
+var irlHideAll = function(){
+	$('#resource-one-full .resource-all-info').hide();
+	$('#resource-one-full .resource-all-file').hide();
+	$('#resource-one-full .resource-delete-all').hide();
+}
+
+var resourceDeleteAllClick = function(){
+	irlHideAll();
+	$('#resource-one-full .resource-delete-all').show();
+}
+
+var resourceXiangqingClick = function(){
+	irlHideAll();
+	$('#resource-one-full .resource-all-info').show();
+}
+
+var resourceLiulanClick = function(){
+	irlHideAll();
+	var filelist = $('#resource-one-full .resource-all-file');
+	filelist.show();
 	hashid = $('#resource-one-full').attr("hashid");
 	$("#nowloadbox").fadeIn(200);
 	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
