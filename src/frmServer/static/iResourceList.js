@@ -71,7 +71,36 @@ $("#resource-main-list .liulan").click(function(){
 	};
 });
 
-var showBigJsonLevel = function(json){
+//点击总的上传
+$("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
+	var hashid = $('#resource-one-full').attr("hashid");
+	var bookname = $('#resource-one-full .the-resource-name').text();
+	$("#allwhite2").load("static/iAddResourceUpload.htm", function(){
+		$("#allwhite2").attr("hashid", hashid);
+		$("#allwhite2").attr("opentype", "irl");
+		$("#allwhite2").attr("bookname", bookname);
+		$("#allwhite2").attr("path", "");
+		$.getScript("static/iAddResourceUpload.js").done(function(){
+			$("#allwhite2").show();
+		});
+	});
+});
+
+var iRLUpFile = function(path){
+	var hashid = $('#resource-one-full').attr("hashid");
+	var bookname = $('#resource-one-full .the-resource-name').text();
+	$("#allwhite2").load("static/iAddResourceUpload.htm", function(){
+		$("#allwhite2").attr("hashid", hashid);
+		$("#allwhite2").attr("opentype", "irl");
+		$("#allwhite2").attr("bookname", bookname);
+		$("#allwhite2").attr("path", path);
+		$.getScript("static/iAddResourceUpload.js").done(function(){
+			$("#allwhite2").show();
+		});
+	});
+}
+
+var showBigJsonLevel = function(json, path){
 	//$("#resource-one-full .resource-all-file .now-dir .true-now").text(path);
 	//$("#resource-one-full .resource-all-file .file-list").html("");
 	var onefile = ''
@@ -79,9 +108,9 @@ var showBigJsonLevel = function(json){
 		if (value.IsDir == false){
 			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>';
 		}else{
-			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt">上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
 			onefile += '<ul class="file-list-2" show="no">'
-			onefile += showBigJsonLevel(json[value.Name].Files)
+			onefile += showBigJsonLevel(json[value.Name].Files, path+value.Name+"/")
 			onefile += '</ul></li>'
 		}
 		//$("#resource-one-full .resource-all-file .file-list").append(onefile);
@@ -118,7 +147,7 @@ var resourceLiulanClick = function(self){
 	$("#nowloadbox").fadeIn(200);
 	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
 		theBigJSON = $.parseJSON(data);
-		thelist = showBigJsonLevel(theBigJSON);
+		thelist = showBigJsonLevel(theBigJSON,'');
 		$("#resource-one-full .resource-all-file .file-list").html(thelist);
 		$("#nowloadbox").fadeOut(200);
 	});
@@ -179,14 +208,6 @@ var getResourceListFromServer = function(){
 			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
 			<p>简介：</p>\
 			<div class="markdown">'+md_c+'</div></div>\
-			<div class="resource-all-file" showit="no">\
-				<div class="now-dir">··/所在文件夹（如果上级没有则斜线后没内容）</div>\
-				<ul class="file-list">\
-					<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">D</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>\
-					<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">F</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>\
-					<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">T</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>\
-				</ul>\
-			</div>\
 		</div>';
 			$("#resource-main-list").append(onebook);
 			i++;

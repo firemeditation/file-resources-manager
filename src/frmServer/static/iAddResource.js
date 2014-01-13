@@ -36,12 +36,13 @@ $.get("webInterface?type=get-resource-type",function(data){
 			if($json.err){
 				alert($json.err)
 			}else{
-				$("#allwhite").show();
-				$("#allwhite").load("static/iAddResourceUpload.htm", function(){
+				$("#allwhite2").show();
+				$("#allwhite2").load("static/iAddResourceUpload.htm", function(){
+					$("#allwhite2").attr("hashid", $json.hashid);
+					$("#allwhite2").attr("opentype", "aer");
+					$("#allwhite2").attr("bookname", $bookname);
+					$("#allwhite2").attr("path", "");
 					$.getScript("static/iAddResourceUpload.js").done(function(){
-						$("#allwhite").attr("hashid", $json.hashid);
-					$("#allwhite").attr("opentype", "aer");
-					$("#allwhite").attr("bookname", $bookname);
 						$("#nowloadbox").fadeOut(200);
 					});
 				});

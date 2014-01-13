@@ -96,6 +96,19 @@ a:hover{
 	background-color:#ffffff;
 	display:none;
 }
+#allwhite2{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	filter: alpha(opacity=90);
+	-moz-opacity:0.9;
+	opacity:0.9;
+	z-index:200;
+	background-color:#ffffff;
+	display:none;
+}
 #showBackupRecord{
 	position:fixed;
 	width: 700px;
