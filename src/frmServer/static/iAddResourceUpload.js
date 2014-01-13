@@ -16,11 +16,18 @@ $("#iAddEditResourceUploadForm .submit input[name='submit']").click(function(){
     var $hashid = inputSafe.CleanAll($("#allwhite").attr("hashid"));
     var $user = login_user.HashId;
     var $bookname = inputSafe.CleanAll($("#allwhite").attr("bookname"));
-    $.getJSON("http://127.0.0.1:"+local_client_port+"/uploadFile?user="+$user+"&bookname="+$bookname+"&local="+$localpath+"&relative="+$relativepath+"&hashid="+$hashid+"&callback=?")
-	$("#allwhite").hide().html("");
-	if( $("#allwhite").attr("opentype") == "aer" ){
-		hideAll();
-		searchClean();
-		showTheBasicResourceList();
-	}
+    $.getJSON("http://127.0.0.1:"+local_client_port+"/uploadFile?user="+$user+"&bookname="+$bookname+"&local="+$localpath+"&relative="+$relativepath+"&hashid="+$hashid+"&callback=?", function(data){
+		if (data.err) {
+			alert(data.err);
+			return
+		}else{
+			alert("已经转向后台上传，具体请查看后台状态。")
+		}
+		$("#allwhite").hide().html("");
+		if( $("#allwhite").attr("opentype") == "aer" ){
+			hideAll();
+			searchClean();
+			showTheBasicResourceList();
+		}
+	})
 });

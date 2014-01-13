@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"os"
 	. "frmPkg"
 )
 
@@ -27,6 +28,13 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 		relative = DirMustEnd(relative)
 	}
 	
+	_, err := os.Stat(localpath)
+	if err != nil {
+		theSend := callback + "({\"err\":\"找不到文件或目录\"})"
+		fmt.Fprint(w, theSend)
+		return
+	}
+	
 	theSend := callback + "({\"client\":\"yes\"})"
 	fmt.Fprintf(w, theSend)
 	
@@ -37,7 +45,9 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	//	backupNum = backupNum - 1
 	//}()
 	
-	_ , err := doUploadResourceFile(user, hashid, localpath, relative)
+	go doUploadResourceFile(user, hashid, localpath, relative, bookname)
+	
+	/*_ , err := doUploadResourceFile(user, hashid, localpath, relative)
 	if err != nil {
 		brstring = "后台上传出错：" + bookname + "：错误：" + fmt.Sprint(err)
 		backupRecord.AddRecord(user, brstring)
@@ -45,4 +55,5 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	
 	brstring = "后台上传完成：" + bookname
 	backupRecord.AddRecord(user, brstring)
+	*/
 }

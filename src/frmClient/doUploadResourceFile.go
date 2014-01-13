@@ -9,7 +9,7 @@ import (
 
 const UploadGoMax = 5  //同时上传的最大进程数
 
-func doUploadResourceFile(userid, resourceid string, originpath, addtopath string) (errA []string, err error) {
+func doUploadResourceFile(userid, resourceid string, originpath, addtopath, bookname string) (errA []string, err error) {
 	ckdir, err := os.Stat(originpath)
 	if err != nil {
 		err = fmt.Errorf("找不到文件或目录：%s", originpath)
@@ -102,6 +102,10 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath strin
 	//wg.Wait()
 	SendSocketBytes(conn, Uint8ToBytes(2), 1)  //发送关闭
 	ReadSocketBytes(conn, 1)
+	
+	brstring := "后台上传完成：" + bookname
+	backupRecord.AddRecord(userid, brstring)
+		
 	return
 }
 
