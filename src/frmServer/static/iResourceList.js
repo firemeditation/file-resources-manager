@@ -73,6 +73,7 @@ $("#resource-main-list .liulan").click(function(){
 
 //点击总的上传
 $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
+	if(login_user.UPower.resource.origin < 2){ return }
 	var hashid = $('#resource-one-full').attr("hashid");
 	var bookname = $('#resource-one-full .the-resource-name').text();
 	$("#allwhite2").load("static/iAddResourceUpload.htm", function(){
@@ -87,6 +88,7 @@ $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 });
 
 var iRLUpFile = function(path){
+	if(login_user.UPower.resource.origin < 2){ return }
 	var hashid = $('#resource-one-full').attr("hashid");
 	var bookname = $('#resource-one-full .the-resource-name').text();
 	$("#allwhite2").load("static/iAddResourceUpload.htm", function(){
@@ -139,6 +141,7 @@ var irlHideAll = function(){
 }
 
 var resourceDeleteAllClick = function(){
+	if(login_user.UPower.resource.origin < 2){ return }
 	irlHideAll();
 	$('#resource-one-full .resource-delete-all').show();
 }
@@ -156,6 +159,7 @@ var resourceLiulanClick = function(){
 	$("#nowloadbox").fadeIn(200);
 	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
 		theBigJSON = $.parseJSON(data);
+		if(json.err){alert(json.err); processServerError(json.err); return;}
 		thelist = showBigJsonLevel(theBigJSON,'');
 		$("#resource-one-full .resource-all-file .file-list").html(thelist);
 		$("#nowloadbox").fadeOut(200);
@@ -182,6 +186,7 @@ var getResourceListFromServer = function(){
 	}
 	$.get(server_word , function(data){
 		var json = $.parseJSON(data);
+		if(json.err){alert(json.err); processServerError(json.err); return;}
 		$("#resource-list .allListBookCount").text(json.Count);
 		iResourceList_count = json.Count;
 		if (iResourceList_from == 0){

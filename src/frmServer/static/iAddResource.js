@@ -34,7 +34,9 @@ $.get("webInterface?type=get-resource-type",function(data){
         .done(function(data){
 			$json = $.parseJSON(data)
 			if($json.err){
-				alert($json.err)
+				alert($json.err);
+				processServerError($json.err);
+				return;
 			}else{
 				$("#allwhite2").show();
 				$("#allwhite2").load("static/iAddResourceUpload.htm", function(){

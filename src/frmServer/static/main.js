@@ -13,6 +13,12 @@ var hideAll = function(){
 	$("html, body").animate({scrollTop:0}, 'slow')
 };
 
+var processServerError(err){
+	if (err == "用户超时" || err == "不是正确的接口请求"){
+		window.location.href='/login'
+	}
+}
+
 // begin 显示基本的查看资源的资源列表
 var showTheBasicResourceList = function(){
 	$("#main-box #resource-list").load("static/iResourceList.htm",function(){
@@ -157,6 +163,7 @@ $(document).ready(function(){
 	
 	//begin 点击查看资源
 	$("#top-kongzhi .chakan").click(function(){
+		if(login_user.UPower.resource.origin < 1){ return }
 		hideAll();
 		searchClean();
 		showTheBasicResourceList();
