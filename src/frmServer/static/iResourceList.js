@@ -12,29 +12,9 @@ var changeFullResouceBoxHeight = function(){
 	$("#resource-one-full").height(fullboxHeight);
 	$("#resource-one-full .uppon-info-show").height(upponHeight);
 }
+$(window).resize(function(){ changeFullResouceBoxHeight(); });
 
-//begin 图书列表的点击动作
-var closeOneBookAll = function(theone,type){
-	if(type != "resource-all-info"){
-		theone.children(".resource-all-info").hide(100);
-		theone.children(".resource-all-info").attr('showit',"no");
-	};
-	if(type != "resource-all-file"){
-		theone.children(".resource-all-file").hide(100);
-		theone.children(".resource-all-file").attr('showit',"no");
-	};
-};
-$("#resource-main-list .the-resource-name").click(function(){
-	closeOneBookAll($(this).parent().parent(),"resource-all-info");
-	var theone = $(this).parent().parent().children(".resource-all-info");
-	if(theone.attr('showit') == "no"){
-		theone.show(100);
-		theone.attr('showit',"yes");
-	}else{
-		theone.hide(100);
-		theone.attr('showit',"no");
-	};
-});
+// 资源图书列表下，点击书名，打开这本书的信息
 var resourceNameClick = function(self){
 	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
 	var hashid = $(self).parent().parent().attr("hashid");
@@ -48,8 +28,7 @@ var resourceNameClick = function(self){
 	
 };
 
-$(window).resize(function(){ changeFullResouceBoxHeight(); });
-
+// 关闭这本书的操作
 var resourceCloseNow = function(self){
 	$("#allwhite").hide();
 	$('#resource-one-full').hide();
@@ -59,7 +38,7 @@ var resourceCloseNow = function(self){
 	allinfo.show().attr("showit","yes");
 }
 
-//点击总的上传
+//点击这本书的上传
 $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 	if(login_user.UPower.resource.origin < 2){ return }
 	var hashid = $('#resource-one-full').attr("hashid");
@@ -75,6 +54,7 @@ $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 	});
 });
 
+// 将文件上传到指定路径下
 var iRLUpFile = function(path){
 	if(login_user.UPower.resource.origin < 2){ return }
 	var hashid = $('#resource-one-full').attr("hashid");
@@ -90,6 +70,7 @@ var iRLUpFile = function(path){
 	});
 }
 
+// 显示图书内所有文件的目录树
 var showBigJsonLevel = function(json, path){
 	//$("#resource-one-full .resource-all-file .now-dir .true-now").text(path);
 	//$("#resource-one-full .resource-all-file .file-list").html("");
@@ -108,6 +89,7 @@ var showBigJsonLevel = function(json, path){
 	return onefile;
 };
 
+// 展开目录树的下一级
 var showChildList = function(self){
 	theUl = $(self).parent().children(".file-list-2")
 	if(theUl.attr("show") == "no"){
@@ -122,23 +104,55 @@ var showChildList = function(self){
 	}
 }
 
+// 隐藏这本书的一切信息组
 var irlHideAll = function(){
 	$('#resource-one-full .resource-all-info').hide();
 	$('#resource-one-full .resource-all-file').hide();
 	$('#resource-one-full .resource-delete-all').hide();
 }
 
+// 显示这本书的详情页
+var resourceXiangqingClick = function(){
+	irlHideAll();
+	$('#resource-one-full .resource-all-info').show();
+}
+
+
+/** begin 删除图书 **/
+
+// 显示这本书的删除选项
 var resourceDeleteAllClick = function(){
 	if(login_user.UPower.resource.origin < 2){ return }
 	irlHideAll();
 	$('#resource-one-full .resource-delete-all').show();
 }
 
-var resourceXiangqingClick = function(){
-	irlHideAll();
-	$('#resource-one-full .resource-all-info').show();
+//删除这本书的一切，包括里面的文件，以及这个条目本身
+var irlDoDropAll = function(){
+	hashid = $("#allwhite2").attr("hashid");
+	if(confirm("确定要删除这个条目的一切？一定要想清楚！")){
+		$.get("webInterface?type=delete-resource-item&hashid="+hashid, function(data){
+			theJSON = $.parseJSON(data);
+			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
+			resourceXiangqingClick();
+		});
+	};
 }
 
+// 清空这本书的所有文件
+var irlDoDelAllFile = function(){
+	hashid = $("#allwhite2").attr("hashid");
+	if(confirm("确定要清空文件所有文件？一定要想清楚！")){
+		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=all",function(data){
+			theJSON = $.parseJSON(data);
+			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
+		});
+	};
+}
+
+/** end 删除图书 **/
+
+// 显示这本书的文件树
 var resourceLiulanClick = function(){
 	irlHideAll();
 	var filelist = $('#resource-one-full .resource-all-file');
@@ -153,14 +167,16 @@ var resourceLiulanClick = function(){
 		$("#nowloadbox").fadeOut(200);
 	});
 };
-//end 图书列表的点击动作
 
+// 返回最后操作时间
 var lastOtime = function(utime){
 	var theTime = utime * 1000;
 	var timedate = new Date(theTime);
 	var theTime = timedate.formatDate("yyyy年MM月dd日 hh:mm:ss");
 	return theTime;
 };
+
+// 从服务器上获取资源图书的列表
 var getResourceListFromServer = function(){
 	$("#nowloadbox").fadeIn(200);
 	$("#resource-main-list").html("")
@@ -220,11 +236,13 @@ var getResourceListFromServer = function(){
 
 getResourceListFromServer();
 
+//点击下一页
 $("#next-and-prev .next").click(function(){
 	iResourceList_from = iResourceList_from + iResourceList_limit;
 	getResourceListFromServer();
 });
 
+//点击上一页
 $("#next-and-prev .prev").click(function(){
 	iResourceList_from = iResourceList_from - iResourceList_limit;
 	getResourceListFromServer();
