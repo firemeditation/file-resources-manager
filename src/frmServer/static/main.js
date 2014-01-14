@@ -13,7 +13,7 @@ var hideAll = function(){
 	$("html, body").animate({scrollTop:0}, 'slow')
 };
 
-var processServerError(err){
+var processServerError = function(err){
 	if (err == "用户超时" || err == "不是正确的接口请求"){
 		window.location.href='/login'
 	}

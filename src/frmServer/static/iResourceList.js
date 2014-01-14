@@ -59,18 +59,6 @@ var resourceCloseNow = function(self){
 	allinfo.show().attr("showit","yes");
 }
 
-$("#resource-main-list .liulan").click(function(){
-	closeOneBookAll($(this).parent().parent().parent(),"resource-all-file");
-	var theone = $(this).parents(".one-resource-main").children(".resource-all-file");
-	if(theone.attr('showit') == "no"){
-		theone.show(100);
-		theone.attr('showit',"yes");
-	}else{
-		theone.hide(100);
-		theone.attr('showit',"no");
-	};
-});
-
 //点击总的上传
 $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 	if(login_user.UPower.resource.origin < 2){ return }
@@ -159,7 +147,7 @@ var resourceLiulanClick = function(){
 	$("#nowloadbox").fadeIn(200);
 	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
 		theBigJSON = $.parseJSON(data);
-		if(json.err){alert(json.err); processServerError(json.err); return;}
+		if(theBigJSON.err){alert(theBigJSON.err); processServerError(theBigJSON.err); return;}
 		thelist = showBigJsonLevel(theBigJSON,'');
 		$("#resource-one-full .resource-all-file .file-list").html(thelist);
 		$("#nowloadbox").fadeOut(200);
