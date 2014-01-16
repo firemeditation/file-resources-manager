@@ -17,7 +17,7 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		backupRecord.AddRecord(userid, bk)
 		return
 	}
-	fmt.Println("请求加锁")
+	//fmt.Println("请求加锁")
 	// 开始请求加锁
 	conn := connectServer()
 	err = sendTheFirstRequest (1, 3, conn)
@@ -25,7 +25,7 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		err = fmt.Errorf("发送状态错误：%s", err)
 		return
 	}
-	fmt.Println("请求加锁2")
+	//fmt.Println("请求加锁2")
 	//发送自己的SID
 	//err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
 	err = SendSocketBytes(conn, []byte(userid), 40)
@@ -39,14 +39,14 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		err = fmt.Errorf("发送请求状态出错：%s", err)
 		return
 	}
-	fmt.Println("请求加锁3")
+	//fmt.Println("请求加锁3")
 	// 发送请求资源hashid
 	err = SendSocketBytes(conn, []byte(resourceid), 40)
 	if err != nil {
 		err = fmt.Errorf("发送资源hashid错误：%s", err)
 		return
 	}
-	fmt.Println("请求加锁4")
+	//fmt.Println("请求加锁4")
 	// 查看服务器是否允许加锁
 	cklb, _ := ReadSocketBytes(conn, 1)
 	ckl := BytesToUint8(cklb)
@@ -54,11 +54,11 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		err = fmt.Errorf("不允许加锁：%s", resourceid)
 		return
 	}
-	fmt.Println("请求加锁5")
+	//fmt.Println("请求加锁5")
 	processid_b , _ := ReadSocketBytes(conn,40)
 	processid := string(processid_b)  //获取进程ID
 	
-	fmt.Println("加锁成功：",processid)
+	//fmt.Println("加锁成功：",processid)
 	
 	// 遍历要找到的目录并存入一个channel
 	fileInfo := make(chan OriginFileInfoFullStruct, UploadGoMax)
@@ -75,7 +75,7 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 	
 	for i := 0; i < UploadGoMax; i++ {
 		//wg.Add(1)
-		fmt.Println("进程",i)
+		//fmt.Println("进程",i)
 		go sendFiles(uploadDone, userid, resourceid, processid, fileInfo, errA)
 	}
 	
@@ -84,7 +84,7 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		select {
 			case <-uploadDone :
 				doneNum++
-				fmt.Println("进程结束")
+				//fmt.Println("进程结束")
 			default:
 				time.Sleep(3 * time.Second)
 		}
@@ -92,9 +92,9 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 			break
 		}
 		SendSocketBytes(conn, Uint8ToBytes(1), 1)  //发送心跳包
-		fmt.Println("发送心跳")
+		//fmt.Println("发送心跳")
 		ckh_b, _ := ReadSocketBytes(conn, 1)
-		fmt.Println("接收回执")
+		//fmt.Println("接收回执")
 		if BytesToUint8(ckh_b) != 1 {
 			break
 		}

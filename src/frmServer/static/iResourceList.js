@@ -222,7 +222,7 @@ var getResourceListFromServer = function(){
 				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
 				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
 			</div>\
-			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;最后操作时间：'+ptime+'</p>\
+			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
 			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
 			<p>简介：</p>\
 			<div class="markdown">'+md_c+'</div></div>\
