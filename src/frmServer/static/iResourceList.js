@@ -129,7 +129,7 @@ var resourceDeleteAllClick = function(){
 
 //删除这本书的一切，包括里面的文件，以及这个条目本身
 var irlDoDropAll = function(){
-	hashid = $("#allwhite2").attr("hashid");
+	hashid = $('#resource-one-full').attr("hashid");
 	if(confirm("确定要删除这个条目的一切？一定要想清楚！")){
 		$.get("webInterface?type=delete-resource-item&hashid="+hashid, function(data){
 			theJSON = $.parseJSON(data);
@@ -141,11 +141,13 @@ var irlDoDropAll = function(){
 
 // 清空这本书的所有文件
 var irlDoDelAllFile = function(){
-	hashid = $("#allwhite2").attr("hashid");
+	hashid = $('#resource-one-full').attr("hashid");
 	if(confirm("确定要清空文件所有文件？一定要想清楚！")){
 		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=all",function(data){
 			theJSON = $.parseJSON(data);
 			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
+			if(theJSON.ok){alert(theJSON.ok);}
+			resourceXiangqingClick();
 		});
 	};
 }

@@ -165,7 +165,7 @@ func (grl *GlobalResourceLock) CheckLock (uid, rid, pid string, ltype uint8) (er
 	grl.lock.RLock()
 	defer grl.lock.RUnlock()
 	
-	fmt.Println("检查：", uid, rid, pid)
+	//fmt.Println("检查：", uid, rid, pid)
 	
 	one_grls , found := grl.grls[rid]
 	if found == false {
@@ -177,7 +177,7 @@ func (grl *GlobalResourceLock) CheckLock (uid, rid, pid string, ltype uint8) (er
 		return
 	}
 	if ltype == 1 {
-		fmt.Println("二检：", one_grls.WriteProcess, one_grls.WriteUser.UserId)
+		//fmt.Println("二检：", one_grls.WriteProcess, one_grls.WriteUser.UserId)
 		if one_grls.WriteProcess != pid || one_grls.WriteUser.UserId != uid {
 			err = fmt.Errorf("用户或进程号不符1：%s", rid)
 			return
