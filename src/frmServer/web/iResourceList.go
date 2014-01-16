@@ -26,11 +26,11 @@ type returnResourceListStruct struct {
 
 func iResourceList(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request){
 	
-	// start 查看用户是否有建立资源的权力
-	//if theUser.UPower["resource"]["origin"] < 2 {
-	//	fmt.Fprint(w,"{\"err\":\"无添加权限\"}")
-	//	return
-	//}
+	// start 查看用户是否有查看资源的权力
+	if theUser.UPower["resource"]["origin"] < 1 {
+		fmt.Fprint(w,"{\"err\":\"无查看权限\"}")
+		return
+	}
 	
 	
 	model := 1 //1为全部列出，2为搜索

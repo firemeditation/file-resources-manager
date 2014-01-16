@@ -4,7 +4,7 @@ package s1
 import (
 	"net"
 	. "frmPkg"
-	"fmt"
+	//"fmt"
 	. "frmServer/public"
 )
 
@@ -47,7 +47,7 @@ func GeneralLock(conn *net.TCPConn) {
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
-	fmt.Println("请求加锁4")
+	//fmt.Println("请求加锁4")
 	// end
 	processid, err := GlobalLock.TryLock(string(theSIDb), string(theBook_b), locktype)  //尝试加写锁
 	if err != nil {
@@ -90,4 +90,12 @@ func GeneralLock(conn *net.TCPConn) {
 	//fmt.Println("锁关闭")
 	GlobalLock.Unlock(string(theBook_b), processid)
 	SendSocketBytes (conn , Uint8ToBytes(1), 2)
+	
+	//更新文件数量
+	if locktype == 1 {
+		var file_count uint64
+		DbConn.QueryRow("select COUNT(hashid) from resourceFile where rg_hashid = $1", string(theBook_b)).Scan(&file_count)
+		up_count, _ := DbConn.Prepare("update resourceGroupStatus set status1 = $1 where hashid = $2")
+		up_count.Exec(file_count, string(theBook_b))
+	}
 }

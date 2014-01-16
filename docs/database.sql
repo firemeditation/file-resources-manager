@@ -105,7 +105,7 @@ drop table IF EXISTS resourceGroupStatus  CASCADE;
 create table resourceGroupStatus
 (
 	hashid char(40) not null,
-	status1 int not null default 0,
+	status1 int not null default 0, -- 资源聚集的原始文件个数
 	status2 int not null default 0,
 	status3 int not null default 0,
 	status4 int not null default 0,
