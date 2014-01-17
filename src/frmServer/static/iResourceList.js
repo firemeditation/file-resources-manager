@@ -47,6 +47,74 @@ var resourceCloseNow = function(self){
 	allinfo.show().attr("showit","yes");
 }
 
+// 返回最后操作时间
+var lastOtime = function(utime){
+	var theTime = utime * 1000;
+	var timedate = new Date(theTime);
+	var theTime = timedate.formatDate("yyyy年MM月dd日 hh:mm:ss");
+	return theTime;
+};
+
+// 从服务器上获取资源图书的列表
+var getResourceListFromServer = function(){
+	$("#nowloadbox").fadeIn(200);
+	$("#resource-main-list").html("")
+	var server_word = "";
+	if(search_word === ""){
+		server_word = "webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit
+		$("#resource-list .allListBookCountTishi").text("本社共有图书")
+	}else{
+		server_word = "webInterface?type=resource-list&key_word="+search_word+"&search_type="+search_type+"&from="+iResourceList_from+"&limit="+iResourceList_limit
+		$("#resource-list .allListBookCountTishi").text("共找到图书")
+	}
+	$.get(server_word , function(data){
+		var json = $.parseJSON(data);
+		if(json.err){alert(json.err); processServerError(json.err); return;}
+		$("#resource-list .allListBookCount").text(json.Count);
+		iResourceList_count = json.Count;
+		if (iResourceList_from == 0){
+			$("#next-and-prev .prev").hide();
+		}else{
+			$("#next-and-prev .prev").show();
+		};
+		if (iResourceList_from + iResourceList_limit >= iResourceList_count){
+			$("#next-and-prev .next").hide();
+		}else{
+			$("#next-and-prev .next").show();
+		};
+		if($("#resource-list .allListBookCount").text() == '0'){
+			$("#next-and-prev .next").hide();
+			$("#next-and-prev .prev").hide();
+		}
+		var i = 0;
+		
+		md_converter = new Markdown.Converter();
+		
+		$(json.List).each(function(){
+			//var li = $.parseJSON(this.MetaData);
+			var ptime = lastOtime(this.Table.Btime);
+			
+			var md_c = md_converter.makeHtml(this.Table.Info);
+			
+			var onebook = '<div class="one-resource-main" hashid="'+this.Table.HashId+'">\
+			<div class="one-resource-total-info">\
+				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
+				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
+			</div>\
+			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
+			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
+			<p>简介：</p>\
+			<div class="markdown">'+md_c+'</div></div>\
+		</div>';
+			$("#resource-main-list").append(onebook);
+			i++;
+		});
+		$("#nowloadbox").fadeOut(200);
+	});
+};
+
+getResourceListFromServer();
+
 //点击这本书的上传
 $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 	if(login_user.UPower.resource.origin < 2){ return }
@@ -133,10 +201,12 @@ var resourceDeleteAllClick = function(){
 var irlDoDropAll = function(){
 	hashid = $('#resource-one-full').attr("hashid");
 	if(confirm("确定要删除这个条目的一切？一定要想清楚！")){
-		$.get("webInterface?type=delete-resource-item&hashid="+hashid, function(data){
+		$.get("webInterface?type=delete-resource-group&hashid="+hashid, function(data){
 			theJSON = $.parseJSON(data);
 			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
-			resourceXiangqingClick();
+			if(theJSON.ok){alert(theJSON.ok);}
+			resourceCloseNow();
+			getResourceListFromServer();
 		});
 	};
 }
@@ -171,74 +241,6 @@ var resourceLiulanClick = function(){
 		$("#nowloadbox").fadeOut(200);
 	});
 };
-
-// 返回最后操作时间
-var lastOtime = function(utime){
-	var theTime = utime * 1000;
-	var timedate = new Date(theTime);
-	var theTime = timedate.formatDate("yyyy年MM月dd日 hh:mm:ss");
-	return theTime;
-};
-
-// 从服务器上获取资源图书的列表
-var getResourceListFromServer = function(){
-	$("#nowloadbox").fadeIn(200);
-	$("#resource-main-list").html("")
-	var server_word = "";
-	if(search_word === ""){
-		server_word = "webInterface?type=resource-list&from="+iResourceList_from+"&limit="+iResourceList_limit
-		$("#resource-list .allListBookCountTishi").text("本社共有图书")
-	}else{
-		server_word = "webInterface?type=resource-list&key_word="+search_word+"&search_type="+search_type+"&from="+iResourceList_from+"&limit="+iResourceList_limit
-		$("#resource-list .allListBookCountTishi").text("共找到图书")
-	}
-	$.get(server_word , function(data){
-		var json = $.parseJSON(data);
-		if(json.err){alert(json.err); processServerError(json.err); return;}
-		$("#resource-list .allListBookCount").text(json.Count);
-		iResourceList_count = json.Count;
-		if (iResourceList_from == 0){
-			$("#next-and-prev .prev").hide();
-		}else{
-			$("#next-and-prev .prev").show();
-		};
-		if (iResourceList_from + iResourceList_limit >= iResourceList_count){
-			$("#next-and-prev .next").hide();
-		}else{
-			$("#next-and-prev .next").show();
-		};
-		if($("#resource-list .allListBookCount").text() == '0'){
-			$("#next-and-prev .next").hide();
-			$("#next-and-prev .prev").hide();
-		}
-		var i = 0;
-		
-		md_converter = new Markdown.Converter();
-		
-		$(json.List).each(function(){
-			//var li = $.parseJSON(this.MetaData);
-			var ptime = lastOtime(this.Table.Btime);
-			
-			var md_c = md_converter.makeHtml(this.Table.Info);
-			
-			var onebook = '<div class="one-resource-main" hashid="'+this.Table.HashId+'">\
-			<div class="one-resource-total-info">\
-				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
-				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
-			</div>\
-			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
-			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
-			<p>简介：</p>\
-			<div class="markdown">'+md_c+'</div></div>\
-		</div>';
-			$("#resource-main-list").append(onebook);
-			i++;
-		});
-		$("#nowloadbox").fadeOut(200);
-	});
-};
-
-getResourceListFromServer();
 
 //点击下一页
 $("#next-and-prev .next").click(function(){

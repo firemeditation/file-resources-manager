@@ -44,6 +44,8 @@ func webInterface(w http.ResponseWriter, r *http.Request){
 			iResourceFile(theUser, w, r)
 		case "delete-resource-file":
 			iDeleteResourceFile(theUser, w, r)
+		case "delete-resource-group":
+			iDeleteResourceGroup(theUser, w, r)
 		default:
 			fmt.Fprint(w,"{\"err\":\"请求的接口不存在\"}")
 	}
