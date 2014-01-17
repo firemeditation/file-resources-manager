@@ -14,8 +14,17 @@ var changeFullResouceBoxHeight = function(){
 }
 $(window).resize(function(){ changeFullResouceBoxHeight(); });
 
+
+// 隐藏这本书的一切信息组
+var irlHideAll = function(){
+	$('#resource-one-full .resource-all-info').hide();
+	$('#resource-one-full .resource-all-file').hide();
+	$('#resource-one-full .resource-delete-all').hide();
+}
+
 // 资源图书列表下，点击书名，打开这本书的信息
 var resourceNameClick = function(self){
+	irlHideAll();
 	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
 	var hashid = $(self).parent().parent().attr("hashid");
 	var bookname = $(self).parent().parent().children(".one-resource-total-info").children(".the-resource-name").text();
@@ -25,7 +34,7 @@ var resourceNameClick = function(self){
 	changeFullResouceBoxHeight();
 	$("#allwhite").show();
 	$('#resource-one-full').show();
-	
+	$('#resource-one-full .resource-all-info').show();	
 };
 
 // 关闭这本书的操作
@@ -102,13 +111,6 @@ var showChildList = function(self){
 		theUl.hide();
 		theUl.attr("show","no")
 	}
-}
-
-// 隐藏这本书的一切信息组
-var irlHideAll = function(){
-	$('#resource-one-full .resource-all-info').hide();
-	$('#resource-one-full .resource-all-file').hide();
-	$('#resource-one-full .resource-delete-all').hide();
 }
 
 // 显示这本书的详情页
