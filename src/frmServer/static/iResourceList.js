@@ -148,17 +148,17 @@ var iRLUpFile = function(path){
 }
 
 // 显示图书内所有文件的目录树
-var showBigJsonLevel = function(json, path){
+var showBigJsonLevel = function(json, path, jsoo){
 	//$("#resource-one-full .resource-all-file .now-dir .true-now").text(path);
 	//$("#resource-one-full .resource-all-file .file-list").html("");
 	var onefile = ''
 	$.each(json, function(name, value){
 		if (value.IsDir == false){
-			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeleteOneFile("'+value.HashId+'")>删</span></li>';
 		}else{
-			onefile += '<li hashid="'+value.HashId+'" filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span>';
+			onefile += '<li filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeletePartFile('+jsoo + '["' + value.Name + '"]' +'.Files)>删</span>';
 			onefile += '<ul class="file-list-2" show="no">'
-			onefile += showBigJsonLevel(json[value.Name].Files, path+value.Name+"/")
+			onefile += showBigJsonLevel(json[value.Name].Files, path+value.Name+"/", jsoo + '["'+value.Name+'"].Files')
 			onefile += '</ul></li>'
 		}
 		//$("#resource-one-full .resource-all-file .file-list").append(onefile);
@@ -187,6 +187,19 @@ var resourceXiangqingClick = function(){
 	$('#resource-one-full .resource-all-info').show();
 }
 
+
+// 获取此目录下所有文件的hashid
+var irlGetAllHashid = function(json){
+	var allhashid = '';
+	$.each(json, function(name, value){
+		if (value.IsDir == false){
+			allhashid += "'"+value.HashId+"',";
+		}else{
+			allhashid += irlGetAllHashid(json[value.Name].Files);
+		}
+	});
+	return allhashid;
+}
 
 /** begin 删除图书 **/
 
@@ -224,6 +237,17 @@ var irlDoDelAllFile = function(){
 	};
 }
 
+// 删除部分文件
+var irlDeletePartFile = function(json){
+	allfile = irlGetAllHashid(json);
+	alert(allfile);
+};
+
+// 删除一个文件
+var irlDeleteOneFile = function(hashid){
+	alert(hashid);
+};
+
 /** end 删除图书 **/
 
 // 显示这本书的文件树
@@ -236,7 +260,7 @@ var resourceLiulanClick = function(){
 	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
 		theBigJSON = $.parseJSON(data);
 		if(theBigJSON.err){alert(theBigJSON.err); processServerError(theBigJSON.err); return;}
-		thelist = showBigJsonLevel(theBigJSON,'');
+		thelist = showBigJsonLevel(theBigJSON,'',"theBigJSON");
 		$("#resource-one-full .resource-all-file .file-list").html(thelist);
 		$("#nowloadbox").fadeOut(200);
 	});
