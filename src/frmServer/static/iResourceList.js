@@ -187,6 +187,22 @@ var resourceXiangqingClick = function(){
 	$('#resource-one-full .resource-all-info').show();
 }
 
+// 显示这本书的文件树
+var resourceLiulanClick = function(){
+	irlHideAll();
+	var filelist = $('#resource-one-full .resource-all-file');
+	filelist.show();
+	hashid = $('#resource-one-full').attr("hashid");
+	$("#nowloadbox").fadeIn(200);
+	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
+		theBigJSON = $.parseJSON(data);
+		if(theBigJSON.err){alert(theBigJSON.err); processServerError(theBigJSON.err); return;}
+		thelist = showBigJsonLevel(theBigJSON,'',"theBigJSON");
+		$("#resource-one-full .resource-all-file .file-list").html(thelist);
+		$("#nowloadbox").fadeOut(200);
+	});
+};
+
 
 // 获取此目录下所有文件的hashid
 var irlGetAllHashid = function(json){
@@ -240,31 +256,32 @@ var irlDoDelAllFile = function(){
 // 删除部分文件
 var irlDeletePartFile = function(json){
 	allfile = irlGetAllHashid(json);
-	alert(allfile);
+	hashid = $('#resource-one-full').attr("hashid");
+	if(confirm("确定要删除这些文件吗？这是不可逆操作，一定要想清楚！")){
+		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=part&file="+allfile,function(data){
+			theJSON = $.parseJSON(data);
+			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
+			if(theJSON.ok){alert(theJSON.ok);}
+			resourceLiulanClick();
+		});
+	}
 };
 
 // 删除一个文件
 var irlDeleteOneFile = function(hashid){
-	alert(hashid);
+	hashid = $('#resource-one-full').attr("hashid");
+	if(confirm("确定要删除这个文件吗？这是不可逆操作，一定要想清楚！")){
+		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=one&file="+hashid,function(data){
+			theJSON = $.parseJSON(data);
+			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
+			if(theJSON.ok){alert(theJSON.ok);}
+			resourceLiulanClick();
+		});
+	}
 };
 
 /** end 删除图书 **/
 
-// 显示这本书的文件树
-var resourceLiulanClick = function(){
-	irlHideAll();
-	var filelist = $('#resource-one-full .resource-all-file');
-	filelist.show();
-	hashid = $('#resource-one-full').attr("hashid");
-	$("#nowloadbox").fadeIn(200);
-	$.get("webInterface?type=resource-file&hashid="+hashid , function(data){
-		theBigJSON = $.parseJSON(data);
-		if(theBigJSON.err){alert(theBigJSON.err); processServerError(theBigJSON.err); return;}
-		thelist = showBigJsonLevel(theBigJSON,'',"theBigJSON");
-		$("#resource-one-full .resource-all-file .file-list").html(thelist);
-		$("#nowloadbox").fadeOut(200);
-	});
-};
 
 //点击下一页
 $("#next-and-prev .next").click(function(){
