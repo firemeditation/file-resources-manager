@@ -209,7 +209,7 @@ var irlGetAllHashid = function(json){
 	var allhashid = '';
 	$.each(json, function(name, value){
 		if (value.IsDir == false){
-			allhashid += "'"+value.HashId+"',";
+			allhashid += value.HashId+",";
 		}else{
 			allhashid += irlGetAllHashid(json[value.Name].Files);
 		}
@@ -268,10 +268,10 @@ var irlDeletePartFile = function(json){
 };
 
 // 删除一个文件
-var irlDeleteOneFile = function(hashid){
+var irlDeleteOneFile = function(file_hashid){
 	hashid = $('#resource-one-full').attr("hashid");
 	if(confirm("确定要删除这个文件吗？这是不可逆操作，一定要想清楚！")){
-		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=one&file="+hashid,function(data){
+		$.get("webInterface?type=delete-resource-file&hashid="+hashid+"&dtype=one&file="+file_hashid,function(data){
 			theJSON = $.parseJSON(data);
 			if(theJSON.err){alert(theJSON.err); processServerError(theJSON.err); return;}
 			if(theJSON.ok){alert(theJSON.ok);}
