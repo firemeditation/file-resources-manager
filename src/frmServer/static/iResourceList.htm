@@ -41,7 +41,37 @@
 	cursor:pointer;
 	font-size:14px;
 }
+#resource-down-box {
+	position:fixed;
+	width: 700px;
+	height: 230px;
+	top:50%;
+	left:50%;
+	margin-left: -350px;
+	margin-top: -115px;
+	box-shadow: 5px 5px 5px #aaaaaa;
+	border: solid 1px #888888;
+	background-color: #ffffff;
+	z-index:201;
+	display:none;
+}
+#resource-down-box-form{
+	padding-left:70px;
+	padding-right:70px;
+	padding-top:20px;
+}
 </style>
+
+<!-- begin 下载文件的box -->
+<div id="resource-down-box">
+	<div class="text-box-title">～现在下载～</div>
+	<form id='resource-down-box-form'>
+		<div class='input_name'>保存路径</div>
+		<div class="localpath"><input name="localpath" class="input_text" value=""></input><span class='input_wrong_suggest'></span></div>
+		<div class="submit input_name" align="right"><input type='button' class="input_submit" onclick=resourceDownDoDown() name="submit" value="下载">&nbsp;&nbsp;<input type='button' class="input_submit" name="close" onclick=resourceDownClose() value="取消"></div>
+    </form>
+</div>
+<!-- end 下载文件的box -->
 
 <!-- begin 弹出的整个图书的信息 -->
 <div id="resource-one-full">
@@ -52,7 +82,7 @@
 			<div class="shanchu resource-edits-1" onclick=resourceDeleteAllClick()>删</div>
 			<div class="shangchuan resource-edits-1">上</div>
 			<div class="bianji resource-edits-1">编</div>
-			<div class="xiazai resource-edits-1">下</div>
+			<div class="xiazai resource-edits-1" onclick=resourceDownBox('all','')>下</div>
 			<div class="liulan resource-edits-1" onclick=resourceLiulanClick()>浏</div>
 			<div class="liulan resource-edits-1" onclick=resourceXiangqingClick()>详</div>
 		</div>

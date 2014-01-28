@@ -154,9 +154,9 @@ var showBigJsonLevel = function(json, path, jsoo){
 	var onefile = ''
 	$.each(json, function(name, value){
 		if (value.IsDir == false){
-			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeleteOneFile("'+value.HashId+'")>删</span></li>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("one","'+value.HashId+'")>下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeleteOneFile("'+value.HashId+'")>删</span></li>';
 		}else{
-			onefile += '<li filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt">下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeletePartFile('+jsoo + '["' + value.Name + '"]' +'.Files)>删</span>';
+			onefile += '<li filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("part",'+jsoo + '["' + value.Name + '"]' +'.Files)>下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeletePartFile('+jsoo + '["' + value.Name + '"]' +'.Files)>删</span>';
 			onefile += '<ul class="file-list-2" show="no">'
 			onefile += showBigJsonLevel(json[value.Name].Files, path+value.Name+"/", jsoo + '["'+value.Name+'"].Files')
 			onefile += '</ul></li>'
@@ -216,6 +216,60 @@ var irlGetAllHashid = function(json){
 	});
 	return allhashid;
 }
+
+/** begin 上传图书 **/
+
+var resourceDownBox = function(type, files){
+	var hashid = $('#resource-one-full').attr("hashid");
+	var bookname = $('#resource-one-full .the-resource-name').text();
+	$("#resource-down-box").attr("hashid", hashid);
+	$("#resource-down-box").attr("bookname", bookname);
+	$("#resource-down-box").attr("type", type);
+	if(type == "part"){
+		allfile = irlGetAllHashid(files);
+		$("#resource-down-box").attr("files", allfile);
+	}else if(type == "one"){
+		$("#resource-down-box").attr("files", files);
+	}
+	$("#resource-down-box-form .localpath input").val("");
+	$("#allwhite2").show();
+	$("#resource-down-box").show();
+}
+
+var resourceDownDoDown = function(){
+	var hashid = $("#resource-down-box").attr("hashid");
+	var bookname = $("#resource-down-box").attr("bookname");
+	var type = $("#resource-down-box").attr("type");
+	var userid = login_user.HashId;
+	
+	var ckArray = [0];
+	ckArray[0] = $.RequestProcess.Text('#resource-down-box-form .localpath',0,1,1000);
+    if($.RequestProcess.ckAllOne(ckArray)==0){ return }
+    var localpath = inputSafe.CleanAll($("#resource-down-box-form .localpath input").val());
+    
+	var url = "http://127.0.0.1:"+local_client_port+"/downloadFile?user="+userid+"&bookname="+bookname+"&hashid="+hashid+"&type="+type+"&localpath="+localpath;
+	if (type == "one" || type == "part"){
+		url = url + "&files="+ $("#resource-down-box").attr("files");
+	}
+	$.getJSON(url+"&callback=?",function(data){
+		if (data.err) {
+			alert(data.err);
+			return
+		}else{
+			alert("已经转向后台上传，具体请查看后台状态。")
+		}
+		$("#allwhite2").hide();
+		$("#resource-down-box").hide();
+	});
+}
+
+var resourceDownClose = function(){
+	$("#allwhite2").hide();
+	$("#resource-down-box").hide();
+}
+
+/** end 上传图书 **/
+
 
 /** begin 删除图书 **/
 
