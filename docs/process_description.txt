@@ -67,9 +67,9 @@
 
 获取资源列表：
 	0. C建立连接 -->
-    1. C{1byte[version](版本号) | 1byte[6](6为获取图书资源列表) | 40byte[sha1])(身份验证标识) | 1byte[1](1为直接资源，2为衍生资源，3为全部) | 40byte[HashID](图书的HashID)} --> 
+    1. C{1byte[version](版本号) | 1byte[6](6为获取图书资源列表) | 40byte[sha1])(身份验证标识) | 40byte[sha1](资源的Hashid) | 40byte[sha1](进程id) | 40byte[HashID](图书的HashID)} | 1byte[1](1为直接资源，2为衍生资源，3为全部) --> 
     2. S{1byte[状态](1标识可以获取，2表示不能)}
-    3. S{40byte[count](图书内文件的数量) | 40byte[len](文件信息结构体大小) | nbyte[[]ServersFileInfoStruct](结构体切片的gob编码) -->
+    3. S{40byte[len](文件信息结构体大小) | nbyte[string](文件的Hashid，用逗号分割) -->
     6. S关闭连接
 
 下载资源（实际下载）：
