@@ -47,7 +47,7 @@ func startServ(thePort string){
 	http.HandleFunc("/checkLink", wCheckLink)
 	http.HandleFunc("/uploadFile", wUploadFile)
 	http.HandleFunc("/getBackupRecord", wGetBackupRecord)
-	//http.HandleFunc("/downloadFile", wDownloadFile)
+	http.HandleFunc("/downloadFile", wDownloadFile)
 	
 	theServ := "127.0.0.1:" + thePort
 	err := http.ListenAndServe(theServ, nil)
