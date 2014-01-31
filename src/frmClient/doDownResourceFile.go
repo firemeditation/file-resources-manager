@@ -66,7 +66,7 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 	if downtype == "one"{
 		fileHashid <- files
 	}else{
-		go getDownloadFilesHashid(fileHashid, downtype, files, errA)
+		go getDownloadFilesHashid(fileHashid, userid, resourceid, processid, downtype, files, bookname, errA)
 	}
 	
 	// 开启多个进程同时向服务器传递文件
@@ -111,16 +111,32 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 }
 
 // getDownloadFilesHashid 获得下载文件的hashid
-func getDownloadFilesHashid(fileHashid chan<- string, downtype, files string, errA []string){
+func getDownloadFilesHashid(fileHashid chan<- string, userid, resourceid, processid, downtype, files, bookname string, errA []string){
+	defer close(fileHashid)
 	if downtype == "all" {
-		//TODO
-	}else if downtype == "part"{
-		hashidA := strings.Split(files,",")
-		for _, oneHash := range hashidA {
-			oneHash = strings.TrimSpace(oneHash)
-			if len(oneHash) != 0 {
-				fileHashid <- oneHash
-			}
+		conn := connectServer()
+		sendTheFirstRequest (1, 6, conn)
+		SendSocketBytes(conn, []byte(userid), 40)
+		SendSocketBytes(conn, []byte(resourceid), 40)
+		SendSocketBytes(conn, []byte(processid), 40)
+		SendSocketBytes(conn, Uint8ToBytes(1), 1)  //发送1，只获得直接资源
+		ck_down_b, _ := ReadSocketBytes(conn, 1)
+		ck_down := BytesToUint8(ck_down_b)
+		if ck_down == 2 {
+			brstring := "资源不允许下载，可能是权限不够：" + bookname
+			backupRecord.AddRecord(userid, brstring)
+			return
+		}
+		thelen_b, _ := ReadSocketBytes(conn, 8)
+		thelen := BytesToUint64(thelen_b)
+		theHashs_b, _ := ReadSocketBytes(conn, thelen)
+		files = string(theHashs_b)
+	}
+	hashidA := strings.Split(files,",")
+	for _, oneHash := range hashidA {
+		oneHash = strings.TrimSpace(oneHash)
+		if len(oneHash) != 0 {
+			fileHashid <- oneHash
 		}
 	}
 }

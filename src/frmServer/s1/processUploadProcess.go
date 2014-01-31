@@ -110,17 +110,5 @@ func ProcessUploadProcess(conn *net.TCPConn) {
 	//fmt.Printf("文件上传成功：%s%s，位置：%s", file_info.RelativeDir, file_info.FileName, fileFullStoragePath )
 	SendSocketBytes (conn , Uint8ToBytes(1), 1)
 	
-	//更新最后操作人
-	last_op, err := DbConn.Prepare("update resourceGroup set users_id = $1 where hashid = $2");
-	if err != nil {
-		ErrLog.Println("数据库错误：", err)
-		//fmt.Println("数据库错误3")
-	}
-	_, err = last_op.Exec(uid , process_id);
-	if err != nil {
-		ErrLog.Println("数据库错误：", err)
-		//fmt.Println("数据库错误3")
-	}
-	
 	return
 }

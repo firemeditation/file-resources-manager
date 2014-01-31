@@ -24,34 +24,61 @@ func GeneralLock(conn *net.TCPConn) {
 		return
 	}
 	//fmt.Println("请求加锁1")
-	// end
-	// start 查看用户是否有资源管理的权力
-	if theUser.UPower["resource"]["origin"] < 2 {
-		ErrLog.Printf("上传错误：用户无权限上传资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
-		SendSocketBytes (conn , Uint8ToBytes(2), 1)
-		return
+	if locktype == 1 {
+		//查看用户是否有资源管理的权力
+		if theUser.UPower["resource"]["origin"] < 2 {
+			ErrLog.Printf("锁错误：用户无权限上传资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁2")
+		// end
+		// begin 查看这个资源是不是用户可写的
+		var ckBook ResourceGroupTable
+		err := DbConn.QueryRow("select units_id, powerlevel from resourceGroup where hashid = $1", string(theBook_b)).Scan(&ckBook.UnitsId, &ckBook.PowerLevel)
+		if err != nil {
+			ErrLog.Printf("锁错误：资源不存在：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁3")
+		if ckBook.PowerLevel >= theUser.UPower["resource"]["origin"] || ckBook.UnitsId != theUser.UnitId {
+			ErrLog.Printf("锁错误：用户无权限上传资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁4")
+		// end
+	}else if locktype == 2 {
+		//查看用户是否有资源管理的权力
+		if theUser.UPower["resource"]["origin"] < 1 {
+			ErrLog.Printf("锁错误：用户无权限下载资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁2")
+		// end
+		// begin 查看这个资源是不是用户可写的
+		var ckBook ResourceGroupTable
+		err := DbConn.QueryRow("select units_id, powerlevel from resourceGroup where hashid = $1", string(theBook_b)).Scan(&ckBook.UnitsId, &ckBook.PowerLevel)
+		if err != nil {
+			ErrLog.Printf("锁错误：资源不存在：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁3")
+		if ckBook.PowerLevel > theUser.UPower["resource"]["origin"] || ckBook.UnitsId != theUser.UnitId {
+			ErrLog.Printf("锁错误：用户无权限下载资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+			SendSocketBytes (conn , Uint8ToBytes(2), 1)
+			return
+		}
+		//fmt.Println("请求加锁4")
+		// end
 	}
-	//fmt.Println("请求加锁2")
-	// end
-	// begin 查看这个资源是不是用户可写的
-	var ckBook ResourceGroupTable
-	err := DbConn.QueryRow("select units_id, powerlevel from resourceGroup where hashid = $1", string(theBook_b)).Scan(&ckBook.UnitsId, &ckBook.PowerLevel)
-	if err != nil {
-		ErrLog.Printf("上传错误：资源不存在：用户：%s，资源：%s", theUser.Name, string(theBook_b))
-		SendSocketBytes (conn , Uint8ToBytes(2), 1)
-		return
-	}
-	//fmt.Println("请求加锁3")
-	if ckBook.PowerLevel >= theUser.UPower["resource"]["origin"] || ckBook.UnitsId != theUser.UnitId {
-		ErrLog.Printf("上传错误：用户无权限上传资源文件：用户：%s，资源：%s", theUser.Name, string(theBook_b))
-		SendSocketBytes (conn , Uint8ToBytes(2), 1)
-		return
-	}
-	//fmt.Println("请求加锁4")
-	// end
+	
 	processid, err := GlobalLock.TryLock(string(theSIDb), string(theBook_b), locktype)  //尝试加写锁
 	if err != nil {
-		ErrLog.Printf("上传错误：加锁失败：用户：%s，资源：%s", theUser.Name, string(theBook_b))
+		ErrLog.Printf("锁错误：加锁失败：用户：%s，资源：%s", theUser.Name, string(theBook_b))
 		SendSocketBytes (conn , Uint8ToBytes(2), 1)
 		return
 	}
@@ -91,11 +118,23 @@ func GeneralLock(conn *net.TCPConn) {
 	GlobalLock.Unlock(string(theBook_b), processid)
 	SendSocketBytes (conn , Uint8ToBytes(1), 2)
 	
-	//更新文件数量
+	//更新文件数量和最后操作人
 	if locktype == 1 {
 		var file_count uint64
 		DbConn.QueryRow("select COUNT(hashid) from resourceFile where rg_hashid = $1", string(theBook_b)).Scan(&file_count)
 		up_count, _ := DbConn.Prepare("update resourceGroupStatus set status1 = $1 where hashid = $2")
 		up_count.Exec(file_count, string(theBook_b))
+		
+		//更新最后操作人
+		last_op, err := DbConn.Prepare("update resourceGroup set users_id = $1 where hashid = $2");
+		if err != nil {
+			ErrLog.Println("数据库错误：", err)
+			//fmt.Println("数据库错误3")
+		}
+		_, err = last_op.Exec(theUser.HashId, string(theBook_b));
+		if err != nil {
+			ErrLog.Println("数据库错误：", err)
+			//fmt.Println("数据库错误3")
+		}
 	}
 }
