@@ -56,5 +56,8 @@ func iDeleteResourceGroup(theUser *IsLoginInfo, w http.ResponseWriter, r *http.R
 	del_group, _ := DbConn.Prepare("delete from resourceGroup where hashid = $1")
 	del_group.Exec(book_hashid)
 	
+	// 搜索缓存的删除
+	SearchCache.Insert("del", book_hashid, "rg")
+	
 	fmt.Fprint(w,"{\"ok\":\"资源删除完毕\"}")
 }
