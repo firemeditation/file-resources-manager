@@ -38,15 +38,19 @@ func wDownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	theTruePath := localpath + bookname + "_" + hashid + "/"
-	err = os.Mkdir(theTruePath,0755)
-	if err != nil {
-		theSend := callback + "({\"err\":\"无法创建目录，请检查本地路径权限\"})"
-		fmt.Fprint(w, theSend)
-		return
+	if FileExist(theTruePath) == false {
+		err = os.Mkdir(theTruePath,0755)
+		if err != nil {
+			theSend := callback + "({\"err\":\"无法创建目录，请检查本地路径权限\"})"
+			fmt.Fprint(w, theSend)
+			return
+		}
 	}
 	
 	theSend := callback + "({\"client\":\"yes\"})"
 	fmt.Fprintf(w, theSend)
+	
+	return
 	
 	brstring := "后台下载中：" + bookname
 	backupRecord.AddRecord(user, brstring)
