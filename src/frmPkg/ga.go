@@ -183,3 +183,9 @@ func SendSocketBytes (conn *net.TCPConn, bytes []byte, len uint64) error {
 	}
 	return err
 }
+
+// 文件是否存在
+func FileExist(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil || os.IsExist(err)
+}

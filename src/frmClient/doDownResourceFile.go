@@ -106,6 +106,8 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 	
 	brstring := "后台下载完成：" + bookname
 	backupRecord.AddRecord(userid, brstring)
+	
+	conn.Close()
 		
 	return
 }
@@ -141,7 +143,7 @@ func getDownloadFilesHashid(fileHashid chan<- string, userid, resourceid, proces
 	}
 }
 
-// downOneFile 下载一个文件 //TODO
+// downOneFile 下载一个文件
 func downOneFile(downDone chan int, userid, resourceid, processid, originpath string, fileHashid <-chan string, errA []string){
 	defer func() {
 		downDone <- 1
@@ -151,27 +153,32 @@ func downOneFile(downDone chan int, userid, resourceid, processid, originpath st
 		err := sendTheFirstRequest (1, 7, conn)
 		if err != nil {
 			errA = append(errA, "发送状态错误")
+			conn.Close()
 			break
 		}
 		//err = SendSocketBytes(conn, []byte(myLogin.SID), 40)
 		err = SendSocketBytes(conn, []byte(userid), 40)
 		if err != nil {
 			errA = append(errA, "发送SID错误")
+			conn.Close()
 			break
 		}
 		err = SendSocketBytes(conn, []byte(resourceid), 40)
 		if err != nil {
 			errA = append(errA, "发送资源ID错误")
+			conn.Close()
 			break
 		}
 		err = SendSocketBytes(conn, []byte(processid), 40)
 		if err != nil {
 			errA = append(errA, "发送进程ID错误")
+			conn.Close()
 			break
 		}
 		err = SendSocketBytes(conn, []byte(oneFile), 40)
 		if err != nil {
 			errA = append(errA, "发送文件ID错误")
+			conn.Close()
 			break
 		}
 		cklb, _ := ReadSocketBytes(conn, 1)
@@ -180,8 +187,50 @@ func downOneFile(downDone chan int, userid, resourceid, processid, originpath st
 			errS := fmt.Sprintf("服务器不允许下载文件：%s", fileHashid)
 			errA = append(errA, errS)
 			backupRecord.AddRecord(userid, errS)
+			conn.Close()
 			break
 		}
 		
+		file_info_len_b, _ := ReadSocketBytes(conn, 8)
+		file_info_len := BytesToUint64(file_info_len_b)
+		file_info_b, _ := ReadSocketBytes(conn, file_info_len)
+		var file_info OriginFileInfoStruct
+		BytesGobStruct(file_info_b, &file_info)
+		file_len_b , _ := ReadSocketBytes(conn, 8)
+		file_len := BytesToUint64(file_len_b)
+		
+		file_full_path := originpath + file_info.RelativeDir
+		if FileExist(file_full_path) == false {
+			err = os.MkdirAll(file_full_path, os.FileMode(0775))
+			if err != nil {
+				errS := fmt.Sprintf("建立保存路径失败：%s，路径内文件无法正常下载", file_full_path)
+				errA = append(errA, errS)
+				backupRecord.AddRecord(userid, errS)
+				conn.Close()
+				break
+			}
+		}
+		
+		file_full_name := originpath + file_info.RelativeDir + file_info.FileName
+		if FileExist(file_full_name) == true {
+			err = os.Remove(file_full_name)
+			if err != nil {
+				errS := fmt.Sprintf("文件名被占用，文件无法删除：%s", file_full_name)
+				errA = append(errA, errS)
+				backupRecord.AddRecord(userid, errS)
+				conn.Close()
+				break
+			}
+		}
+		infile, err := os.OpenFile(file_full_name, os.O_WRONLY|os.O_CREATE, os.FileMode(0664))
+		err = ReadSocketToFile(conn, file_len, infile)
+		if err != nil {
+			errS := fmt.Sprintf("文件无法下载或保存：%s", file_full_name)
+			errA = append(errA, errS)
+			backupRecord.AddRecord(userid, errS)
+			conn.Close()
+			break
+		}
+		conn.Close()
 	}
 }

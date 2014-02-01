@@ -44,11 +44,11 @@
 #resource-down-box {
 	position:fixed;
 	width: 700px;
-	height: 230px;
+	height: 270px;
 	top:50%;
 	left:50%;
 	margin-left: -350px;
-	margin-top: -115px;
+	margin-top: -135px;
 	box-shadow: 5px 5px 5px #aaaaaa;
 	border: solid 1px #888888;
 	background-color: #ffffff;
@@ -66,6 +66,7 @@
 <div id="resource-down-box">
 	<div class="text-box-title">～现在下载～</div>
 	<form id='resource-down-box-form'>
+		<div class='input_name'>保存路径下将新建“书名-Hashid”目录，所有同名文件将被覆盖</div>
 		<div class='input_name'>保存路径</div>
 		<div class="localpath"><input name="localpath" class="input_text" value=""></input><span class='input_wrong_suggest'></span></div>
 		<div class="submit input_name" align="right"><input type='button' class="input_submit" onclick=resourceDownDoDown() name="submit" value="下载">&nbsp;&nbsp;<input type='button' class="input_submit" name="close" onclick=resourceDownClose() value="取消"></div>
