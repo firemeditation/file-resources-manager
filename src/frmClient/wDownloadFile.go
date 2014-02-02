@@ -50,8 +50,6 @@ func wDownloadFile(w http.ResponseWriter, r *http.Request) {
 	theSend := callback + "({\"client\":\"yes\"})"
 	fmt.Fprintf(w, theSend)
 	
-	return
-	
 	brstring := "后台下载中：" + bookname
 	backupRecord.AddRecord(user, brstring)
 	//backupNum = backupNum + 1

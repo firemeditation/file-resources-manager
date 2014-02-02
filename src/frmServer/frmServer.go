@@ -66,6 +66,10 @@ func doAccept (conn *net.TCPConn) {
 			s1.GeneralLock(conn)
 		case 4 :
 			s1.ProcessUploadProcess(conn)
+		case 6 :
+			s1.ProcessGetFileList(conn)
+		//case 7 :
+		//	s1.ProcessDownloadFile(conn)
 	}
 }
 
