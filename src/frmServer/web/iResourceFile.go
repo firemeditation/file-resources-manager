@@ -33,7 +33,7 @@ func iResourceFile(theUser *IsLoginInfo, w http.ResponseWriter, r *http.Request)
 	
 	// 获取到所有属于这个资源的文件（目前来说就只有直接资源）
 	all_file_tree := map[string]ResourceFileTreeStruct{}
-	all_file , _ := DbConn.Query("select hashid, powerlevel, fname, opath from resourceFile where rg_hashid = $1", rhashid)
+	all_file , _ := DbConn.Query("select hashid, powerlevel, fname, opath from resourceFile where rg_hashid = $1 order by opath ASC, fname ASC", rhashid)
 	// 整理路径并存入ResourceFileTreeStruct的结构体中
 	for all_file.Next(){
 		onefile := ResourceFileTable{}
