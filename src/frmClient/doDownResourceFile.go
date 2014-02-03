@@ -201,7 +201,7 @@ func downOneFile(downDone chan int, userid, resourceid, processid, originpath st
 		
 		file_full_path := originpath + file_info.RelativeDir
 		if FileExist(file_full_path) == false {
-			err = os.MkdirAll(file_full_path, os.FileMode(0775))
+			err = os.MkdirAll(file_full_path, os.FileMode(0755))
 			if err != nil {
 				errS := fmt.Sprintf("建立保存路径失败：%s，路径内文件无法正常下载", file_full_path)
 				errA = append(errA, errS)
