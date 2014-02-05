@@ -61,3 +61,11 @@
 在Web界面右上角检查是否与客户端正常连接。
 
 如果一切正常则可以开始使用。
+
+------
+
+## 演示视频 ##
+
+“图书数字资源管理”已完成功能的演示（2014年1月10日）  [vimeo](https://vimeo.com/83818751)  [viddler](http://www.viddler.com/v/8665b335)  [优酷](http://v.youku.com/v_show/id_XNjU5OTEwNzM2.html)
+
+“图书数字资源管理”-演示2-资源文件上传下载（2014年2月3日）  [vimeo](https://vimeo.com/85698449)  [viddler](http://www.viddler.com/v/7d18a531)  [优酷](http://v.youku.com/v_show/id_XNjY4Nzk1MzA0.html)
