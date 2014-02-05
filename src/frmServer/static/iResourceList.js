@@ -115,6 +115,8 @@ var getResourceListFromServer = function(){
 
 getResourceListFromServer();
 
+/** begin 上传图书 **/
+
 //点击这本书的上传
 $("#resource-one-full .one-resource-total-info .shangchuan").click(function(){
 	if(login_user.UPower.resource.origin < 2){ return }
@@ -145,7 +147,9 @@ var iRLUpFile = function(path){
 			$("#allwhite2").show();
 		});
 	});
-}
+};
+
+/** end 上传图书 **/
 
 // 显示图书内所有文件的目录树
 var showBigJsonLevel = function(json, path, jsoo){
@@ -217,7 +221,7 @@ var irlGetAllHashid = function(json){
 	return allhashid;
 }
 
-/** begin 上传图书 **/
+/** begin 下载图书 **/
 
 var resourceDownBox = function(type, files){
 	var hashid = $('#resource-one-full').attr("hashid");
@@ -256,7 +260,7 @@ var resourceDownDoDown = function(){
 			alert(data.err);
 			return
 		}else{
-			alert("已经转向后台上传，具体请查看后台状态。")
+			alert("已经转向后台下载，具体请查看后台状态。")
 		}
 		$("#allwhite2").hide();
 		$("#resource-down-box").hide();
@@ -268,7 +272,7 @@ var resourceDownClose = function(){
 	$("#resource-down-box").hide();
 }
 
-/** end 上传图书 **/
+/** end 下载图书 **/
 
 
 /** begin 删除图书 **/
