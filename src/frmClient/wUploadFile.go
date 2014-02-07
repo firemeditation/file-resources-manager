@@ -23,16 +23,19 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	user := r.Form["user"][0]
 	bookname := r.Form["bookname"][0]
 	
-	localpath = DirMustEnd(localpath)
+	//localpath = DirMustEnd(localpath)
 	if len(relative) != 0 {
 		relative = DirMustEnd(relative)
 	}
 	
-	_, err := os.Stat(localpath)
+	file_info, err := os.Stat(localpath)
 	if err != nil {
 		theSend := callback + "({\"err\":\"找不到文件或目录\"})"
 		fmt.Fprint(w, theSend)
 		return
+	}
+	if file_info.IsDir() == true {
+		localpath = DirMustEnd(localpath)
 	}
 	
 	theSend := callback + "({\"client\":\"yes\"})"

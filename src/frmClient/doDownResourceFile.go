@@ -65,6 +65,7 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 	fileHashid := make(chan string, DownGoMax)
 	if downtype == "one"{
 		fileHashid <- files
+		close(fileHashid)
 	}else{
 		go getDownloadFilesHashid(fileHashid, userid, resourceid, processid, downtype, files, bookname, errA)
 	}

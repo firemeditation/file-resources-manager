@@ -66,6 +66,7 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 		go readDirMain(fileInfo, originpath, addtopath)
 	}else{
 		fileInfo <- OriginFileInfoFullStruct{originpath, OriginFileInfoStruct{addtopath, ckdir.Name(), ckdir.Size(),ckdir.Mode(),ckdir.ModTime()}}
+		close(fileInfo)
 	}
 	
 	// 开启多个进程同时向服务器传递文件
