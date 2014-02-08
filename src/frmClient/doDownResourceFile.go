@@ -53,6 +53,8 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 	ckl := BytesToUint8(cklb)
 	if ckl == 2 {
 		err = fmt.Errorf("不允许加锁：%s", resourceid)
+		brstring := "不允许加锁，可能因为别人正在使用：" + bookname
+		backupRecord.AddRecord(userid, brstring)
 		return
 	}
 	//fmt.Println("请求加锁5")
@@ -185,7 +187,7 @@ func downOneFile(downDone chan int, userid, resourceid, processid, originpath st
 		cklb, _ := ReadSocketBytes(conn, 1)
 		ckl := BytesToUint8(cklb)
 		if ckl == 2 {
-			errS := fmt.Sprintf("服务器不允许下载文件：%s", fileHashid)
+			errS := fmt.Sprintf("服务器不允许下载文件，可能文件不存在或没有权限：%s", fileHashid)
 			errA = append(errA, errS)
 			backupRecord.AddRecord(userid, errS)
 			conn.Close()

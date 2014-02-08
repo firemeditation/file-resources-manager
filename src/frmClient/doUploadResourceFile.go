@@ -52,6 +52,8 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 	ckl := BytesToUint8(cklb)
 	if ckl == 2 {
 		err = fmt.Errorf("不允许加锁：%s", resourceid)
+		brstring := "不允许加锁，可能因为别人正在使用：" + bookname
+		backupRecord.AddRecord(userid, brstring)
 		return
 	}
 	//fmt.Println("请求加锁5")
