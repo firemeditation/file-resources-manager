@@ -82,7 +82,7 @@
 			<div class="guanbi resource-edits-1" onclick=resourceCloseNow(this)>关</div>
 			<div class="shanchu resource-edits-1" onclick=resourceDeleteAllClick()>删</div>
 			<div class="shangchuan resource-edits-1">上</div>
-			<div class="bianji resource-edits-1">编</div>
+			<div class="bianji resource-edits-1" onclick=resourceEditInfoShow()>编</div>
 			<div class="xiazai resource-edits-1" onclick=resourceDownBox('all','')>下</div>
 			<div class="liulan resource-edits-1" onclick=resourceLiulanClick()>浏</div>
 			<div class="liulan resource-edits-1" onclick=resourceXiangqingClick()>详</div>
@@ -93,10 +93,24 @@
 		<div class="resource-all-file" showit="no">
 			<div class="now-dir">··/</div>
 			<ul class="file-list">
-				<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">D</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>
-				<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">F</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>
-				<li hashid="dfa34edfgserasgdd45yuhgf" filetype="d/f/t"><span class="file-list-type">T</span><span class="file-list-name">文件名或文件夹名</span><span class="xiazai2 file-list-opt">下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt">删</span></li>
 			</ul>
+		</div>
+		<div class="resource-edit-info">
+			<form id='iEditResourceInfo' name='iEditResourceInfo' method='post' action='dd'>
+				<div class='input_name'>资源类型</div>
+				<div class="resoucetype"><select name="resourcetype" class="input_text"></select></div>
+				<div class='input_name'>书名/杂志名</div>
+				<div class='bookname'><input name='bookname' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='input_name'>作者</div>
+				<div class='author'><input name='author' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='input_name'>编辑</div>
+				<div class='editor'><input name='editor' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='input_name'>ISBN/ISSN</div>
+				<div class='isbn'><input name='isbn' type='text'  class="input_text" value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='input_name'>简介 [Markdown语法]</div><br>
+				<div class='info'><textarea name='info' class="input_textarea"></textarea><br> <span class='input_wrong_suggest'></span></div>
+				<div class="submit input_name" align="right"><input type='button' class="input_submit" name="submit" value="提交"></div>
+		</form>
 		</div>
 		<div class="resource-delete-all">
 			<div class="jinggao">以下操作不可逆且风险极大<br>请一定想清楚是否要执行</div>

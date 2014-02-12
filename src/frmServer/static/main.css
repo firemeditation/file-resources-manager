@@ -44,7 +44,7 @@ a:hover{
 	border: 1px solid #444444;
 	font-size:14px;
 	margin-left:30px;
-	line-height:30px;
+	line-height:150%;
 	width:90%;
 	height:300px;
 }
@@ -356,10 +356,16 @@ a:hover{
 	text-align:center;
 	cursor:pointer;
 }
-#resource-one-full .resource-all-info{
+#resource-one-full .resource-all-info, #resource-one-full .resource-edit-info{
 	padding:5px;
 	font-size:14px;
 	line-height:200%;
+}
+#resource-one-full #iEditResourceInfo{
+	margin:10px;
+}
+#resource-one-full .resource-edit-info{
+	display:none;
 }
 #resource-list #resource-main-list .resource-all-info{
 	display:none;

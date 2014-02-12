@@ -2,6 +2,7 @@ var iResourceList_from = 0;
 var iResourceList_limit = 10;
 var iResourceList_count = 0;
 
+var allBookListJSON;
 var theBigJSON;
 
 //修改弹出的每本书的详细信息的框的高度
@@ -20,6 +21,7 @@ var irlHideAll = function(){
 	$('#resource-one-full .resource-all-info').hide();
 	$('#resource-one-full .resource-all-file').hide();
 	$('#resource-one-full .resource-delete-all').hide();
+	$('#resource-one-full .resource-edit-info').hide();
 }
 
 // 资源图书列表下，点击书名，打开这本书的信息
@@ -27,8 +29,10 @@ var resourceNameClick = function(self){
 	irlHideAll();
 	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
 	var hashid = $(self).parent().parent().attr("hashid");
+	var num = $(self).parent().parent().attr("num");
 	var bookname = $(self).parent().parent().children(".one-resource-total-info").children(".the-resource-name").text();
 	$('#resource-one-full').attr("hashid",hashid);
+	$('#resource-one-full').attr("num",num);
 	$('#resource-one-full .uppon-info-show .resource-all-info').html(allinfo);
 	$('#resource-one-full .the-resource-name').text(bookname);
 	changeFullResouceBoxHeight();
@@ -90,13 +94,15 @@ var getResourceListFromServer = function(){
 		
 		md_converter = new Markdown.Converter();
 		
-		$(json.List).each(function(){
+		allBookListJSON = json.List;
+		
+		$(allBookListJSON).each(function(index){
 			//var li = $.parseJSON(this.MetaData);
 			var ptime = lastOtime(this.Table.Btime);
 			
 			var md_c = md_converter.makeHtml(this.Table.Info);
 			
-			var onebook = '<div class="one-resource-main" hashid="'+this.Table.HashId+'">\
+			var onebook = '<div class="one-resource-main" num='+index+' hashid="'+this.Table.HashId+'">\
 			<div class="one-resource-total-info">\
 				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
 				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
@@ -151,6 +157,8 @@ var iRLUpFile = function(path){
 
 /** end 上传图书 **/
 
+/** begin 文件目录树 **/
+
 // 显示图书内所有文件的目录树
 var showBigJsonLevel = function(json, path, jsoo){
 	//$("#resource-one-full .resource-all-file .now-dir .true-now").text(path);
@@ -184,6 +192,8 @@ var showChildList = function(self){
 		theUl.attr("show","no")
 	}
 }
+
+/** end 文件目录树 **/
 
 // 显示这本书的详情页
 var resourceXiangqingClick = function(){
@@ -339,6 +349,34 @@ var irlDeleteOneFile = function(file_hashid){
 };
 
 /** end 删除图书 **/
+
+/** begin 编辑图书信息 **/
+var resourceEditInfoShow = function(){
+	if(login_user.UPower.resource.origin < 2){ return }
+	$("#nowloadbox").fadeIn(200);
+	thisNum = $('#resource-one-full').attr("num");
+	thisInfo = allBookListJSON[thisNum];
+	$.get("webInterface?type=get-resource-type",function(data){
+		var json = $.parseJSON(data);
+		$('#resource-one-full #iEditResourceInfo .resoucetype select').html("");
+		$(json).each(function(){
+			if(this.Id != thisInfo.Table.RtId){
+				$('#resource-one-full #iEditResourceInfo .resoucetype select').append("<option value='" + this.Id + "'>" + this.Name + "</option>")
+			}else{
+				$('#resource-one-full #iEditResourceInfo .resoucetype select').append("<option value='" + this.Id + "' selected>" + this.Name + "</option>")
+			}
+		});
+		$("#nowloadbox").fadeOut(200);
+	});
+	irlHideAll();
+	$('#resource-one-full #iEditResourceInfo .bookname input').val(thisInfo.Table.Name);
+	$('#resource-one-full #iEditResourceInfo .author input').val(thisInfo.MD.Author);
+	$('#resource-one-full #iEditResourceInfo .editor input').val(thisInfo.MD.Editor);
+	$('#resource-one-full #iEditResourceInfo .isbn input').val(thisInfo.MD.ISBN);
+	$('#resource-one-full #iEditResourceInfo .info textarea').val(thisInfo.Table.Info);
+	$('#resource-one-full .resource-edit-info').show();
+};
+/** end 编辑图书信息 **/
 
 
 //点击下一页
