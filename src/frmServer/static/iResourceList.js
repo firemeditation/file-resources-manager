@@ -376,6 +376,39 @@ var resourceEditInfoShow = function(){
 	$('#resource-one-full #iEditResourceInfo .info textarea').val(thisInfo.Table.Info);
 	$('#resource-one-full .resource-edit-info').show();
 };
+
+$('#iEditResourceInfo .bookname input').keyup(function(){ $.RequestProcess.Text('#iEditResourceInfo .bookname',0,1,1000); });
+$('#iEditResourceInfo .author input').keyup(function(){ $.RequestProcess.Text('#iEditResourceInfo .author',1,1,1000); });
+$('#iEditResourceInfo .editor input').keyup(function(){ $.RequestProcess.Text('#iEditResourceInfo .editor',1,1,1000); });
+$('#iEditResourceInfo .isbn input').keyup(function(){ $.RequestProcess.Text('#iEditResourceInfo .isbn',1,1,1000); });
+$('#iEditResourceInfo .info input').keyup(function(){ $.RequestProcess.Textarea('#iEditResourceInfo .info',1,1,99999); });
+
+var iEditResourceInfo_Edit = function(){
+	var ckArray = [0,1,1,1,1];
+	ckArray[0] = $.RequestProcess.Text('#iEditResourceInfo .bookname',0,1,1000);
+	ckArray[1] = $.RequestProcess.Text('#iEditResourceInfo .author',1,1,1000);
+    ckArray[2] = $.RequestProcess.Text('#iEditResourceInfo .editor',1,1,1000);
+    ckArray[3] = $.RequestProcess.Text('#iEditResourceInfo .isbn',1,1,1000);
+    ckArray[4] = $.RequestProcess.Textarea('#iEditResourceInfo .info',1,1,99999);
+    if($.RequestProcess.ckAllOne(ckArray)==0){ return }
+    var $bookname = inputSafe.CleanAll($("#iEditResourceInfo .bookname input").val());
+    var $bookinfo = inputSafe.Clean($("#iEditResourceInfo .info textarea").val());
+    var $booktype = inputSafe.Clean($("#iEditResourceInfo .resoucetype select").val());
+    var $json = '{"Author":"' + inputSafe.CleanAll($("#iEditResourceInfo .author input").val()) + '", "Editor":"'+inputSafe.CleanAll($("#iEditResourceInfo .editor input").val())+'", "ISBN":"'+inputSafe.CleanAll($("#iEditResourceInfo .isbn input").val())+'"}'
+	var $bookhashid = $('#resource-one-full').attr("hashid");
+	$("#nowloadbox").fadeIn(200);
+	$.post("webInterface?type=edit-one-resource", {hashid:$bookhashid, bookname: $bookname, bookinfo: $bookinfo, booktype : $booktype, json : $json})
+    .fail(function(){alert("错误")})
+    .done(function(data){
+		$json = $.parseJSON(data)
+			if($json.err){
+				alert($json.err);
+				processServerError($json.err);
+				return;
+			};
+			getResourceListFromServer();
+	});
+};
 /** end 编辑图书信息 **/
 
 
