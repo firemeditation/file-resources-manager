@@ -71,51 +71,56 @@ var getResourceListFromServer = function(){
 		server_word = "webInterface?type=resource-list&key_word="+search_word+"&search_type="+search_type+"&from="+iResourceList_from+"&limit="+iResourceList_limit
 		$("#resource-list .allListBookCountTishi").text("共找到图书")
 	}
-	$.get(server_word , function(data){
-		var json = $.parseJSON(data);
-		if(json.err){alert(json.err); processServerError(json.err); return;}
-		$("#resource-list .allListBookCount").text(json.Count);
-		iResourceList_count = json.Count;
-		if (iResourceList_from == 0){
-			$("#next-and-prev .prev").hide();
-		}else{
-			$("#next-and-prev .prev").show();
-		};
-		if (iResourceList_from + iResourceList_limit >= iResourceList_count){
-			$("#next-and-prev .next").hide();
-		}else{
-			$("#next-and-prev .next").show();
-		};
-		if($("#resource-list .allListBookCount").text() == '0'){
-			$("#next-and-prev .next").hide();
-			$("#next-and-prev .prev").hide();
+	$.ajax({
+		url: server_word,
+		async : false, 
+		type : "get",
+		success : function(data){
+			var json = $.parseJSON(data);
+			if(json.err){alert(json.err); processServerError(json.err); return;}
+			$("#resource-list .allListBookCount").text(json.Count);
+			iResourceList_count = json.Count;
+			if (iResourceList_from == 0){
+				$("#next-and-prev .prev").hide();
+			}else{
+				$("#next-and-prev .prev").show();
+			};
+			if (iResourceList_from + iResourceList_limit >= iResourceList_count){
+				$("#next-and-prev .next").hide();
+			}else{
+				$("#next-and-prev .next").show();
+			};
+			if($("#resource-list .allListBookCount").text() == '0'){
+				$("#next-and-prev .next").hide();
+				$("#next-and-prev .prev").hide();
+			}
+			var i = 0;
+			
+			md_converter = new Markdown.Converter();
+			
+			allBookListJSON = json.List;
+			
+			$(allBookListJSON).each(function(index){
+				//var li = $.parseJSON(this.MetaData);
+				var ptime = lastOtime(this.Table.Btime);
+				
+				var md_c = md_converter.makeHtml(this.Table.Info);
+				
+				var onebook = '<div class="one-resource-main" num='+index+' hashid="'+this.Table.HashId+'">\
+				<div class="one-resource-total-info">\
+					<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
+					<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
+				</div>\
+				<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
+				<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
+				<p>简介：</p>\
+				<div class="markdown">'+md_c+'</div></div>\
+			</div>';
+				$("#resource-main-list").append(onebook);
+				i++;
+			});
+			$("#nowloadbox").fadeOut(200);
 		}
-		var i = 0;
-		
-		md_converter = new Markdown.Converter();
-		
-		allBookListJSON = json.List;
-		
-		$(allBookListJSON).each(function(index){
-			//var li = $.parseJSON(this.MetaData);
-			var ptime = lastOtime(this.Table.Btime);
-			
-			var md_c = md_converter.makeHtml(this.Table.Info);
-			
-			var onebook = '<div class="one-resource-main" num='+index+' hashid="'+this.Table.HashId+'">\
-			<div class="one-resource-total-info">\
-				<div class="the-resource-name" onclick=resourceNameClick(this)>'+this.Table.Name+'</div>\
-				<div class="the-little-info">类型：'+this.RSR.RtName+'&nbsp;&nbsp;&nbsp;&nbsp;作者：'+this.MD.Author+'<br>编辑：'+this.MD.Editor+'&nbsp;&nbsp;&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'</div>\
-			</div>\
-			<div class="resource-all-info" showit="no"><p>类型：'+this.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+this.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
-			<p>作者：'+this.MD.Author+'&nbsp;&nbsp;编辑：'+this.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+this.MD.ISBN+'&nbsp;&nbsp;</p>\
-			<p>简介：</p>\
-			<div class="markdown">'+md_c+'</div></div>\
-		</div>';
-			$("#resource-main-list").append(onebook);
-			i++;
-		});
-		$("#nowloadbox").fadeOut(200);
 	});
 };
 
@@ -407,6 +412,18 @@ var iEditResourceInfo_Edit = function(){
 				return;
 			};
 			getResourceListFromServer();
+			thisNum = $('#resource-one-full').attr("num");
+			thisInfo = allBookListJSON[thisNum];
+			$('#resource-one-full .the-resource-name').text($bookname);
+			var ptime = lastOtime(thisInfo.Table.Btime);
+			var md_c = md_converter.makeHtml(thisInfo.Table.Info);
+			var allinfo = '<p>类型：'+thisInfo.RSR.RtName+'&nbsp;&nbsp;最后操作人：'+thisInfo.RSR.UsersName+'&nbsp;&nbsp;创建时间：'+ptime+'</p>\
+				<p>作者：'+thisInfo.MD.Author+'&nbsp;&nbsp;编辑：'+thisInfo.MD.Editor+'&nbsp;&nbsp;ISBN/ISSN：'+thisInfo.MD.ISBN+'&nbsp;&nbsp;</p>\
+				<p>简介：</p>\
+				<div class="markdown">'+md_c+'</div>';
+			//alert(allinfo);
+			$('#resource-one-full .uppon-info-show .resource-all-info').html(allinfo);
+			resourceXiangqingClick();
 	});
 };
 /** end 编辑图书信息 **/
