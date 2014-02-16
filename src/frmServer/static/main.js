@@ -156,10 +156,19 @@ $(document).ready(function(){
 	});
 	//end 点击客户端状态
 	
+	// begin 点击查看当前用户的信息
 	$("#top-kongzhi .userinfo").click(function(){
-		$("#top-kongzhi .soutext").val("");
 		hideAll();
+		$("#nowloadbox").fadeIn(200);
+		searchClean();
+		$("#main-box #now-user-info").load("static/iNowUserInfo.htm", function(){
+			$.getScript("static/iNowUserInfo.js").done(function(){
+				$("#main-box #now-user-info").fadeIn();
+				$("#nowloadbox").fadeOut(200);
+			});
+		});
 	});
+	// end 点击查看当前用户的信息
 	
 	//begin 点击查看资源
 	$("#top-kongzhi .chakan").click(function(){

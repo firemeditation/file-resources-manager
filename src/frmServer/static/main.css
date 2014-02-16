@@ -263,7 +263,7 @@ a:hover{
 .text-box-title {
 	font-size: 30px;
 	padding:10px;
-	font-family:"微软雅黑","黑体","SimHei";
+	font-family:"WenQuanYi Micro Hei Mono","文泉驿等宽微米黑","微软雅黑","黑体","SimHei";
 	color:#333333;
 	letter-spacing:2px;
 }
@@ -408,7 +408,7 @@ a:hover{
 	padding: 10px 0px 10px 0px;
 	cursor:pointer;
 }
-#resource-add-box {
+#resource-add-box, #now-user-info {
 	padding: 0 70px 0 70px;
 	display: none;
 }

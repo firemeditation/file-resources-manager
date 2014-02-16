@@ -1,0 +1,49 @@
+<style type="text/css">
+#iNowUserInfo {
+	padding-left:30px;
+	padding-right:30px;
+	/*border-left: solid 1px #888888;
+	border-right: solid 1px #888888;*/
+}
+#iNowUserInfo .user_all_info {
+	padding: 10px 40px 10px 40px;
+	font-size:16px;
+	line-height:200%;
+}
+#iNowUserInfo .user-power-title, #iNowUserInfo .user-change-password-title {
+	font-size: 16px;
+	font-family:"WenQuanYi Micro Hei Mono","文泉驿等宽微米黑","微软雅黑","黑体","SimHei";
+	padding-top:20px;
+}
+#iNowUserInfo .user-power-box, #iNowUserInfo .user-change-password-box {
+	padding: 10px;
+	margin:0 20px 0 20px;
+	border: solid 1px #ddd;
+}
+</style>
+
+<div id="iNowUserInfo">
+	<div class="user_title_name text-box-title">当前用户 <span></span> 的属性信息</div>
+	<div class="user_all_info">
+		<p>所属机构：<span class="belong-unit"></span>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;所属组：<span class="belong-group"></span></p>
+		<div class="user-power-title">用户具体权限：</div>
+		<div class="user-power-box">
+			　　机构管理权限：<span class="power-units"></span><br>
+			　用户组管理权限：<span class="power-usergroup"></span><br>
+			　　用户管理权限：<span class="power-user"></span><br>
+			原始资源管理权限：<span class="power-resource"></span><br>
+		</div>
+		<div class="user-change-password-title">修改登录密码：</div>
+		<div class="user-change-password-box">
+			<form id='change-password' name='change-password' method='post' action=''>
+				<div class='title input_name'>原密码</div>
+				<div class='old_password'><input name='old_password' class="input_text" type='password' value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='title input_name'>新密码</div>
+				<div class='new_password'><input name='new_password' class="input_text" type='password' value=''> <span class='input_wrong_suggest'></span></div>
+				<div class='title input_name'>新密码重复输入</div>
+				<div class='new_password2'><input name='new_password2' class="input_text" type='password' value=''> <span class='input_wrong_suggest'></span></div>
+				<div class="submit input_name" align="right"><input type='button' class="input_submit" name="submit" value="提交"></div>
+			</form>
+		</div>
+	</div>
+</div>

@@ -44,7 +44,7 @@ func processLogin(w http.ResponseWriter, r *http.Request){
 	
 	if password != ck_passwd {
 		LogInfo.Printf("登录错误：密码错误：用户：%s", username)
-		fmt.Fprint(w,"用户名火密码错误")
+		fmt.Fprint(w,"用户名或密码错误")
 		return
 	}
 	
