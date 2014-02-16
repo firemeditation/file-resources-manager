@@ -200,3 +200,9 @@ $(document).ready(function(){
 	});
 	//end 点击新建资源
 });
+
+var logoutSystem = function(){
+	$.get("logout",function(){
+		window.location.href='login';
+	});
+};
