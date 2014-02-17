@@ -16,7 +16,7 @@ func doLogout(w http.ResponseWriter, r *http.Request){
 	cookiename, _ := ServerConfig.GetString("web","cookie")
 	userhash_cookie, err := r.Cookie(cookiename)
 	if err != nil {
-		fmt.Fprint(w,"no")
+		fmt.Fprint(w,"<script language='javascript'>window.location.href='login'</script>")
 		//fmt.Println("no")
 		return
 	}
@@ -25,6 +25,6 @@ func doLogout(w http.ResponseWriter, r *http.Request){
 	cookie := http.Cookie{Name: cookiename, Value: userhash_cookie.Value, MaxAge: -2}
 	http.SetCookie(w, &cookie)
 	UserLoginStatus.Del(userhash_cookie.Value)
-	fmt.Fprint(w,"yes")
+	fmt.Fprint(w,"<script language='javascript'>window.location.href='login'</script>")
 	//fmt.Println("yes")
 }
