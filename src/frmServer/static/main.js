@@ -10,6 +10,7 @@ var hideAll = function(){
 	$("#main-box #help-box").hide();
 	$("#main-box #resource-list").hide();
 	$("#main-box #resource-add-box").hide();
+	$("#main-box #now-user-info").hide();
 	$("html, body").animate({scrollTop:0}, 'slow')
 };
 
