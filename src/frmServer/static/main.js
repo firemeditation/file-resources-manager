@@ -15,7 +15,7 @@ var hideAll = function(){
 };
 
 var processServerError = function(err){
-	if (err == "用户超时" || err == "不是正确的接口请求"){
+	if (err == "用户超时" || err == "用户不存在" || err == "不是正确的接口请求"){
 		window.location.href='/login'
 	}
 }
@@ -80,7 +80,13 @@ window.setInterval(checkClientStatus,30000);
 
 // 维持登录状态心跳
 var updateLive = function(){
-	$.get("updateLive")
+	$.get("updateLive",function(data){
+		theJson = $.parseJSON(data);
+		if(theJson.err){
+			alert(theJson.err);
+			processServerError();
+		};
+	});
 }
 // 每10分钟执行一次updateLive函数
 window.setInterval(updateLive,600000);
@@ -102,6 +108,8 @@ var onloadGetUserinfo = function(){
 };
 
 $(document).ready(function(){
+	updateLive();
+	
 	onloadGetUserinfo();
 	//检查端口cookie
 	var local_client_port_cookie = $.cookie('local_client_port');
