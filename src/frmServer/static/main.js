@@ -16,7 +16,7 @@ var hideAll = function(){
 
 var processServerError = function(err){
 	if (err == "用户超时" || err == "用户不存在" || err == "不是正确的接口请求"){
-		window.location.href='/login'
+		window.location.href='login'
 	}
 }
 
@@ -39,7 +39,6 @@ var searchClean = function(){
 var doSearch = function(){
 	var search_change_port_reg = new RegExp("^client.port:([0-9]+)$");
 	var search_text = $("#top-kongzhi .soutext").val();
-	cTrim
 	search_text = cTrim(search_text)
 	search_text = inputSafe.CleanAll(search_text)
 	if (search_text.match(search_change_port_reg)){
@@ -84,7 +83,7 @@ var updateLive = function(){
 		theJson = $.parseJSON(data);
 		if(theJson.err){
 			alert(theJson.err);
-			processServerError();
+			processServerError(theJson.err);
 		};
 	});
 }
