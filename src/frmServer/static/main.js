@@ -22,6 +22,7 @@ var processServerError = function(err){
 
 // begin 显示基本的查看资源的资源列表
 var showTheBasicResourceList = function(){
+	$("#nowloadbox").fadeIn(200);
 	$("#main-box #resource-list").load("static/iResourceList.htm",function(){
 		$.getScript("static/iResourceList.js");
 	});

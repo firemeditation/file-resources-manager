@@ -171,9 +171,9 @@ var showBigJsonLevel = function(json, path, jsoo){
 	var onefile = ''
 	$.each(json, function(name, value){
 		if (value.IsDir == false){
-			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("one","'+value.HashId+'")>下</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeleteOneFile("'+value.HashId+'")>删</span></li>';
+			onefile += '<li hashid="'+value.HashId+'" filetype="f"><span>├</span><span class="file-list-type">F</span><span class="file-list-name">'+value.Name+'</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("one","'+value.HashId+'")>下</span><span class="shanchu2 file-list-opt" onclick=irlDeleteOneFile("'+value.HashId+'")>删</span></li>';
 		}else{
-			onefile += '<li filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("part",'+jsoo + '["' + value.Name + '"]' +'.Files)>下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="bianji2 file-list-opt">编</span><span class="shanchu2 file-list-opt" onclick=irlDeletePartFile('+jsoo + '["' + value.Name + '"]' +'.Files)>删</span>';
+			onefile += '<li filetype="d"><span>├</span><span class="file-list-type">D</span><span class="file-list-name" onclick=showChildList(this)>'+value.Name+'/</span><span class="xiazai2 file-list-opt" onclick=resourceDownBox("part",'+jsoo + '["' + value.Name + '"]' +'.Files)>下</span><span class="shangchuan2 file-list-opt" onclick=iRLUpFile("'+path + value.Name + '/")>上</span><span class="shanchu2 file-list-opt" onclick=irlDeletePartFile('+jsoo + '["' + value.Name + '"]' +'.Files)>删</span>';
 			onefile += '<ul class="file-list-2" show="no">'
 			onefile += showBigJsonLevel(json[value.Name].Files, path+value.Name+"/", jsoo + '["'+value.Name+'"].Files')
 			onefile += '</ul></li>'
