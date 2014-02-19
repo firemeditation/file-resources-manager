@@ -3,9 +3,7 @@
 package public
 
 import(
-	"sync"
 	"fmt"
-	"time"
 	"strings"
 )
 
@@ -23,63 +21,29 @@ type acftiOneSearch struct {
 
 //正式
 type AsyncCacheFullTextIndex struct {
-	lock *sync.RWMutex
-	wait int64
-	Del []acftiAid
-	Up []acftiAid
-	KeyWord []string
+	Del chan acftiAid
+	Up chan acftiAid
+	KeyWord chan string
 }
 
 //NewAsyncCachFullTextIndex 新建异步缓存全文索引
 func NewAsyncCachFullTextIndex (modewait int64) *AsyncCacheFullTextIndex {
-	return &AsyncCacheFullTextIndex{new(sync.RWMutex), modewait , []acftiAid{}, []acftiAid{}, []string{}}
+	return &AsyncCacheFullTextIndex{make(chan acftiAid), make(chan acftiAid), make(chan string)}
 }
 
 // Insert 插入一条待处理数据
 func (acf *AsyncCacheFullTextIndex) Insert(mode, hashid, htype string){
-	acf.lock.Lock()
-	defer acf.lock.Unlock()
 	switch mode {
 		case "del":
-			candel := true
-			for _, one := range acf.Del {
-				if one.HashId == hashid && one.Type == htype {
-					candel = false
-					break
-				}
-			}
-			if candel == true {
-				acf.Del = append(acf.Del, acftiAid{hashid, htype})
-			}
+			acf.Del <- acftiAid{hashid, htype}
 		case "up":
-			canup := true
-			for _, one := range acf.Up {
-				if one.HashId == hashid && one.Type == htype {
-					canup = false
-					break
-				}
-			}
-			if canup == true {
-				hashid = "'"+hashid+"'"
-				acf.Up = append(acf.Up, acftiAid{hashid, htype})
-			}
+			acf.Up <- acftiAid{hashid, htype}
 	}
 }
 
 // InsertWord 插入个待处理关键词
 func  (acf *AsyncCacheFullTextIndex) InsertWord(word string){
-	acf.lock.Lock()
-	defer acf.lock.Unlock()
-	canadd := true
-	for _, oneword := range acf.KeyWord {
-		if oneword == word {
-			canadd = false
-			break
-		}
-	}
-	if canadd == true {
-		acf.KeyWord = append(acf.KeyWord, word)
-	}
+	acf.KeyWord <- word
 }
 
 // SearchString 返回一个逗号分割的字符串
@@ -159,19 +123,20 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 // AsyncCache 异步缓存
 func (acf *AsyncCacheFullTextIndex) AsyncCache(){
 	for {
-		time.Sleep(time.Duration(acf.wait)*time.Second)
-		acf.cacheDel()
-		acf.cacheUp()
-		acf.cacheKeyWord()
+		select {
+			case del := <- acf.Del :
+				acf.cacheDel(del)
+			case up := <- acf.Up :
+				acf.cacheUp(up)
+			case key := <- acf.KeyWord :
+				acf.cacheKeyWord(key)
+		}
 	}
 }
 
 // 缓存删除的，其实就是删除掉已经删除了的数据
-func (acf *AsyncCacheFullTextIndex) cacheDel(){
-	acf.lock.Lock()
-	defer acf.lock.Unlock()
+func (acf *AsyncCacheFullTextIndex) cacheDel(beDel acftiAid){
 	del_pre , _ := DbConn.Prepare("delete from acfti where htype = $1 and hashid = $2")
-	for _, beDel := range acf.Del {
 		switch beDel.Type {
 			case "rg":
 				del_pre.Exec(1, beDel.HashId)
@@ -180,57 +145,47 @@ func (acf *AsyncCacheFullTextIndex) cacheDel(){
 			case "rt":
 				del_pre.Exec(3, beDel.HashId)
 		}
-	}
-	acf.Del = []acftiAid{}
 }
 
 // 缓存得到更新的
-func (acf *AsyncCacheFullTextIndex) cacheUp(){
-	acf.lock.Lock()
-	defer acf.lock.Unlock()
-	if len(acf.Up) == 0 {
-		return
-	}
-	up_rg := []string{}
-	up_rf := []string{}
-	up_rt := []string{}
+func (acf *AsyncCacheFullTextIndex) cacheUp(oneA acftiAid){
+	var up_rg string
+	//var up_rf string  //预留
+	//var up_rt string  //预留
 	del_pre, _ := DbConn.Prepare("delete from acfti where htype = $1 and hashid = $2")
-	for _, oneA := range acf.Up {
 		switch oneA.Type {
 			case "rg":
-				up_rg = append(up_rg, oneA.HashId)
+				//up_rg = append(up_rg, oneA.HashId)
+				up_rg = oneA.HashId
 				del_pre.Exec(1, oneA.HashId)
+			/*
 			case "rf":
-				up_rf = append(up_rf, oneA.HashId)
+				up_rf = oneA.HashId
 				del_pre.Exec(2, oneA.HashId)
 			case "rt":
-				up_rt = append(up_rt, oneA.HashId)
+				up_rt = oneA.HashId
 				del_pre.Exec(3, oneA.HashId)
+			* 块预留
+			*/
 		}
-	}
 	
-	upstring_rg := strings.Join(up_rg, ", ")
+	//upstring_rg := strings.Join(up_rg, ", ")
 	allwords := acf.getAllKeyWord()
 	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
 	for _, oneWord := range allwords {
-		searchRg := acf.searchFromRg(oneWord, upstring_rg)
-		for _, oneS := range searchRg {
-			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
+		if len(up_rg) != 0 {
+			searchRg := acf.searchFromRg(oneWord, up_rg)
+			for _, oneS := range searchRg {
+				sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
+			}
 		}
 	}
-	acf.Up = []acftiAid{}
 }
 
 // 缓存新的关键词
-func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
-	acf.lock.Lock()
-	defer acf.lock.Unlock()
-	if len(acf.KeyWord) == 0 {
-		return
-	}
+func (acf *AsyncCacheFullTextIndex) cacheKeyWord(oneWord string){
 	sql_p, _ := DbConn.Prepare("insert into acfti (key_word, uid, hashid, htype) values ($1, $2, $3, $4)")
 	sql_del, _ := DbConn.Prepare("delete from acfti where key_word = $1")
-	for _, oneWord := range acf.KeyWord {
 		sql_del.Exec(oneWord)  //为了以防万一重复了，删除所有的这个关键词的项目
 		
 		sql_p.Exec(oneWord, 1, "0000000000000000000000000000000000000000", 1)  //写入站位的全零项目
@@ -240,7 +195,7 @@ func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 		// begin 处理ResourceGroup的搜索
 		searchRg := acf.searchFromRg(oneWord,"0")
 		if len(searchRg) == 0 {
-			continue
+			return
 		}
 		for _, oneS := range searchRg {
 			sql_p.Exec(oneWord, oneS.UnitId, oneS.HashId, 1)
@@ -249,8 +204,6 @@ func (acf *AsyncCacheFullTextIndex) cacheKeyWord(){
 		
 		// 处理ResourceFile的搜索 TODO
 		// 处理ResourceText的搜索 TODO
-	}
-	acf.KeyWord = []string{}
 }
 
 // 获取所有现有关键词
@@ -271,7 +224,7 @@ func (acf *AsyncCacheFullTextIndex) searchFromRg (keyword string, hashstring str
 	if hashstring == "0"{
 		sql = "select hashid, units_id from resourceGroup where name ilike '%"+keyword+"%' or info ilike '%"+keyword+"%' or metadata->>'Author' ilike '%"+keyword+"%' or metadata->>'Editor' ilike '%"+keyword+"%' or metadata->>'ISBN' ilike '%"+keyword+"%'"
 	}else{
-		sql = "select hashid, units_id from resourceGroup where (name ilike '%"+keyword+"%' or info ilike '%"+keyword+"%' or metadata->>'Author' ilike '%"+keyword+"%' or metadata->>'Editor' ilike '%"+keyword+"%' or metadata->>'ISBN' ilike '%"+keyword+"%') and hashid in ( "+hashstring+" )"
+		sql = "select hashid, units_id from resourceGroup where (name ilike '%"+keyword+"%' or info ilike '%"+keyword+"%' or metadata->>'Author' ilike '%"+keyword+"%' or metadata->>'Editor' ilike '%"+keyword+"%' or metadata->>'ISBN' ilike '%"+keyword+"%') and hashid = '"+hashstring+"' "
 	}
 	search, _ := DbConn.Query(sql)
 	for search.Next() {

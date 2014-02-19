@@ -40,7 +40,10 @@ var searchClean = function(){
 var doSearch = function(){
 	var search_change_port_reg = new RegExp("^client.port:([0-9]+)$");
 	var search_text = $("#top-kongzhi .soutext").val();
-	search_text = cTrim(search_text)
+	search_text = cTrim(search_text,0)
+	if (mbStringLength(search_text) == 0){
+		return
+	}
 	search_text = inputSafe.CleanAll(search_text)
 	if (search_text.match(search_change_port_reg)){
 		var exec = search_change_port_reg.exec(search_text);
