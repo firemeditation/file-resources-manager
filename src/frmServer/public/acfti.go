@@ -82,7 +82,6 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 	if key_count == 0 {
 		// 如果关键词索引里没有的处理方法
 		// 加入异步缓存的KeyWord列表，然后做简单的标题搜索
-		acf.InsertWord(key_word)
 		sql2 := "select hashid from "
 		switch htype {
 			case "rg":
@@ -103,6 +102,9 @@ func (acf *AsyncCacheFullTextIndex) Search (key_word, htype string, uid uint16) 
 			hashid = append(hashid,one_hashid)
 		}
 		key_count = uint64(len(hashid))
+		
+		acf.InsertWord(key_word)
+		
 		return
 	}
 	
