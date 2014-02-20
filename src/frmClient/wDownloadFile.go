@@ -23,6 +23,13 @@ func wDownloadFile(w http.ResponseWriter, r *http.Request) {
 	bookname := r.Form["bookname"][0]
 	downtype := r.Form["type"][0]
 	
+	serverStatus := ckServerConnect()
+	if serverStatus == 2 {
+		theSend := callback + "({\"err\":\"客户端无法访问服务器\"})"
+		fmt.Fprint(w, theSend)
+		return
+	}
+	
 	localpath = DirMustEnd(localpath)
 	
 	var files string

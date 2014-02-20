@@ -20,7 +20,17 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 	}
 	//fmt.Println("请求加锁")
 	// 开始请求加锁
-	conn := connectServer()
+	conn, err := connectServer()
+	if err != nil {
+		//err = fmt.Errorf("无法连接服务器：%s", err)
+		backupRecord.AddRecord(userid, "无法连接服务器")
+		return
+	}
+	if err != nil {
+		//err = fmt.Errorf("无法连接服务器：%s", err)
+		backupRecord.AddRecord(userid, "无法连接服务器")
+		return
+	}
 	err = sendTheFirstRequest (1, 3, conn)
 	if err != nil {
 		err = fmt.Errorf("发送状态错误：%s", err)
@@ -119,7 +129,12 @@ func doDownResourceFile(userid, resourceid, originpath, downtype, files, booknam
 func getDownloadFilesHashid(fileHashid chan<- string, userid, resourceid, processid, downtype, files, bookname string, errA []string){
 	defer close(fileHashid)
 	if downtype == "all" {
-		conn := connectServer()
+		conn, err := connectServer()
+		if err != nil {
+			//err = fmt.Errorf("无法连接服务器：%s", err)
+			backupRecord.AddRecord(userid, "无法连接服务器")
+			return
+		}
 		sendTheFirstRequest (1, 6, conn)
 		SendSocketBytes(conn, []byte(userid), 40)
 		SendSocketBytes(conn, []byte(resourceid), 40)
@@ -152,8 +167,13 @@ func downOneFile(downDone chan int, userid, resourceid, processid, originpath st
 		downDone <- 1
 	}()
 	for oneFile := range fileHashid {
-		conn := connectServer()
-		err := sendTheFirstRequest (1, 7, conn)
+		conn, err := connectServer()
+		if err != nil {
+			//err = fmt.Errorf("无法连接服务器：%s", err)
+			backupRecord.AddRecord(userid, "无法连接服务器")
+			return
+		}
+		err = sendTheFirstRequest (1, 7, conn)
 		if err != nil {
 			errA = append(errA, "发送状态错误")
 			conn.Close()

@@ -3,7 +3,6 @@ package main
 import (
 	"net"
 	"os"
-	"fmt"
 	. "frmPkg"
 	"os/exec"
 )
@@ -24,19 +23,21 @@ func sendTheFirstRequest (version , retype uint8, conn *net.TCPConn) error {
 }
 
 //connectServer 根据配置文件地址连接服务器
-func connectServer() *net.TCPConn {
+func connectServer() (connecter *net.TCPConn, err error) {
 	serviceAddr, _ := clientConfig.GetString("server","addr")
 	IPAdrr, err := net.ResolveTCPAddr("tcp", serviceAddr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
-		os.Exit(1)
+		//fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
+		//os.Exit(1)
+		return
 	}
-	Connecter, err := net.DialTCP("tcp", nil, IPAdrr)
+	connecter, err = net.DialTCP("tcp", nil, IPAdrr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
-		os.Exit(1)
+		//fmt.Fprintf(os.Stderr, "连接服务器出错：", err)
+		//os.Exit(1)
+		return
 	}
-	return Connecter
+	return
 }
 
 //clearScreen 清空屏幕内容

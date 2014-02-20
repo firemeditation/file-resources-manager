@@ -23,6 +23,13 @@ func wUploadFile(w http.ResponseWriter, r *http.Request) {
 	user := r.Form["user"][0]
 	bookname := r.Form["bookname"][0]
 	
+	serverStatus := ckServerConnect()
+	if serverStatus == 2 {
+		theSend := callback + "({\"err\":\"客户端无法访问服务器\"})"
+		fmt.Fprint(w, theSend)
+		return
+	}
+	
 	//localpath = DirMustEnd(localpath)
 	if len(relative) != 0 {
 		relative = DirMustEnd(relative)

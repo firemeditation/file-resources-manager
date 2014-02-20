@@ -14,9 +14,12 @@ func wCheckLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	callback := getCallback[0]
-	
-	//theSend := callback + "({\"client\":\"yes\", \"backupNum\":" + fmt.Sprint(backupNum) + "})"
-	theSend := callback + "({\"client\":\"yes\"})"
+	theSend := callback
+	if serverConnectStatus == 1 {
+		theSend = callback + "({\"client\":\"all\"})"
+	}else{
+		theSend = callback + "({\"client\":\"less\"})"
+	}
 	
 	fmt.Fprintf(w, theSend)
 }

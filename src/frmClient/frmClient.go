@@ -16,16 +16,19 @@ var clientConfig  *goconfig.ConfigFile
 var backupRecord *backupRecordStruct
 //var myLogin SelfLoginInfo
 //var resourceType []ResourceTypeTable
+var serverConnectStatus uint8  //服务器连接情况，1代表正常，2代表不正常
 
 func init() {
 	clientConfig = GetConfig("client")
 	backupRecord = newBackupRecordStuct()
+	
 }
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	//Login()
 	//mainLoop()
+	go ckServerConnectLoop()
 	startClient()
 }
 

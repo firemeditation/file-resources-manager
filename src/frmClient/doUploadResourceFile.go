@@ -19,7 +19,12 @@ func doUploadResourceFile(userid, resourceid string, originpath, addtopath, book
 	}
 	//fmt.Println("请求加锁")
 	// 开始请求加锁
-	conn := connectServer()
+	conn, err := connectServer()
+	if err != nil {
+		//err = fmt.Errorf("无法连接服务器：%s", err)
+		backupRecord.AddRecord(userid, "无法连接服务器")
+		return
+	}
 	err = sendTheFirstRequest (1, 3, conn)
 	if err != nil {
 		err = fmt.Errorf("发送状态错误：%s", err)
@@ -142,8 +147,13 @@ func sendFiles(uploadDone chan int, userid, resourceid, processid string, fileIn
 		uploadDone <- 1
 	}()
 	for oneFile := range fileInfo {
-		conn := connectServer()
-		err := sendTheFirstRequest (1, 4, conn)
+		conn, err := connectServer()
+		if err != nil {
+			//err = fmt.Errorf("无法连接服务器：%s", err)
+			backupRecord.AddRecord(userid, "无法连接服务器")
+			return
+		}
+		err = sendTheFirstRequest (1, 4, conn)
 		if err != nil {
 			errA = append(errA, "发送状态错误")
 			break

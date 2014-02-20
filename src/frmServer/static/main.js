@@ -68,13 +68,13 @@ var doSearch = function(){
 // checkClientStatus 检查客户端状态
 var checkClientStatus = function(){
 	$.getJSON("http://127.0.0.1:"+local_client_port+"/checkLink?callback=?",function(r){
-		if(r['client'] == 'yes'){
-			$("#top-status-area .client_status").text("连接正常");
-		}else{
-			$("#top-status-area .client_status").text("连接不正常");
+		if(r['client'] == 'all'){
+			$("#top-status-area .client_status").text("客户端连接正常");
+		}else if ((r['client'] == 'less'){
+			$("#top-status-area .client_status").text("客户端无法访问服务器");
 		}
 	}).fail(function(){
-		$("#top-status-area .client_status").text("没有连接");
+		$("#top-status-area .client_status").text("客户端没有启动");
 	});
 }
 // 每30秒执行一次checkClientStatus函数
