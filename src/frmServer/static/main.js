@@ -70,7 +70,7 @@ var checkClientStatus = function(){
 	$.getJSON("http://127.0.0.1:"+local_client_port+"/checkLink?callback=?",function(r){
 		if(r['client'] == 'all'){
 			$("#top-status-area .client_status").text("客户端连接正常");
-		}else if ((r['client'] == 'less'){
+		}else if (r['client'] == 'less'){
 			$("#top-status-area .client_status").text("客户端无法访问服务器");
 		}
 	}).fail(function(){
@@ -78,7 +78,7 @@ var checkClientStatus = function(){
 	});
 }
 // 每30秒执行一次checkClientStatus函数
-window.setInterval(checkClientStatus,30000);
+window.setInterval(checkClientStatus,10000);
 
 
 // 维持登录状态心跳
@@ -106,6 +106,12 @@ var onloadGetUserinfo = function(){
 			$("#top-kongzhi .show_hide_userinfo .user-info-self").text("错误：" + json.err)
 		}else{
 			$("#top-kongzhi .show_hide_userinfo .user-info-self").html("用户名：" + json.Name + "&nbsp;&nbsp;所属机构：" + json.UnitName + "&nbsp;&nbsp;所属组：" + json.GroupName)
+		}
+		if(login_user.UPower.resource.origin < 2){
+			$("#top-kongzhi .xinjian").hide();
+		}
+		if(login_user.UPower.user.user == 0 && login_user.UPower.user.unit == 0 && login_user.UPower.user.group == 0){
+			$("#top-kongzhi .xitonggl").hide();
 		}
 	});
 };

@@ -26,6 +26,9 @@ var irlHideAll = function(){
 
 // 资源图书列表下，点击书名，打开这本书的信息
 var resourceNameClick = function(self){
+	if(login_user.UPower.resource.origin == 0){
+		return
+	}
 	irlHideAll();
 	var allinfo = $(self).parent().parent().children(".resource-all-info").html();
 	var hashid = $(self).parent().parent().attr("hashid");

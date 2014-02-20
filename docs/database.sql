@@ -28,6 +28,7 @@ insert into groups values (1, '空组', 0, '{}', '空组');
 insert into groups values (2, '管理', 0, '{"user":{"user":5, "unit":5, "group":5},"resource":{"origin":5}}', '管理组');
 insert into groups values (3, '机构管理员', 0, '{"user":{"user":4, "unit":4, "group":4},"resource":{"origin":4}}', '某一个机构的管理员');
 insert into groups values (4, '普通使用者', 0, '{"resource":{"origin":2}}', '某一个机构的普通使用者');
+insert into groups values (5, '普通查看者', 0, '{"resource":{"origin":1}}', '某一个机构的普通查看者');
 
 -- Table: users
 drop table IF EXISTS users CASCADE;
@@ -50,6 +51,7 @@ INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (1, 'nobody', '
 INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (2, 'root', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 2);
 INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (3, 'admin1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 3);
 INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (4, 'admin2', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 4);
+INSERT INTO users (id, name, passwd, units_id, groups_id) VALUES (5, 'user1', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 5);
 
 
 -- Table: resourceType
