@@ -2,7 +2,7 @@
 
 --------------
 
-**特别注意：**此项目处于开发阶段，功能完成度非常低，暂无使用价值。
+**特别注意：**此项目处于开发阶段。
 
 **所需组件：**
 
@@ -66,6 +66,5 @@
 
 ## 演示视频 ##
 
-“图书数字资源管理”已完成功能的演示（2014年1月10日）  [vimeo](https://vimeo.com/83818751)  [viddler](http://www.viddler.com/v/8665b335)  [优酷](http://v.youku.com/v_show/id_XNjU5OTEwNzM2.html)
+“图书数字资源管理”最新功能演示（2014年2月21日）  [vimeo](https://vimeo.com/87276191)  [viddler](http://www.viddler.com/v/af309ebc)
 
-“图书数字资源管理”-演示2-资源文件上传下载（2014年2月3日）  [vimeo](https://vimeo.com/85698449)  [viddler](http://www.viddler.com/v/7d18a531)  [优酷](http://v.youku.com/v_show/id_XNjY4Nzk1MzA0.html)
