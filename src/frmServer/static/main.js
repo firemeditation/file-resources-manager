@@ -11,6 +11,7 @@ var hideAll = function(){
 	$("#main-box #resource-list").hide();
 	$("#main-box #resource-add-box").hide();
 	$("#main-box #now-user-info").hide();
+	$("#main-box #system-control").hide();
 	$("html, body").animate({scrollTop:0}, 'slow')
 };
 
@@ -199,7 +200,8 @@ $(document).ready(function(){
 	
 	$("#top-kongzhi .usehelp").click(function(){
 		hideAll();
-		$("#top-kongzhi .soutext").val("");
+		searchClean();
+		//$("#top-kongzhi .soutext").val("");
 		$("#main-box #help-box").fadeIn();
 	});
 	
@@ -217,6 +219,21 @@ $(document).ready(function(){
 		});
 	});
 	//end 点击新建资源
+	
+	//begin 点击系统管理
+	$("#top-kongzhi .xitonggl").click(function(){
+		//hideAll();
+		//searchClean();
+		$("#nowloadbox").fadeIn(200);
+		$("#main-box #system-control").load("static/iSystemControl.htm", function(){
+			$.getScript("static/iSystemControl.js").done(function(){
+				$("#main-box #system-control").fadeIn();
+				$("#allwhite").fadeIn();
+				$("#nowloadbox").fadeOut(200);
+			});
+		});
+	});
+	//end 点击系统管理
 });
 
 var logoutSystem = function(){
