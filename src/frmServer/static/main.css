@@ -289,18 +289,6 @@ a:hover{
 	margin-bottom:15px;
 	margin-top:15px;
 }
-#system-control-true{
-	position:fixed;
-	width: 900px;
-	height:500px;
-	top:60px;
-	left:50%;
-	margin-left:-450px;
-	background-color:#fff;
-	border: solid 1px #888888;
-	box-shadow: 5px 5px 5px #aaaaaa;
-	z-index:101;
-}
 #resource-one-full{
 	position:fixed;
 	width: 900px;

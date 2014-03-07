@@ -1,6 +1,61 @@
 <style type="text/css">
-
+#system-control-true{
+	position:fixed;
+	width: 900px;
+	height:500px;
+	top:60px;
+	left:50%;
+	margin-left:-450px;
+	background-color:#fff;
+	border: solid 1px #888888;
+	box-shadow: 5px 5px 5px #aaaaaa;
+	z-index:101;
+}
+#system-control-true .header {
+	border:0;
+	border-bottom:solid 1px #888888;
+	height:30px;
+	font-family:"WenQuanYi Micro Hei Mono","文泉驿等宽微米黑","微软雅黑","黑体","SimHei";
+	font-size:16px;
+}
+#system-control-true .header-left {
+	float:left;
+}
+#system-control-true .header-right{
+	float:right;
+}
+#system-control-true .header-right .context{
+	height:30px;
+	float:right;
+	padding:0 10px 0 10px;
+	line-height:30px;
+	color: red;
+}
+#system-control-true .header-right .close{
+	border-left:solid 1px #888888;
+	height:30px;
+	float:right;
+	padding:0 10px 0 10px;
+	line-height:30px;
+	cursor:pointer;
+}
+#system-control-true .header-left .menu-list {
+	cursor:pointer;
+	float:left;
+	height:30px;
+	line-height:30px;
+	padding:0 5px 0 5px;
+	border-right:solid 1px #888888;
+}
 </style>
 <div id="system-control-true">
-	
+	<div class="header">
+		<div class="header-left">
+			<div class="menu-list">机构管理</div>
+			<div class="menu-list">用户组管理</div>
+			<div class="menu-list">用户管理</div>
+			<div class="menu-list">系统统计</div>
+		</div>
+		<div class="header-right"><div class="close">关</div><div class="context">··系统管理</div></div>
+	</div>
 </div>
