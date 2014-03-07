@@ -3,7 +3,7 @@
 	position:fixed;
 	width: 900px;
 	height:500px;
-	top:60px;
+	top:20px;
 	left:50%;
 	margin-left:-450px;
 	background-color:#fff;
@@ -47,6 +47,35 @@
 	padding:0 5px 0 5px;
 	border-right:solid 1px #888888;
 }
+#system-control-true .body .body-top{
+	height:40px;
+	font-family:"WenQuanYi Micro Hei Mono","文泉驿等宽微米黑","微软雅黑","黑体","SimHei";
+	font-size:18px;
+	padding-left:40px;
+	line-height:40px;
+}
+#system-control-true .body .body-left{
+	float: left;
+	font-family:"WenQuanYi Micro Hei Mono","文泉驿等宽微米黑","微软雅黑","黑体","SimHei";
+	width: 100px;
+	text-align:center;
+	font-size:14px;
+	color: #333;
+	border-right:dashed 1px #888888;
+	margin-top : 10px;
+}
+#system-control-true .body .body-left .menu-list{
+	padding: 7px 0 7px 0;
+}
+#system-control-true .body .body-left .menu-list span{
+	cursor:pointer;
+}
+#system-control-true .body .body-right{
+	float: right;
+	height: 424px;
+	width:794px;
+	overflow-y:auto;
+}
 </style>
 <div id="system-control-true">
 	<div class="header">
@@ -56,6 +85,18 @@
 			<div class="menu-list">用户管理</div>
 			<div class="menu-list">系统统计</div>
 		</div>
-		<div class="header-right"><div class="close">关</div><div class="context">··系统管理</div></div>
+		<div class="header-right"><div class="close" onclick=iSystemControl.Close()>关</div><div class="context">··系统管理</div></div>
+	</div>
+	<div class="body">
+		<div class="body-top">～ <span>机构管理</span> ～</div>
+		<div class="body-main">
+			<div class="body-left">
+				<div class="menu-list"><span isnow="true">机构列表</span></div>
+				<div class="menu-list"><span isnow="true">添加机构</span></div>
+				<div class="menu-list"><span isnow="true">我的机构</span></div>
+			</div>
+			<div class="body-right">
+			</div>
+		</div>
 	</div>
 </div>

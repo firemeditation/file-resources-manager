@@ -227,8 +227,8 @@ $(document).ready(function(){
 		$("#nowloadbox").fadeIn(200);
 		$("#main-box #system-control").load("static/iSystemControl.htm", function(){
 			$.getScript("static/iSystemControl.js").done(function(){
-				$("#main-box #system-control").fadeIn();
-				$("#allwhite").fadeIn();
+				$("#main-box #system-control").show();
+				$("#allwhite").show();
 				$("#nowloadbox").fadeOut(200);
 			});
 		});
