@@ -43,6 +43,10 @@ func (p *MyMux) ServeHTTP (w http.ResponseWriter, r *http.Request){
 		webInterface(w,r)
 		return
 	}
+	if r.URL.Path == "/webController" {
+		webController(w,r)
+		return
+	}
 	http.NotFound(w,r)
 	return
 }
